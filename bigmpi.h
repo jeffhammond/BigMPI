@@ -3,6 +3,13 @@
 
 #include <mpi.h>
 
+/* This function does all the heavy lifting in BigMPI. */
+
+int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
+
+/* All of these functions should just be calling MPIX_Type_contiguous_x and
+ * then the associated MPI function with count=1 and the newtype. */
+
 int MPIX_Send_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm);
 int MPIX_Recv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Status *status);
 

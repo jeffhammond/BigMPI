@@ -6,13 +6,13 @@ LD = $(CC)
 
 CFLAGS = $(FLAGS) -std=c99
 FFLAGS = $(FLAGS) -std=f95
-LDFLAGS = 
+LDFLAGS =
 
 .PHONY: all clean realclean
 
 LIBRARY = libbigmpi.a
-OBJECTS = 
-TESTS   = 
+OBJECTS = type_contiguous_x.o sendrecv_x.o
+TESTS   =
 
 all: $(LIBRARY)
 
@@ -25,12 +25,12 @@ $(LIBRARY): $(OBJECTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 
-clean: 
+clean:
 	-rm -f $(OBJECTS)
 
 
-realclean: clean 
-	-rm -f $(TESTS) 
+realclean: clean
+	-rm -f $(TESTS)
 	-rm -f $(LIBRARY)
 
 
