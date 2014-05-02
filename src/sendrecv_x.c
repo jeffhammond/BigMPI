@@ -4,7 +4,7 @@ int MPIX_Send_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int des
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Send(buf, (int)count, datatype, dest, tag, comm);
     } else {
         MPI_Datatype newtype;
@@ -20,7 +20,7 @@ int MPIX_Recv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, i
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Recv(buf, (int)count, datatype, source, tag, comm, status);
     } else {
         MPI_Datatype newtype;
@@ -36,7 +36,7 @@ int MPIX_Isend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Isend(buf, (int)count, datatype, dest, tag, comm, request);
     } else {
         MPI_Datatype newtype;
@@ -52,7 +52,7 @@ int MPIX_Irecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, 
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Irecv(buf, (int)count, datatype, source, tag, comm, request);
     } else {
         MPI_Datatype newtype;
@@ -70,7 +70,7 @@ int MPIX_Sendrecv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= BIGMPI_MAX_INT && recvcount <= BIGMPI_MAX_INT )) {
+    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Sendrecv(sendbuf, (int)sendcount, sendtype, dest, sendtag,
                           recvbuf, (int)recvcount, recvtype, source, recvtag,
                           comm, status);
@@ -97,7 +97,7 @@ int MPIX_Sendrecv_replace_x(void *buf, MPI_Count count, MPI_Datatype datatype, i
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Sendrecv_replace(buf, (int)count, datatype, dest, sendtag, source, recvtag, comm, status);
     } else {
         MPI_Datatype newtype;
@@ -114,7 +114,7 @@ int MPIX_Bsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Bsend(buf, (int)count, datatype, dest, tag, comm);
     } else {
         MPI_Datatype newtype;
@@ -130,7 +130,7 @@ int MPIX_Ssend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Ssend(buf, (int)count, datatype, dest, tag, comm);
     } else {
         MPI_Datatype newtype;
@@ -146,7 +146,7 @@ int MPIX_Rsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Rsend(buf, (int)count, datatype, dest, tag, comm);
     } else {
         MPI_Datatype newtype;
@@ -162,7 +162,7 @@ int MPIX_Ibsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int d
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Ibsend(buf, (int)count, datatype, dest, tag, comm, request);
     } else {
         MPI_Datatype newtype;
@@ -178,7 +178,7 @@ int MPIX_Issend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int d
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Issend(buf, (int)count, datatype, dest, tag, comm, request);
     } else {
         MPI_Datatype newtype;
@@ -194,7 +194,7 @@ int MPIX_Irsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int d
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Irsend(buf, (int)count, datatype, dest, tag, comm, request);
     } else {
         MPI_Datatype newtype;
@@ -210,7 +210,7 @@ int MPIX_Mrecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message 
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Mrecv(buf, (int)count, datatype, message, status);
     } else {
         MPI_Datatype newtype;
@@ -226,7 +226,7 @@ int MPIX_Imrecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Imrecv(buf, (int)count, datatype, message, request);
     } else {
         MPI_Datatype newtype;

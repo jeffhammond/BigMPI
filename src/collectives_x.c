@@ -4,7 +4,7 @@ int MPIX_Bcast_x(void *buf, MPI_Count count, MPI_Datatype datatype, int root, MP
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Bcast(buf, (int)count, datatype, root, comm);
     } else {
         MPI_Datatype newtype;
@@ -21,7 +21,7 @@ int MPIX_Gather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtyp
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= BIGMPI_MAX_INT && recvcount <= BIGMPI_MAX_INT )) {
+    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Gather(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, root, comm);
     } else {
         /* We do not specialize for case where only one of the counts is big
@@ -44,7 +44,7 @@ int MPIX_Scatter_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= BIGMPI_MAX_INT && recvcount <= BIGMPI_MAX_INT )) {
+    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Scatter(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, root, comm);
     } else {
         /* We do not specialize for case where only one of the counts is big
@@ -67,7 +67,7 @@ int MPIX_Allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= BIGMPI_MAX_INT && recvcount <= BIGMPI_MAX_INT )) {
+    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Allgather(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm);
     } else {
         /* We do not specialize for case where only one of the counts is big
@@ -90,7 +90,7 @@ int MPIX_Alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= BIGMPI_MAX_INT && recvcount <= BIGMPI_MAX_INT )) {
+    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Alltoall(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm);
     } else {
         /* We do not specialize for case where only one of the counts is big
@@ -112,7 +112,7 @@ int MPIX_Ibcast_x(void *buf, MPI_Count count, MPI_Datatype datatype, int root, M
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (count <= BIGMPI_MAX_INT )) {
+    if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Ibcast(buf, (int)count, datatype, root, comm, request);
     } else {
         MPI_Datatype newtype;
@@ -129,7 +129,7 @@ int MPIX_Igather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= BIGMPI_MAX_INT && recvcount <= BIGMPI_MAX_INT )) {
+    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Igather(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, root, comm, request);
     } else {
         /* We do not specialize for case where only one of the counts is big
@@ -152,7 +152,7 @@ int MPIX_Iscatter_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= BIGMPI_MAX_INT && recvcount <= BIGMPI_MAX_INT )) {
+    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Iscatter(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, root, comm, request);
     } else {
         /* We do not specialize for case where only one of the counts is big
@@ -175,7 +175,7 @@ int MPIX_Iallgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= BIGMPI_MAX_INT && recvcount <= BIGMPI_MAX_INT )) {
+    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Iallgather(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm, request);
     } else {
         /* We do not specialize for case where only one of the counts is big
@@ -198,7 +198,7 @@ int MPIX_Ialltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= BIGMPI_MAX_INT && recvcount <= BIGMPI_MAX_INT )) {
+    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Ialltoall(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm, request);
     } else {
         /* We do not specialize for case where only one of the counts is big
@@ -225,7 +225,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= BIGMPI_MAX_INT && recvcount <= BIGMPI_MAX_INT )) {
+    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Gatherv(sendbuf, (int)sendcount, sendtype,
                          recvbuf, newrecvcounts, recvtype,
                          root, comm);
