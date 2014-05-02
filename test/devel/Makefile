@@ -14,11 +14,11 @@ all: $(TESTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 
-clean: 
+clean:
 	-rm -f *.o
 
 
-realclean: clean 
-	-rm -f $(TESTS) 
+realclean: clean
+	-rm -f $(TESTS)
 
 
