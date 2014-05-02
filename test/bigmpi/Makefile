@@ -11,7 +11,7 @@ LIBS = -L../../lib -lbigmpi
 
 .PHONY: all clean realclean
 
-TESTS = test_sendrecv_x.x
+TESTS = test_sendrecv_x.x test_isendrecv_x.x
 
 all: $(TESTS)
 
