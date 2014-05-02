@@ -36,3 +36,35 @@ int MPIX_Recv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, i
     }
     return rc;
 }
+
+int MPIX_Isend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request * request)
+{
+    int rc = MPI_SUCCESS;
+
+    if (count <= BIGMPI_MAX_INT ) {
+        rc = MPI_Isend(buf, (int)count, datatype, dest, tag, comm, request);
+    } else {
+        MPI_Datatype newtype;
+        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPI_Type_commit(&newtype);
+        rc = MPI_Isend(buf, 1, newtype, dest, tag, comm, request);
+        MPI_Type_free(&newtype);
+    }
+    return rc;
+}
+
+int MPIX_Irecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request * request)
+{
+    int rc = MPI_SUCCESS;
+
+    if (count <= BIGMPI_MAX_INT ) {
+        rc = MPI_Irecv(buf, (int)count, datatype, source, tag, comm, request);
+    } else {
+        MPI_Datatype newtype;
+        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPI_Type_commit(&newtype);
+        rc = MPI_Irecv(buf, 1, newtype, source, tag, comm, request);
+        MPI_Type_free(&newtype);
+    }
+    return rc;
+}
