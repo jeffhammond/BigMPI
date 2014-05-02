@@ -5,6 +5,8 @@
 
 #include "bigmpi.h"
 
+#include "likely.h"
+
 int MPIX_Send_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
