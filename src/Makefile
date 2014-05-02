@@ -7,7 +7,8 @@ LD = $(CC)
 # BIGMPI_MAX_INT allow one to debug without requiring
 # 4+ GiB of memory for every test.  This value must
 # be set to something less than INT_MAX.
-CFLAGS = $(FLAGS) -std=c99 -DBIGMPI_MAX_INT=1000000
+CPPFLAGS = -I../include -DBIGMPI_MAX_INT=1000000
+CFLAGS = $(FLAGS) -std=c99 $(CPPFLAGS)
 FFLAGS = $(FLAGS) -std=f95
 LDFLAGS = $(CFLAGS)
 
@@ -22,13 +23,13 @@ TESTS   =
 all: $(LIBRARY)
 
 
-$(LIBRARY): $(OBJECTS) bigmpi.h
+$(LIBRARY): $(OBJECTS)
 	-ar -r $(LIBRARY) $(OBJECTS)
 
-%.x: %.o bigmpi.h
+%.x: %.o
 	$(LD) $(LDFLAGS) $< $(LIBS) -o $@
 
-%.o: %.c bigmpi.h
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
