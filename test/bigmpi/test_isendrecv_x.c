@@ -40,7 +40,7 @@ int main(int argc, char * argv[])
     }
 
     int m = (argc > 1) ? atoi(argv[1]) : 2;
-    MPI_Count n = m*test_int_max;
+    MPI_Count n = m*test_int_max+17777;
 
     char * buf = NULL;
 

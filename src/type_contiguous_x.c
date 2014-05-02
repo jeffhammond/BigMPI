@@ -29,6 +29,11 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     MPI_Count c = count/bigmpi_int_max;
     MPI_Count r = count%bigmpi_int_max;
 
+#ifdef BIGMPI_DEBUG
+    printf("MPIX_Type_contiguous_x: count = %zu, chunk = %zu, remainder = %zu \n",
+            (size_t)count, (size_t)c, (size_t)r );
+#endif
+
     MPI_Datatype chunk;
     rc = MPI_Type_contiguous(bigmpi_int_max, oldtype, &chunk);
     MPI_ASSERT(rc==MPI_SUCCESS);
