@@ -3,6 +3,13 @@
 
 #include <mpi.h>
 
+#ifdef BIGMPI_MAX_INT
+const MPI_Count bigmpi_int_max = BIGMPI_MAX_INT;
+#else
+#include <limits.h>
+const MPI_Count bigmpi_int_max = INT_MAX;
+#endif
+
 /* This function does all the heavy lifting in BigMPI. */
 
 int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
