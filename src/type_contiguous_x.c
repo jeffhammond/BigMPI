@@ -5,7 +5,14 @@
 
 #include <mpi.h>
 
-#define BIGMPI_MAX 2147483648
+#ifdef BIGMPI_MAX_INT_INT
+const MPI_Count bigmpi_int_max = BIGMPI_MAX_INT_INT;
+#else
+#include <limits.h>
+const MPI_Count bigmpi_int_max = INT_MAX;
+#endif
+
+/* This function does all the heavy lifting in BigMPI. */
 
 #define MPI_ASSERT(e)  \
         ((void) ((e) ? 0 : MPI_Abort(MPI_COMM_WORLD,1) ))
@@ -31,11 +38,11 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
 {
     int rc = MPI_SUCCESS;
 
-    MPI_Count c = count/BIGMPI_MAX;
-    MPI_Count r = count%BIGMPI_MAX;
+    MPI_Count c = count/BIGMPI_MAX_INT;
+    MPI_Count r = count%BIGMPI_MAX_INT;
 
     MPI_Datatype chunk;
-    rc = MPI_Type_contiguous(BIGMPI_MAX, oldtype, &chunk);
+    rc = MPI_Type_contiguous(BIGMPI_MAX_INT, oldtype, &chunk);
     MPI_ASSERT(rc==MPI_SUCCESS);
 
     MPI_Datatype chunks;
@@ -49,7 +56,7 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     int typesize;
     rc = MPI_Type_size(oldtype, &typesize);
 
-    MPI_Aint remdisp                   = (MPI_Aint)c*BIGMPI_MAX*typesize; /* must explicit-cast to avoid overflow */
+    MPI_Aint remdisp                   = (MPI_Aint)c*BIGMPI_MAX_INT*typesize; /* must explicit-cast to avoid overflow */
     int array_of_blocklengths[2]       = {1,1};
     MPI_Aint array_of_displacements[2] = {0,remdisp};
     MPI_Datatype array_of_types[2]     = {chunks,remainder};
@@ -100,11 +107,11 @@ int MPIX_Type_contiguousv_x(int ncount, MPI_Count counts[], MPI_Datatype oldtype
 
     TODO: Implement this function
 
-    MPI_Count c = count/BIGMPI_MAX;
-    MPI_Count r = count%BIGMPI_MAX;
+    MPI_Count c = count/BIGMPI_MAX_INT;
+    MPI_Count r = count%BIGMPI_MAX_INT;
 
     MPI_Datatype chunk;
-    rc = MPI_Type_contiguous(BIGMPI_MAX, oldtype, &chunk);
+    rc = MPI_Type_contiguous(BIGMPI_MAX_INT, oldtype, &chunk);
     MPI_ASSERT(rc==MPI_SUCCESS);
 
     MPI_Datatype chunks;
@@ -118,7 +125,7 @@ int MPIX_Type_contiguousv_x(int ncount, MPI_Count counts[], MPI_Datatype oldtype
     int typesize;
     rc = MPI_Type_size(oldtype, &typesize);
 
-    MPI_Aint remdisp                   = (MPI_Aint)c*BIGMPI_MAX*typesize; /* must explicit-cast to avoid overflow */
+    MPI_Aint remdisp                   = (MPI_Aint)c*BIGMPI_MAX_INT*typesize; /* must explicit-cast to avoid overflow */
     int array_of_blocklengths[2]       = {1,1};
     MPI_Aint array_of_displacements[2] = {0,remdisp};
     MPI_Datatype array_of_types[2]     = {chunks,remainder};
