@@ -1,16 +1,25 @@
 FLAGS = -g -O2 -Wall
 
 CC = mpicc
-CFLAGS = $(FLAGS) -std=c99
+CPPFLAGS = -I../../include -DBIGMPI_MAX_INT=1000000
+CFLAGS = $(FLAGS) -std=c99 $(CPPFLAGS)
+
+LD = $(CC)
+LDFLAGS = $(CFLAGS)
+
+LIBS = -L../../lib -lbigmpi
 
 .PHONY: all clean realclean
 
-TESTS =
+TESTS = test_sendrecv_x.x
 
 all: $(TESTS)
 
-%.x: %.c
-	$(CC) $(CFLAGS) $< -o $@
+%.x: %.o
+	$(LD) $(LDFLAGS) $< $(LIBS) -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	-rm -f *.o
