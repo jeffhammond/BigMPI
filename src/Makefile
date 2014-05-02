@@ -29,19 +29,16 @@ $(LIBRARY): $(OBJECTS)
 %.x: %.o
 	$(LD) $(LDFLAGS) $< $(LIBS) -o $@
 
-%.o: %.c
+%.o: %.c bigmpi_impl.h
 	$(CC) $(CFLAGS) -c $< -o $@
-
-install:
-	-mkdir -p ../lib/.
-	-cp $(LIBRARY) ../lib/.
 
 clean:
 	-rm -f $(OBJECTS)
 
-
 realclean: clean
-	-rm -f $(TESTS)
 	-rm -f $(LIBRARY)
 
+install: clean
+	-mkdir -p ../lib/.
+	-cp $(LIBRARY) ../lib/.
 
