@@ -3,16 +3,18 @@
 
 #include <mpi.h>
 
-/* This function does all the heavy lifting in BigMPI. */
+/* These functions do the heavy lifting in BigMPI. */
 
 int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
 
 #if 0
+/* TODO: Finish implement this function. */
 int MPIX_Type_contiguousv_x(int ncount, MPI_Count counts[], MPI_Datatype oldtypes[], MPI_Datatype * newtypes[]);
 #endif
 
 /* All of these functions should just be calling MPIX_Type_contiguous_x and
- * then the associated MPI function with count=1 and the newtype. */
+ * then the associated MPI function with count=1 and the newtype if the count
+ * is bigger than INT_MAX and dropping into the regular implementation otherwise. */
 
 int MPIX_Send_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm);
 int MPIX_Recv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Status *status);
