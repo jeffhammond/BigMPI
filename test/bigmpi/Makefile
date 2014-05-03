@@ -9,11 +9,15 @@ LDFLAGS = $(CFLAGS)
 
 LIBS = -L../../lib -lbigmpi verify_buffer.o
 
-.PHONY: all clean realclean
+.PHONY: all clean realclean test
 
 TESTS = test_sendrecv_x.x test_isendrecv_x.x test_send_recv_x.x
 
 all: $(TESTS)
+
+test: $(TESTS)
+	for i in $(TESTS); do mpirun -np 2 $$i; done
+	for i in $(TESTS); do mpirun -np 2 $$i 1000 0; done
 
 %.x: %.o verify_buffer.o
 	$(LD) $(LDFLAGS) $< $(LIBS) -o $@
