@@ -40,8 +40,9 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    int m = (argc > 1) ? atoi(argv[1]) : 2;
-    MPI_Count n = m*test_int_max+17777;
+    int l = (argc > 1) ? atoi(argv[1]) : 2;
+    int m = (argc > 2) ? atoi(argv[2]) : 17777;
+    MPI_Count n = l * test_int_max + m;
 
     char * buf = NULL;
 
