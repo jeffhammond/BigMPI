@@ -6,6 +6,7 @@
 
 #include <mpi.h>
 #include "bigmpi.h"
+#include "verify_buffer.h"
 
 #ifdef BIGMPI_MAX_INT
 const MPI_Count test_int_max = BIGMPI_MAX_INT;
@@ -54,30 +55,14 @@ int main(int argc, char * argv[])
                             buf_recv, n, MPI_CHAR, 0 /* src */, r /* tag */,
                             MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            /* correctness verification */
-            size_t errors = 0;
-            for (size_t i = 0; i < (size_t)n; i++) {
-                errors += (buf_recv[i] != (unsigned char)0 );
-            }
-            if (errors > 0) {
-                printf("There were %zu errors!", errors);
-                MPI_Abort(MPI_COMM_WORLD, (int)errors);
-            }
+            verify_buffer(buf_recv, n, 0);
         }
         else if (rank==0) {
             MPIX_Sendrecv_x(buf_send, n, MPI_CHAR, r /* dst */, r /* tag */,
                             buf_recv, n, MPI_CHAR, r /* src */, r /* tag */,
                             MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            /* correctness verification */
-            size_t errors = 0;
-            for (size_t i = 0; i < (size_t)n; i++) {
-                errors += (buf_recv[i] != (unsigned char)r );
-            }
-            if (errors > 0) {
-                printf("There were %zu errors!", errors);
-                MPI_Abort(MPI_COMM_WORLD, (int)errors);
-            }
+            verify_buffer(buf_recv, n, r);
         }
     }
 
