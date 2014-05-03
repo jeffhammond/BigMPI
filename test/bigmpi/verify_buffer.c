@@ -3,7 +3,7 @@
 
 #include "verify_buffer.h"
 
-int verify_buffer(char *buf, MPI_Count count, int expected_value)
+void verify_buffer(char *buf, MPI_Count count, int expected_value)
 {
     size_t errors = 0;
     for (size_t i = 0; i < (size_t)count; i++) {
