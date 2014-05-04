@@ -3,7 +3,7 @@
 
 #include "verify_buffer.h"
 
-void verify_buffer(char *buf, MPI_Count count, int expected_value)
+size_t verify_buffer(char *buf, MPI_Count count, int expected_value)
 {
     size_t errors = 0;
     for (size_t i = 0; i < (size_t)count; i++) {
@@ -13,4 +13,5 @@ void verify_buffer(char *buf, MPI_Count count, int expected_value)
         printf("There were %zu errors!", errors);
         MPI_Abort(MPI_COMM_WORLD, (int)errors);
     }
+    return errors;
 }
