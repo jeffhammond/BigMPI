@@ -38,26 +38,36 @@ int main(int argc, char * argv[])
     int m = (argc > 2) ? atoi(argv[2]) : 17777;
     MPI_Count n = l * test_int_max + m;
 
-    char * buf = NULL;
+    char * buf_send = NULL;
+    char * buf_recv = NULL;
 
-    MPI_Alloc_mem((MPI_Aint)n, MPI_INFO_NULL, &buf);
+    MPI_Alloc_mem((MPI_Aint)n, MPI_INFO_NULL, &buf_send);
+    MPI_Alloc_mem((MPI_Aint)n, MPI_INFO_NULL, &buf_recv);
 
-    memset(buf, rank, (size_t)n);
+    memset(buf_send, rank, (size_t)n);
+    memset(buf_recv, rank, (size_t)n);
 
     for (int r = 1; r < size; r++) {
 
         /* pairwise communication */
         if (rank==r) {
-            MPIX_Send_x(buf, n, MPI_CHAR, 0 /* dst */, r /* tag */, MPI_COMM_WORLD);
+            MPIX_Sendrecv_x(buf_send, n, MPI_CHAR, 0 /* dst */, r /* tag */,
+                            buf_recv, n, MPI_CHAR, 0 /* src */, r /* tag */,
+                            MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+            verify_buffer(buf_recv, n, 0);
         }
         else if (rank==0) {
-            MPIX_Recv_x(buf, n, MPI_CHAR, r /* src */, r /* tag */, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPIX_Sendrecv_x(buf_send, n, MPI_CHAR, r /* dst */, r /* tag */,
+                            buf_recv, n, MPI_CHAR, r /* src */, r /* tag */,
+                            MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            verify_buffer(buf, n, r);
+            verify_buffer(buf_recv, n, r);
         }
     }
 
-    MPI_Free_mem(buf);
+    MPI_Free_mem(buf_send);
+    MPI_Free_mem(buf_recv);
 
     if (rank==0) {
         printf("SUCCESS\n");

@@ -44,18 +44,10 @@ int main(int argc, char * argv[])
 
     memset(buf, rank, (size_t)n);
 
-    for (int r = 1; r < size; r++) {
+    /* collective communication */
+    MPIX_Bcast_x(buf, n, MPI_CHAR, 0 /* root */, MPI_COMM_WORLD);
 
-        /* pairwise communication */
-        if (rank==r) {
-            MPIX_Send_x(buf, n, MPI_CHAR, 0 /* dst */, r /* tag */, MPI_COMM_WORLD);
-        }
-        else if (rank==0) {
-            MPIX_Recv_x(buf, n, MPI_CHAR, r /* src */, r /* tag */, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-            verify_buffer(buf, n, r);
-        }
-    }
+    verify_buffer(buf, n, 0);
 
     MPI_Free_mem(buf);
 

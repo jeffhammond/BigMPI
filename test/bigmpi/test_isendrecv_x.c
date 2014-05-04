@@ -1,10 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <string.h>
 #include <strings.h>
 
 #include <mpi.h>
 #include "bigmpi.h"
+#include "verify_buffer.h"
 
 #ifdef BIGMPI_MAX_INT
 const MPI_Count test_int_max = BIGMPI_MAX_INT;
@@ -39,8 +41,9 @@ int main(int argc, char * argv[])
         return 1;
     }
 
-    int m = (argc > 1) ? atoi(argv[1]) : 2;
-    MPI_Count n = m*test_int_max+17777;
+    int l = (argc > 1) ? atoi(argv[1]) : 2;
+    int m = (argc > 2) ? atoi(argv[2]) : 17777;
+    MPI_Count n = l * test_int_max + m;
 
     char * buf = NULL;
 
@@ -65,15 +68,7 @@ int main(int argc, char * argv[])
         }
 
         if (rank==0) {
-            /* correctness verification */
-            size_t errors = 0;
-            for (size_t i = 0; i < (size_t)n; i++) {
-                errors += (buf[i] != (unsigned char)r );
-            }
-            if (errors > 0) {
-                printf("There were %zu errors!", errors);
-                MPI_Abort(MPI_COMM_WORLD, (int)errors);
-            }
+            verify_buffer(buf, n, r);
         }
     }
 
