@@ -86,8 +86,6 @@ int MPIX_Reduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count re
         MPI_Comm_size(comm, &commsize);
         MPI_Count sendcount = recvcount * commsize;
 
-        /* Using MPI_Type_get_extent instead of MPI_Type_size for generality,
-         * but the rest of BigMPI may not support types where extent > size. */
         MPI_Aint lb /* unused */, extent;
         MPI_Type_get_extent(datatype, &lb, &extent);
         MPI_Aint buf_size = (MPI_Aint)sendcount * extent;
