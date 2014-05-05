@@ -39,7 +39,7 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     MPI_Type_contiguous(r, oldtype, &remainder);
 
     MPI_Aint lb /* unused */, extent;
-    MPI_Type_get_extent(datatype, &lb, &extent);
+    MPI_Type_get_extent(oldtype, &lb, &extent);
 
     MPI_Aint remdisp          = (MPI_Aint)c*bigmpi_int_max*extent;
     int blocklengths[2]       = {1,1};
