@@ -16,6 +16,8 @@ int MPIX_Type_contiguousv_x(int ncount, MPI_Count counts[], MPI_Datatype oldtype
  * then the associated MPI function with count=1 and the newtype if the count
  * is bigger than INT_MAX and dropping into the regular implementation otherwise. */
 
+/* Point-to-point */
+
 int MPIX_Send_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm);
 int MPIX_Recv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Status *status);
 
@@ -35,6 +37,8 @@ int MPIX_Irsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int d
 
 int MPIX_Mrecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message *message, MPI_Status *status);
 int MPIX_Imrecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message *message, MPI_Request *request);
+
+/* Collectives */
 
 int MPIX_Bcast_x(void *buffer, MPI_Count count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int MPIX_Gather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
@@ -56,9 +60,7 @@ int MPIX_Iallgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
 int MPIX_Ialltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                      void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request);
 
-#if 0
-
-/* UNSUPPORTED */
+/* Reductions */
 
 int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
                   MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
@@ -76,6 +78,37 @@ int MPIX_Ireduce_scatter_x(const void *sendbuf, void *recvbuf, const MPI_Count r
                            MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
 int MPIX_Ireduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count recvcount,
                                  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
+
+/* RMA */
+
+int MPIX_Accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+                      int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
+                      MPI_Op op, MPI_Win win);
+int MPIX_Get_x(void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+               int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype, MPI_Win win);
+int MPIX_Put_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+               int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype, MPI_Win win);
+int MPIX_Get_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+                          void *result_addr, MPI_Count result_count, MPI_Datatype result_datatype,
+                          int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
+                          MPI_Op op, MPI_Win win);
+int MPIX_Rput_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+                int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
+                MPI_Win win, MPI_Request *request);
+int MPIX_Rget_x(void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+                int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
+                MPI_Win win, MPI_Request *request);
+int MPIX_Raccumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+                       int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
+                       MPI_Op op, MPI_Win win, MPI_Request *request);
+int MPIX_Rget_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+                           void *result_addr, MPI_Count result_count, MPI_Datatype result_datatype,
+                           int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
+                           MPI_Op op, MPI_Win win, MPI_Request *request);
+
+#if 0
+
+/* UNSUPPORTED */
 
 int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                    void *recvbuf, const MPI_Count *recvcounts, const int *displs, MPI_Datatype recvtype,
@@ -99,31 +132,6 @@ int MPIX_Iallgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype se
 int MPIX_Ialltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[], MPI_Datatype sendtype,
                       void *recvbuf, const MPI_Count recvcounts[], const int rdispls[], MPI_Datatype recvtype,
                       MPI_Comm comm, MPI_Request *request);
-
-int MPIX_Accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
-                      int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
-                      MPI_Op op, MPI_Win win);
-int MPIX_Get_x(void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
-               int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype, MPI_Win win);
-int MPIX_Put_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
-               int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype, MPI_Win win);
-int MPIX_Get_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
-                          void *result_addr, int result_count, MPI_Datatype result_datatype,
-                          int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
-                          MPI_Op op, MPI_Win win);
-int MPIX_Rput_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
-                int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
-                MPI_Win win, MPI_Request *request);
-int MPIX_Rget_x(void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
-                int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
-                MPI_Win win, MPI_Request *request);
-int MPIX_Raccumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
-                       int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
-                       MPI_Op op, MPI_Win win, MPI_Request *request);
-int MPIX_Rget_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
-                           void *result_addr, int result_count, MPI_Datatype result_datatype,
-                           int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
-                           MPI_Op op, MPI_Win win, MPI_Request *request);
 
 int MPIX_Neighbor_allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                               void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
