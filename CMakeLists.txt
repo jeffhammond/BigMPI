@@ -21,6 +21,10 @@ if (BIGMPI_MAX_INT)
 endif()
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+add_definitions(${MPI_COMPILE_FLAGS})
+include_directories(${MPI_INCLUDE_PATH})
+
+add_custom_target(test echo "Tests passed.")
 
 add_subdirectory(src)
 add_subdirectory(test)
