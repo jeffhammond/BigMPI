@@ -53,7 +53,7 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     return MPI_SUCCESS;
 }
 
-#if 0
+#if TODO
 /*
  * Synopsis
  *
@@ -75,49 +75,32 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
  */
 int MPIX_Type_contiguousv_x(int ncount, MPI_Count counts[], MPI_Datatype oldtypes[], MPI_Datatype * newtypes[])
 {
-    int rc = MPI_SUCCESS;
-
-    TODO: Implement this function
+    /* TODO: Implement this function */
 
     MPI_Count c = count/bigmpi_int_max;
     MPI_Count r = count%bigmpi_int_max;
 
     MPI_Datatype chunk;
-    rc = MPI_Type_contiguous(bigmpi_int_max, oldtype, &chunk);
-    MPI_ASSERT(rc==MPI_SUCCESS);
+    MPI_Type_contiguous(bigmpi_int_max, oldtype, &chunk);
 
     MPI_Datatype chunks;
-    rc = MPI_Type_contiguous(c, chunk, &chunks);
-    MPI_ASSERT(rc==MPI_SUCCESS);
+    MPI_Type_vector(c, bigmpi_int_max, bigmpi_int_max, oldtype, &chunks);
+
 
     MPI_Datatype remainder;
-    rc = MPI_Type_contiguous(r, oldtype, &remainder);
-    MPI_ASSERT(rc==MPI_SUCCESS);
+    MPI_Type_contiguous(r, oldtype, &remainder);
 
     int typesize;
-    rc = MPI_Type_size(oldtype, &typesize);
+    MPI_Type_size(oldtype, &typesize);
 
     MPI_Aint remdisp          = (MPI_Aint)c*bigmpi_int_max*typesize; /* must explicit-cast to avoid overflow */
     int blocklengths[2]       = {1,1};
     MPI_Aint displacements[2] = {0,remdisp};
     MPI_Datatype types[2]     = {chunks,remainder};
-    rc = MPI_Type_create_struct(2, blocklengths, displacements, types, newtype);
-    MPI_ASSERT(rc==MPI_SUCCESS);
+    MPI_Type_create_struct(2, blocklengths, displacements, types, newtype);
 
-    /* For MPIX_Type_contiguous_x to behave like it should, we do not commit the datatype internally. */
-    /*
-    rc = MPI_Type_commit(newtype);
-    MPI_ASSERT(rc==MPI_SUCCESS);
-    */
-
-    rc = MPI_Type_free(&chunk);
-    MPI_ASSERT(rc==MPI_SUCCESS);
-
-    rc = MPI_Type_free(&chunks);
-    MPI_ASSERT(rc==MPI_SUCCESS);
-
-    rc = MPI_Type_free(&remainder);
-    MPI_ASSERT(rc==MPI_SUCCESS);
+    MPI_Type_free(&chunks);
+    MPI_Type_free(&remainder);
 
     return MPI_SUCCESS;
 }
