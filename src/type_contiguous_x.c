@@ -24,8 +24,6 @@
  */
 int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype)
 {
-    int rc = MPI_SUCCESS;
-
     MPI_Count c = count/bigmpi_int_max;
     MPI_Count r = count%bigmpi_int_max;
 
@@ -35,28 +33,22 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
 #endif
 
     MPI_Datatype chunks;
-    rc = MPI_Type_vector(c, bigmpi_int_max, bigmpi_int_max, oldtype, &chunks);
-    MPI_ASSERT(rc==MPI_SUCCESS);
+    MPI_Type_vector(c, bigmpi_int_max, bigmpi_int_max, oldtype, &chunks);
 
     MPI_Datatype remainder;
-    rc = MPI_Type_contiguous(r, oldtype, &remainder);
-    MPI_ASSERT(rc==MPI_SUCCESS);
+    MPI_Type_contiguous(r, oldtype, &remainder);
 
     int typesize;
-    rc = MPI_Type_size(oldtype, &typesize);
+    MPI_Type_size(oldtype, &typesize);
 
     MPI_Aint remdisp                   = (MPI_Aint)c*bigmpi_int_max*typesize; /* must explicit-cast to avoid overflow */
     int array_of_blocklengths[2]       = {1,1};
     MPI_Aint array_of_displacements[2] = {0,remdisp};
     MPI_Datatype array_of_types[2]     = {chunks,remainder};
-    rc = MPI_Type_create_struct(2, array_of_blocklengths, array_of_displacements, array_of_types, newtype);
-    MPI_ASSERT(rc==MPI_SUCCESS);
+    MPI_Type_create_struct(2, array_of_blocklengths, array_of_displacements, array_of_types, newtype);
 
-    rc = MPI_Type_free(&chunks);
-    MPI_ASSERT(rc==MPI_SUCCESS);
-
-    rc = MPI_Type_free(&remainder);
-    MPI_ASSERT(rc==MPI_SUCCESS);
+    MPI_Type_free(&chunks);
+    MPI_Type_free(&remainder);
 
     return MPI_SUCCESS;
 }
