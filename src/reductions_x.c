@@ -18,22 +18,25 @@ int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
     if (likely (count <= bigmpi_int_max )) {
         return MPI_Reduce(sendbuf, recvbuf, (int)count, datatype, op, root, comm);
     } else {
+        int c = (int)(count/bigmpi_int_max);
+        int r = (int)(count%bigmpi_int_max);
         if (sendbuf==MPI_IN_PLACE) {
-            int c = (int)(count/bigmpi_int_max);
+            int commrank;
+            MPI_Comm_rank(comm, &commrank);
+
             for (int i=0; i<c; i++) {
-                MPI_Reduce(MPI_IN_PLACE, &recvbuf[i*bigmpi_int_max],
+                MPI_Reduce(commrank==root ? MPI_IN_PLACE : &recvbuf[i*bigmpi_int_max],
+                           &recvbuf[i*bigmpi_int_max],
                            bigmpi_int_max, datatype, op, root, comm);
             }
-            int r = (int)(count%bigmpi_int_max);
-            MPI_Reduce(MPI_IN_PLACE, &recvbuf[c*bigmpi_int_max],
+            MPI_Reduce(commrank==root ? MPI_IN_PLACE : &recvbuf[c*bigmpi_int_max],
+                       &recvbuf[c*bigmpi_int_max],
                        r, datatype, op, root, comm);
         } else {
-            int c = (int)(count/bigmpi_int_max);
             for (int i=0; i<c; i++) {
                 MPI_Reduce(&sendbuf[i*bigmpi_int_max], &recvbuf[i*bigmpi_int_max],
                            bigmpi_int_max, datatype, op, root, comm);
             }
-            int r = (int)(count%bigmpi_int_max);
             MPI_Reduce(&sendbuf[c*bigmpi_int_max], &recvbuf[c*bigmpi_int_max],
                        r, datatype, op, root, comm);
         }
@@ -47,24 +50,22 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
     if (likely (count <= bigmpi_int_max )) {
         return MPI_Allreduce(sendbuf, recvbuf, (int)count, datatype, op, comm);
     } else {
+        int c = (int)(count/bigmpi_int_max);
+        int r = (int)(count%bigmpi_int_max);
         if (sendbuf==MPI_IN_PLACE) {
-            int c = (int)(count/bigmpi_int_max);
             for (int i=0; i<c; i++) {
                 MPI_Allreduce(MPI_IN_PLACE, &recvbuf[i*bigmpi_int_max],
-                           bigmpi_int_max, datatype, op, comm);
+                              bigmpi_int_max, datatype, op, comm);
             }
-            int r = (int)(count%bigmpi_int_max);
             MPI_Allreduce(MPI_IN_PLACE, &recvbuf[c*bigmpi_int_max],
-                       r, datatype, op, comm);
+                          r, datatype, op, comm);
         } else {
-            int c = (int)(count/bigmpi_int_max);
             for (int i=0; i<c; i++) {
                 MPI_Allreduce(&sendbuf[c*bigmpi_int_max], &recvbuf[i*bigmpi_int_max],
-                           bigmpi_int_max, datatype, op, comm);
+                              bigmpi_int_max, datatype, op, comm);
             }
-            int r = (int)(count%bigmpi_int_max);
             MPI_Allreduce(&sendbuf[c*bigmpi_int_max], &recvbuf[c*bigmpi_int_max],
-                       r, datatype, op, comm);
+                          r, datatype, op, comm);
         }
     }
     return MPI_SUCCESS;
@@ -76,12 +77,17 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
  * an MPI_REDUCE collective operation with count equal to recvcount*n,
  * followed by an MPI_SCATTER with sendcount equal to recvcount. */
 
+/* The previous statement is untrue when sendbuf=MPI_IN_PLACE so we
+ * are forced to buffer even in the in-place case. */
+
 int MPIX_Reduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count recvcount,
                                 MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     if (likely (recvcount <= bigmpi_int_max )) {
         return MPI_Reduce_scatter_block(sendbuf, recvbuf, (int)recvcount, datatype, op, comm);
     } else {
+        int root = 0;
+
         int commsize;
         MPI_Comm_size(comm, &commsize);
         MPI_Count sendcount = recvcount * commsize;
@@ -90,19 +96,12 @@ int MPIX_Reduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count re
         MPI_Type_get_extent(datatype, &lb, &extent);
         MPI_Aint buf_size = (MPI_Aint)sendcount * extent;
 
-        int root = 0;
         void * tempbuf = NULL;
-
         MPI_Alloc_mem(buf_size, MPI_INFO_NULL, &tempbuf);
-        if (tempbuf==NULL) {
-            MPI_Abort(comm, 1);
-        }
+        if (tempbuf==NULL) { MPI_Abort(comm, 1); }
 
-        if (sendbuf==MPI_IN_PLACE) {
-            MPIX_Reduce_x(recvbuf, tempbuf, sendcount, datatype, op, root, comm);
-        } else {
-            MPIX_Reduce_x(sendbuf, tempbuf, sendcount, datatype, op, root, comm);
-        }
+        MPIX_Reduce_x(sendbuf==MPI_IN_PLACE ? recvbuf : sendbuf,
+                      tempbuf, sendcount, datatype, op, root, comm);
         MPIX_Scatter_x(tempbuf, recvcount, datatype, recvbuf, recvcount, datatype, root, comm);
 
         MPI_Free_mem(&tempbuf);
