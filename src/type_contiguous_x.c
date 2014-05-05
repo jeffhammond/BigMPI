@@ -38,6 +38,7 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     MPI_Datatype remainder;
     MPI_Type_contiguous(r, oldtype, &remainder);
 
+    /* TODO: Might need MPI_Type_get_extent to be fully general... */
     int typesize;
     MPI_Type_size(oldtype, &typesize);
 
