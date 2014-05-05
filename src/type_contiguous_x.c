@@ -41,11 +41,11 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     int typesize;
     MPI_Type_size(oldtype, &typesize);
 
-    MPI_Aint remdisp                   = (MPI_Aint)c*bigmpi_int_max*typesize; /* must explicit-cast to avoid overflow */
-    int array_of_blocklengths[2]       = {1,1};
-    MPI_Aint array_of_displacements[2] = {0,remdisp};
-    MPI_Datatype array_of_types[2]     = {chunks,remainder};
-    MPI_Type_create_struct(2, array_of_blocklengths, array_of_displacements, array_of_types, newtype);
+    MPI_Aint remdisp          = (MPI_Aint)c*bigmpi_int_max*typesize; /* must explicit-cast to avoid overflow */
+    int blocklengths[2]       = {1,1};
+    MPI_Aint displacements[2] = {0,remdisp};
+    MPI_Datatype types[2]     = {chunks,remainder};
+    MPI_Type_create_struct(2, blocklengths, displacements, types, newtype);
 
     MPI_Type_free(&chunks);
     MPI_Type_free(&remainder);
@@ -97,11 +97,11 @@ int MPIX_Type_contiguousv_x(int ncount, MPI_Count counts[], MPI_Datatype oldtype
     int typesize;
     rc = MPI_Type_size(oldtype, &typesize);
 
-    MPI_Aint remdisp                   = (MPI_Aint)c*bigmpi_int_max*typesize; /* must explicit-cast to avoid overflow */
-    int array_of_blocklengths[2]       = {1,1};
-    MPI_Aint array_of_displacements[2] = {0,remdisp};
-    MPI_Datatype array_of_types[2]     = {chunks,remainder};
-    rc = MPI_Type_create_struct(2, array_of_blocklengths, array_of_displacements, array_of_types, newtype);
+    MPI_Aint remdisp          = (MPI_Aint)c*bigmpi_int_max*typesize; /* must explicit-cast to avoid overflow */
+    int blocklengths[2]       = {1,1};
+    MPI_Aint displacements[2] = {0,remdisp};
+    MPI_Datatype types[2]     = {chunks,remainder};
+    rc = MPI_Type_create_struct(2, blocklengths, displacements, types, newtype);
     MPI_ASSERT(rc==MPI_SUCCESS);
 
     /* For MPIX_Type_contiguous_x to behave like it should, we do not commit the datatype internally. */
