@@ -66,16 +66,12 @@ int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
                   MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
 int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
                      MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-int MPIX_Reduce_scatter_x(const void *sendbuf, void *recvbuf, const MPI_Count recvcounts[],
-                          MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 int MPIX_Reduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count recvcount,
                                 MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
 int MPIX_Ireduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
                    MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request *request);
 int MPIX_Iallreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
                       MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
-int MPIX_Ireduce_scatter_x(const void *sendbuf, void *recvbuf, const MPI_Count recvcounts[],
-                           MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
 int MPIX_Ireduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count recvcount,
                                  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
 
@@ -110,6 +106,30 @@ int MPIX_Rget_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_
 
 /* UNSUPPORTED */
 
+/* These will eventually be supported. */
+
+int MPIX_Neighbor_allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+                              void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int MPIX_Neighbor_alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+                             void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int MPIX_Ineighbor_allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+                               void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm,
+                               MPI_Request *request);
+int MPIX_Ineighbor_alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+                             void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm,
+                             MPI_Request *request);
+
+/* It is unclear if supporting these is worthwhile... */
+
+int MPIX_Scan_x(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+int MPIX_Exscan_x(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+int MPIX_Iscan_x(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm,
+                 MPI_Request *request);
+int MPIX_Iexscan_x(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm,
+                   MPI_Request *request);
+
+/* Supporting the v-collectives is obnoxious and a motivating use case is missing. */
+
 int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                    void *recvbuf, const MPI_Count *recvcounts, const int *displs, MPI_Datatype recvtype,
                    int root, MPI_Comm comm);
@@ -133,39 +153,37 @@ int MPIX_Ialltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const i
                       void *recvbuf, const MPI_Count recvcounts[], const int rdispls[], MPI_Datatype recvtype,
                       MPI_Comm comm, MPI_Request *request);
 
-int MPIX_Neighbor_allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                              void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+/* These are equivalent to reduce+scatterv, hence are unsupported for the same reason
+ * as the other v-collectives. */
+
+int MPIX_Reduce_scatter_x(const void *sendbuf, void *recvbuf, const MPI_Count recvcounts[],
+                          MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
+int MPIX_Ireduce_scatter_x(const void *sendbuf, void *recvbuf, const MPI_Count recvcounts[],
+                           MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
+
+/* These will not be supported until the other v-collectives are, if ever. */
+
 int MPIX_Neighbor_allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                                void *recvbuf, const MPI_Count recvcounts[], const int displs[],
                                MPI_Datatype recvtype, MPI_Comm comm)
-int MPIX_Neighbor_alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                             void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 int MPIX_Neighbor_alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[],
                               MPI_Datatype sendtype, void *recvbuf, const MPI_Count recvcounts[],
                               const int rdispls[], MPI_Datatype recvtype, MPI_Comm comm)
-int MPIX_Ineighbor_allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                               void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype,
-                               MPI_Comm comm, MPI_Request *request);
 int MPIX_Ineighbor_allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                                 void *recvbuf, const MPI_Count recvcounts[], const int displs[],
                                 MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request);
-int MPIX_Ineighbor_alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                             void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm,
-                             MPI_Request *request);
 int MPIX_Ineighbor_alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[],
                                MPI_Datatype sendtype, void *recvbuf, const MPI_Count recvcounts[],
                                const int rdispls[], MPI_Datatype recvtype, MPI_Comm comm,
                                MPI_Request *request);
 
-int MPIX_Scan_x(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-int MPIX_Exscan_x(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm);
-int MPIX_Iscan_x(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
-int MPIX_Iexscan_x(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request *request);
+/* These are like the v-collectives, only worse... */
 
 int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[],
                      void *recvbuf, const MPI_Count recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm);
 int MPIX_Ialltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[],
-                      void *recvbuf, const MPI_Count recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Request *request);
+                      void *recvbuf, const MPI_Count recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm,
+                      MPI_Request *request);
 int MPIX_Neighbor_alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[],
                               const MPI_Datatype sendtypes[], void *recvbuf, const MPI_Count recvcounts[],
                               const MPI_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm);
