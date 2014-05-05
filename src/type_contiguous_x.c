@@ -38,11 +38,10 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     MPI_Datatype remainder;
     MPI_Type_contiguous(r, oldtype, &remainder);
 
-    /* TODO: Might need MPI_Type_get_extent to be fully general... */
-    int typesize;
-    MPI_Type_size(oldtype, &typesize);
+    MPI_Aint lb /* unused */, extent;
+    MPI_Type_get_extent(datatype, &lb, &extent);
 
-    MPI_Aint remdisp          = (MPI_Aint)c*bigmpi_int_max*typesize; /* must explicit-cast to avoid overflow */
+    MPI_Aint remdisp          = (MPI_Aint)c*bigmpi_int_max*extent;
     int blocklengths[2]       = {1,1};
     MPI_Aint displacements[2] = {0,remdisp};
     MPI_Datatype types[2]     = {chunks,remainder};
