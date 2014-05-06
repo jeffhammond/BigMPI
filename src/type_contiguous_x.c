@@ -52,3 +52,69 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
 
     return MPI_SUCCESS;
 }
+
+/*
+ * Synopsis
+ *
+ * int MPIX_Decode_contiguous_x(MPI_Datatype   intype,
+ *                              MPI_Count    * count,
+ *                              MPI_Datatype * basetype)
+ *
+ *  Input Parameters
+ *
+ *   newtype           new datatype (handle)
+ *
+ * Output Parameter
+ *
+ *   count             replication count (nonnegative integer)
+ *   oldtype           old datatype (handle)
+ *
+ */
+int MPIX_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datatype * basetype)
+{
+    int nint, nadd, ndts, combiner;
+
+    /* Step 1: Decode the type_create_struct call. */
+
+    MPI_Type_get_envelope(intype, &nint, &nadd, &ndts, &combiner);
+    assert(combiner==MPI_COMBINER_STRUCT && nint==2 && nadd==2 && ndts==2);
+
+    int blocklengths[2];//       = {1,1};
+    MPI_Aint displacements[2];// = {0,remdisp};
+    MPI_Datatype types[2];//     = {chunks,remainder};
+    MPI_Type_get_contents(intype, 2, 2, 2, blocklengths, displacements, types);
+    assert(blocklengths[0]==1 && blocklengths[1]==1 && displacements[0]==0);
+
+    /* Step 2: Decode the type_vector call. */
+
+    MPI_Type_get_envelope(types[0], &nint, &nadd, &ndts, &combiner);
+    assert(combiner==MPI_COMBINER_VECTOR && nint==3 && nadd==0 && ndts==1);
+
+    int cbs[3]; /* {count,blocklength,stride} */
+    MPI_Datatype vbasetype[1];
+    MPI_Type_get_contents(types[0], 3, 0, 1, cbs, NULL, vbasetype);
+    assert(/* blocklength = */ cbs[1]==bigmpi_int_max && /* stride = */ cbs[2]==bigmpi_int_max);
+
+    /* chunk count - see above */
+    MPI_Count c = cbs[0];
+
+    /* Step 3: Decode the type_contiguous call. */
+
+    MPI_Type_get_envelope(types[1], &nint, &nadd, &ndts, &combiner);
+    assert(combiner==MPI_COMBINER_CONTIGUOUS && nint==1 && nadd==0 && ndts==1);
+
+    int ccc[1]; /* {count} */
+    MPI_Datatype cbasetype[1];
+    MPI_Type_get_contents(types[1], 1, 0, 1, ccc, NULL, cbasetype);
+
+    /* remainder - see above */
+    MPI_Count r = ccc[0];
+
+    /* The underlying type of the vector and contig types must match. */
+    assert(cbasetype[0]==vbasetype[0]);
+
+    /* This should not overflow because everything is already MPI_Count type. */
+    *count = c*bigmpi_int_max+r;
+
+    return MPI_SUCCESS;
+}
