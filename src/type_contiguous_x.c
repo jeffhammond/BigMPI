@@ -85,23 +85,33 @@ int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datat
     /* Step 1: Decode the type_create_struct call. */
 
     MPI_Type_get_envelope(intype, &nint, &nadd, &ndts, &combiner);
-    assert(combiner==MPI_COMBINER_STRUCT && nint==2 && nadd==2 && ndts==2);
+    assert(combiner==MPI_COMBINER_STRUCT);
+    assert(nint==3);
+    assert(nadd==2);
+    assert(ndts==2);
 
-    int blocklengths[2];//       = {1,1};
-    MPI_Aint displacements[2];// = {0,remdisp};
-    MPI_Datatype types[2];//     = {chunks,remainder};
-    MPI_Type_get_contents(intype, 2, 2, 2, blocklengths, displacements, types);
-    assert(blocklengths[0]==1 && blocklengths[1]==1 && displacements[0]==0);
+    int cnbls[3]; /* {count, blocklengths[]} */
+    MPI_Aint displacements[2]; /* {0,remdisp} */
+    MPI_Datatype types[2]; /* {chunks,remainder} */;
+    MPI_Type_get_contents(intype, 3, 2, 2, cnbls, displacements, types);
+    assert(cnbls[0]==2);
+    assert(cnbls[1]==1);
+    assert(cnbls[2]==1);
+    assert(displacements[0]==0);
 
     /* Step 2: Decode the type_vector call. */
 
     MPI_Type_get_envelope(types[0], &nint, &nadd, &ndts, &combiner);
-    assert(combiner==MPI_COMBINER_VECTOR && nint==3 && nadd==0 && ndts==1);
+    assert(combiner==MPI_COMBINER_VECTOR);
+    assert(nint==3);
+    assert(nadd==0);
+    assert(ndts==1);
 
     int cbs[3]; /* {count,blocklength,stride} */
     MPI_Datatype vbasetype[1];
     MPI_Type_get_contents(types[0], 3, 0, 1, cbs, NULL, vbasetype);
-    assert(/* blocklength = */ cbs[1]==bigmpi_int_max && /* stride = */ cbs[2]==bigmpi_int_max);
+    assert(/* blocklength = */ cbs[1]==bigmpi_int_max);
+    assert(/* stride = */ cbs[2]==bigmpi_int_max);
 
     /* chunk count - see above */
     MPI_Count c = cbs[0];
@@ -109,7 +119,10 @@ int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datat
     /* Step 3: Decode the type_contiguous call. */
 
     MPI_Type_get_envelope(types[1], &nint, &nadd, &ndts, &combiner);
-    assert(combiner==MPI_COMBINER_CONTIGUOUS && nint==1 && nadd==0 && ndts==1);
+    assert(combiner==MPI_COMBINER_CONTIGUOUS);
+    assert(nint==1);
+    assert(nadd==0);
+    assert(ndts==1);
 
     int ccc[1]; /* {count} */
     MPI_Datatype cbasetype[1];
