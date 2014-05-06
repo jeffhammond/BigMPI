@@ -56,9 +56,17 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
 /*
  * Synopsis
  *
- * int MPIX_Decode_contiguous_x(MPI_Datatype   intype,
- *                              MPI_Count    * count,
- *                              MPI_Datatype * basetype)
+ * This function inverts MPIX_Type_contiguous_x, i.e. it provides
+ * the original arguments for that call so that we know how many
+ * built-in types are in the user-defined datatype.
+ *
+ * This function is primary used inside of BigMPI and does not
+ * correspond to an MPI function, so we do avoid the use of the
+ * MPIX namespace.
+ *
+ * int BigMPI_Decode_contiguous_x(MPI_Datatype   intype,
+ *                                MPI_Count    * count,
+ *                                MPI_Datatype * basetype)
  *
  *  Input Parameters
  *
@@ -70,7 +78,7 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
  *   oldtype           old datatype (handle)
  *
  */
-int MPIX_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datatype * basetype)
+int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datatype * basetype)
 {
     int nint, nadd, ndts, combiner;
 
