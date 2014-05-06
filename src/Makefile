@@ -9,7 +9,7 @@ LD = $(CC)
 # be set to something less than INT_MAX.
 CPPFLAGS  = -I. -I../include -DBIGMPI_MAX_INT=1000000
 # Pedantic debug output that only developers should care about.
-CPPFLAGS += -DBIGMPI_DEBUG
+#CPPFLAGS += -DBIGMPI_DEBUG
 CFLAGS = $(FLAGS) -std=c99 $(CPPFLAGS)
 FFLAGS = $(FLAGS) -std=f95
 LDFLAGS = $(CFLAGS)
