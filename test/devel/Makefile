@@ -5,7 +5,7 @@ CFLAGS = $(FLAGS) -std=c99
 
 .PHONY: all clean realclean
 
-TESTS =  aint_overflow.x
+TESTS =  aint_overflow.x preprocessor.x
 
 all: $(TESTS)
 
