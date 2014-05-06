@@ -133,6 +133,7 @@ int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datat
 
     /* The underlying type of the vector and contig types must match. */
     assert(cbasetype[0]==vbasetype[0]);
+    *basetype = cbasetype[0];
 
     /* This should not overflow because everything is already MPI_Count type. */
     *count = c*bigmpi_int_max+r;
