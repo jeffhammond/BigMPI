@@ -12,6 +12,74 @@
  * not part of the standard, we are going to do it in the name
  * of performance and implementation simplicity. */
 
+#define PASTE_BIGMPI_REDUCE_OP(OP)                                                      \
+void BigMPI_##OP##_x(void * invec, void * inoutvec, int * len, MPI_Datatype * bigtype)  \
+{                                                                                       \
+    /* We are reducing a single element of bigtype... */                                \
+    assert(*len==1);                                                                    \
+                                                                                        \
+    MPI_Count count;                                                                    \
+    MPI_Datatype basetype;                                                              \
+    BigMPI_Decode_contiguous_x(*bigtype, &count, &basetype);                            \
+                                                                                        \
+    int c = (int)(count/bigmpi_int_max);                                                \
+    int r = (int)(count%bigmpi_int_max);                                                \
+                                                                                        \
+    for (int i=0; i<c; i++) {                                                           \
+        MPI_Reduce_local(&invec[i*bigmpi_int_max], &inoutvec[i*bigmpi_int_max],         \
+                         bigmpi_int_max, basetype, MPI_##OP);                           \
+    }                                                                                   \
+    MPI_Reduce_local(&invec[c*bigmpi_int_max], &inoutvec[c*bigmpi_int_max],             \
+                     r, basetype, MPI_##OP);                                            \
+    return;                                                                             \
+}
+
+/* Create a BigMPI_<op>_x for all built-in ops. */
+PASTE_BIGMPI_REDUCE_OP(MAX)
+PASTE_BIGMPI_REDUCE_OP(MIN)
+PASTE_BIGMPI_REDUCE_OP(SUM)
+PASTE_BIGMPI_REDUCE_OP(PROD)
+PASTE_BIGMPI_REDUCE_OP(LAND)
+PASTE_BIGMPI_REDUCE_OP(BAND)
+PASTE_BIGMPI_REDUCE_OP(LOR)
+PASTE_BIGMPI_REDUCE_OP(BOR)
+PASTE_BIGMPI_REDUCE_OP(LXOR)
+PASTE_BIGMPI_REDUCE_OP(BXOR)
+PASTE_BIGMPI_REDUCE_OP(MAXLOC)
+PASTE_BIGMPI_REDUCE_OP(MINLOC)
+
+int BigMPI_Op_create(MPI_Op op, MPI_Op * bigop)
+{
+    int commute;
+    MPI_Op_commutative(op, &commute);
+
+    MPI_User_function * bigfn = NULL;
+
+    if      (op==MPI_MAX)  bigfn = BigMPI_MAX_x;
+    else if (op==MPI_MIN)  bigfn = BigMPI_MIN_x;
+    else if (op==MPI_SUM)  bigfn = BigMPI_SUM_x;
+    else if (op==MPI_PROD) bigfn = BigMPI_PROD_x;
+    else if (op==MPI_LAND) bigfn = BigMPI_LAND_x;
+    else if (op==MPI_BAND) bigfn = BigMPI_BAND_x;
+    else if (op==MPI_LOR)  bigfn = BigMPI_LOR_x;
+    else if (op==MPI_BOR)  bigfn = BigMPI_BOR_x;
+    else if (op==MPI_LXOR) bigfn = BigMPI_LXOR_x;
+    else if (op==MPI_BXOR) bigfn = BigMPI_BXOR_x;
+#if 0
+    /* TODO: Figure out how to support these.  The results of multiple
+     *       calls to Reduce_local will need to be combined... */
+    else if (op==MPI_MAXLOC) MPI_User_function * bigfn = BigMPI_MAXLOC_x;
+    else if (op==MPI_MINLOC) MPI_User_function * bigfn = BigMPI_MINLOC_x;
+#endif
+    else {
+        printf("BigMPI does not support this op.  Sorry. \n");
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
+    return MPI_Op_create(bigfn, commute, bigop);
+}
+
+/* int MPI_Op_free(MPI_Op *op); */
+
 int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
                   MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
 {
