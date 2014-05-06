@@ -3,14 +3,14 @@
 
 #include <mpi.h>
 
-/* These functions do the heavy lifting in BigMPI. */
+/* This function does the heavy lifting in BigMPI. */
 
 int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
 
-#if 0
-/* TODO: Finish implement this function. */
-int MPIX_Type_contiguousv_x(int ncount, MPI_Count counts[], MPI_Datatype oldtypes[], MPI_Datatype * newtypes[]);
-#endif
+/* This function is primarily for internal use but some users may want to use it
+ * so it will be in the public API, albeit with a different namespace. */
+
+int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datatype * basetype);
 
 /* All of these functions should just be calling MPIX_Type_contiguous_x and
  * then the associated MPI function with count=1 and the newtype if the count
