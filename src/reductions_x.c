@@ -78,14 +78,13 @@ int BigMPI_Op_create(MPI_Op op, MPI_Op * bigop)
     return MPI_Op_create(bigfn, commute, bigop);
 }
 
-/* int MPI_Op_free(MPI_Op *op); */
-
 int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
                   MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
 {
     if (likely (count <= bigmpi_int_max )) {
         return MPI_Reduce(sendbuf, recvbuf, (int)count, datatype, op, root, comm);
     } else {
+#ifdef BIGMPI_CLEAVER
         int c = (int)(count/bigmpi_int_max);
         int r = (int)(count%bigmpi_int_max);
         if (sendbuf==MPI_IN_PLACE) {
@@ -108,8 +107,30 @@ int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
             MPI_Reduce(&sendbuf[c*bigmpi_int_max], &recvbuf[c*bigmpi_int_max],
                        r, datatype, op, root, comm);
         }
+        return MPI_SUCCESS;
+#else /* BIGMPI_CLEAVER */
+
+        MPI_Datatype bigtype;
+        MPIX_Type_contiguous_x(count, datatype, &bigtype);
+        MPI_Type_commit(&bigtype);
+
+        MPI_Op bigop;
+        BigMPI_Op_create(op, &bigop);
+
+        if (sendbuf==MPI_IN_PLACE) {
+            printf("BigMPI does not support MPI_IN_PLACE."
+                   "You can try the cleaver implementation instead. \n");
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
+        int rc = MPI_Reduce(sendbuf, recvbuf, 1, bigtype, bigop, root, comm);
+
+        MPI_Type_free(&bigtype);
+        MPI_Op_free(&bigop);
+
+        return rc;
+
+#endif /* BIGMPI_CLEAVER */
     }
-    return MPI_SUCCESS;
 }
 
 int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
@@ -118,6 +139,7 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
     if (likely (count <= bigmpi_int_max )) {
         return MPI_Allreduce(sendbuf, recvbuf, (int)count, datatype, op, comm);
     } else {
+#ifdef BIGMPI_CLEAVER
         int c = (int)(count/bigmpi_int_max);
         int r = (int)(count%bigmpi_int_max);
         if (sendbuf==MPI_IN_PLACE) {
@@ -135,8 +157,30 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
             MPI_Allreduce(&sendbuf[c*bigmpi_int_max], &recvbuf[c*bigmpi_int_max],
                           r, datatype, op, comm);
         }
+        return MPI_SUCCESS;
+#else /* BIGMPI_CLEAVER */
+
+        MPI_Datatype bigtype;
+        MPIX_Type_contiguous_x(count, datatype, &bigtype);
+        MPI_Type_commit(&bigtype);
+
+        MPI_Op bigop;
+        BigMPI_Op_create(op, &bigop);
+
+        if (sendbuf==MPI_IN_PLACE) {
+            printf("BigMPI does not support MPI_IN_PLACE."
+                   "You can try the cleaver implementation instead. \n");
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
+        int rc = MPI_Allreduce(sendbuf, recvbuf, 1, bigtype, bigop, comm);
+
+        MPI_Type_free(&bigtype);
+        MPI_Op_free(&bigop);
+
+        return rc;
+
+#endif /* BIGMPI_CLEAVER */
     }
-    return MPI_SUCCESS;
 }
 
 /* MPI-3 Section 5.10
