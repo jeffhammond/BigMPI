@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     MPI_Count n = 1;
     int errors = 0;
     for (int i=0; i<e; i++) {
-        printf("Building a BigMPI type for count = %zu \n", (size_t)n);
+        printf("Building and decoding a BigMPI type for count = %zu \n", (size_t)n);
 
         MPI_Datatype intype = MPI_CHAR, bigtype;
         MPIX_Type_contiguous_x(n, intype, &bigtype);
