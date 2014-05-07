@@ -3,6 +3,11 @@ BigMPI
 
 Interface to MPI for large messages, i.e. those where the count argument
 exceeds `INT_MAX` but is still less than `SIZE_MAX`.
+BigMPI is designed for the common case where one has a 64b address
+space and is unable to do MPI communication on more than 2^31 elements
+despite having sufficient memory to allocate such buffers.
+BigMPI does not attempt to support large-counts on systems where
+C int and void* are both 32b.
 
 ## Motivation
 
