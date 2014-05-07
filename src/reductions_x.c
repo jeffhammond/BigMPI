@@ -117,12 +117,23 @@ int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
         MPI_Op bigop;
         BigMPI_Op_create(op, &bigop);
 
+        /* This is overkill.  Only the root needs to copy the buffer. */
+        void * tempbuf = NULL;
         if (sendbuf==MPI_IN_PLACE) {
-            printf("BigMPI does not support MPI_IN_PLACE."
-                   "You can try the cleaver implementation instead. \n");
-            MPI_Abort(MPI_COMM_WORLD, 1);
+            MPI_Aint lb /* unused */, extent;
+            MPI_Type_get_extent(datatype, &lb, &extent);
+            MPI_Aint buf_size = (MPI_Aint)count * extent;
+
+            MPI_Alloc_mem(buf_size, MPI_INFO_NULL, &tempbuf);
+            if (tempbuf==NULL) { MPI_Abort(comm, 1); }
+            memcpy(tempbuf, recvbuf, (size_t)buf_size);
         }
-        int rc = MPI_Reduce(sendbuf, recvbuf, 1, bigtype, bigop, root, comm);
+
+        int rc = MPI_Reduce( sendbuf==MPI_IN_PLACE ? tempbuf : sendbuf, recvbuf, 1, bigtype, bigop, root, comm);
+
+        if (sendbuf==MPI_IN_PLACE) {
+            MPI_Free_mem(&tempbuf);
+        }
 
         MPI_Type_free(&bigtype);
         MPI_Op_free(&bigop);
@@ -167,12 +178,20 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
         MPI_Op bigop;
         BigMPI_Op_create(op, &bigop);
 
+        void * tempbuf = NULL;
         if (sendbuf==MPI_IN_PLACE) {
-            printf("BigMPI does not support MPI_IN_PLACE."
-                   "You can try the cleaver implementation instead. \n");
-            MPI_Abort(MPI_COMM_WORLD, 1);
+            MPI_Aint lb /* unused */, extent;
+            MPI_Type_get_extent(datatype, &lb, &extent);
+            MPI_Aint buf_size = (MPI_Aint)count * extent;
+
+            MPI_Alloc_mem(buf_size, MPI_INFO_NULL, &tempbuf);
+            if (tempbuf==NULL) { MPI_Abort(comm, 1); }
+            memcpy(tempbuf, recvbuf, (size_t)buf_size);
         }
-        int rc = MPI_Allreduce(sendbuf, recvbuf, 1, bigtype, bigop, comm);
+        int rc = MPI_Allreduce(sendbuf==MPI_IN_PLACE ? tempbuf : sendbuf, recvbuf, 1, bigtype, bigop, comm);
+        if (sendbuf==MPI_IN_PLACE) {
+            MPI_Free_mem(&tempbuf);
+        }
 
         MPI_Type_free(&bigtype);
         MPI_Op_free(&bigop);
