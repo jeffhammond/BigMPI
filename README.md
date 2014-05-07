@@ -1,7 +1,8 @@
 BigMPI
 ======
 
-Interface to MPI for large messages, i.e. those where the count argument needs to exceed `INT_MAX`.
+Interface to MPI for large messages, i.e. those where the count argument
+exceeds `INT_MAX` but is still less than `SIZE_MAX`.
 
 ## Motivation
 
