@@ -37,52 +37,31 @@ int main(int argc, char * argv[])
     int m = (argc > 2) ? atoi(argv[2]) : 17777;
     MPI_Count n = l * test_int_max + m;
 
-    char * buf_send = NULL;
-    char * buf_recv = NULL;
+    char * buf = NULL;
 
-    MPI_Alloc_mem((MPI_Aint)n, MPI_INFO_NULL, &buf_send);
-    MPI_Alloc_mem((MPI_Aint)n, MPI_INFO_NULL, &buf_recv);
+    MPI_Alloc_mem((MPI_Aint)n, MPI_INFO_NULL, &buf);
 
-    memset(buf_send, rank, (size_t)n);
-    memset(buf_recv, rank, (size_t)n);
-
-    size_t errors = 0;
+    memset(buf, rank, (size_t)n);
 
     for (int r = 1; r < size; r++) {
 
         /* pairwise communication */
         if (rank==r) {
-            MPIX_Sendrecv_x(buf_send, n, MPI_CHAR, 0 /* dst */, r /* tag */,
-                            buf_recv, n, MPI_CHAR, 0 /* src */, r /* tag */,
-                            MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-            errors = verify_buffer(buf_recv, n, r);
-            if (errors > 0) {
-                printf("There were %zu errors!\n", errors);
-                for (size_t i=0; i<(size_t)n; i++) {
-                    printf("buf_recv[%zu] = %d (expected %d)\n", i, buf_recv[i], r);
-                }
-            }
+            MPIX_Send_x(buf, n, MPI_CHAR, 0 /* dst */, r /* tag */, MPI_COMM_WORLD);
         }
         else if (rank==0) {
-            MPIX_Sendrecv_x(buf_send, n, MPI_CHAR, r /* dst */, r /* tag */,
-                            buf_recv, n, MPI_CHAR, r /* src */, r /* tag */,
-                            MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            MPIX_Recv_x(buf, n, MPI_CHAR, r /* src */, r /* tag */, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            errors = verify_buffer(buf_recv, n, r);
+            size_t errors = verify_buffer(buf, n, r);
             if (errors > 0) {
-                printf("There were %zu errors!\n", errors);
-                for (size_t i=0; i<(size_t)n; i++) {
-                    printf("buf_recv[%zu] = %d (expected %d)\n", i, buf_recv[i], r);
-                }
+                printf("There were %zu errors!", errors);
             }
         }
     }
 
-    MPI_Free_mem(buf_send);
-    MPI_Free_mem(buf_recv);
+    MPI_Free_mem(buf);
 
-    if (rank==0 && errors==0) {
+    if (rank==0) {
         printf("SUCCESS\n");
     }
 
