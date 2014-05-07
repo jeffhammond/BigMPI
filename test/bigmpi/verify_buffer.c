@@ -1,10 +1,15 @@
 #include <stdio.h>
+#include <stdint.h>
+#include <assert.h>
+
 #include <mpi.h>
 
 #include "verify_buffer.h"
 
 size_t verify_buffer(char *buf, MPI_Count count, int expected_value)
 {
+    assert(count<SIZE_MAX);
+
     size_t errors = 0;
     for (size_t i = 0; i < (size_t)count; i++) {
         errors += (buf[i] != (unsigned char)expected_value);
