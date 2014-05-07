@@ -19,6 +19,7 @@ static const MPI_Count bigmpi_count_max = BIGMPI_MAX_INT*BIGMPI_MAX_INT;
 #include <limits.h>
 #include <stdint.h>
 static const MPI_Count bigmpi_int_max   = INT_MAX;
+/* SIZE_MAX corresponds to size_t, which should be what MPI_Aint is. */
 static const MPI_Count bigmpi_count_max = SIZE_MAX;
 #endif
 
