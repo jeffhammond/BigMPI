@@ -41,9 +41,11 @@ Even though `MPI_Count` might be 128b, I am only supporting
 64b counts (because of `MPI_Aint` limitations and desire to use `size_t`
 in my unit tests), so BigMPI is not going to solve your problem if you
 want to communicate more than 8 EiB of data in a single message.
+Such computers do not exist nor is it likely that they will exist
+in the foreseeable future.
 
-If you have more than 8 EiB of memory and a 1+ PiB/s interconnect in your
-system, please let me know so that I can use it...
+BigMPI requires C99.  If your compiler does not support C99, get a
+new compiler.
 
 ## Supported Functions
 I believe that point-to-point, one-sided, broadcast and reductions
