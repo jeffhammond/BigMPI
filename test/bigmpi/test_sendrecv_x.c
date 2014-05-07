@@ -56,7 +56,7 @@ int main(int argc, char * argv[])
                             buf_recv, n, MPI_CHAR, 0 /* src */, r /* tag */,
                             MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            errors = verify_buffer(buf_recv, n, r);
+            errors = verify_buffer(buf_recv, n, 0);
             if (errors > 0) {
                 printf("There were %zu errors!\n", errors);
                 for (size_t i=0; i<(size_t)n; i++) {
