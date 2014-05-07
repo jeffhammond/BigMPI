@@ -41,18 +41,23 @@ int main(int argc, char * argv[])
 
     MPI_Alloc_mem((MPI_Aint)n, MPI_INFO_NULL, &buf);
 
-    memset(buf, rank, (size_t)n);
+    memset(buf, rank==0 ? size : 0, (size_t)n);
 
     /* collective communication */
     MPIX_Bcast_x(buf, n, MPI_CHAR, 0 /* root */, MPI_COMM_WORLD);
 
-    verify_buffer(buf, n, 0);
-
-    MPI_Free_mem(buf);
-
-    if (rank==0) {
+    size_t errors = verify_buffer(buf, n, size);
+    if (errors > 0) {
+        printf("There were %zu errors!", errors);
+        for (size_t i=0; i<(size_t)n; i++) {
+            printf("buf[%zu] = %d (expected %d)\n", i, buf[i], size);
+        }
+    }
+    if (rank==0 && errors==0) {
         printf("SUCCESS\n");
     }
+
+    MPI_Free_mem(buf);
 
     MPI_Finalize();
 
