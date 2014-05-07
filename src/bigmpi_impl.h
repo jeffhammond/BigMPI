@@ -13,10 +13,13 @@
 #include "likely.h"
 
 #ifdef BIGMPI_MAX_INT
-static const MPI_Count bigmpi_int_max = BIGMPI_MAX_INT;
+static const MPI_Count bigmpi_int_max   = BIGMPI_MAX_INT;
+static const MPI_Count bigmpi_count_max = BIGMPI_MAX_INT*BIGMPI_MAX_INT;
 #else
 #include <limits.h>
-static const MPI_Count bigmpi_int_max = INT_MAX;
+#include <stdint.h>
+static const MPI_Count bigmpi_int_max   = INT_MAX;
+static const MPI_Count bigmpi_count_max = SIZE_MAX;
 #endif
 
 #endif // BIGMPI_IMPL_H

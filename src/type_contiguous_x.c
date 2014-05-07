@@ -24,13 +24,11 @@
  */
 int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype)
 {
+    /* The count has to fit into MPI_Aint for BigMPI to work. */
+    assert(count<bigmpi_count_max);
+
     MPI_Count c = count/bigmpi_int_max;
     MPI_Count r = count%bigmpi_int_max;
-
-#ifdef BIGMPI_DEBUG
-    printf("MPIX_Type_contiguous_x: count = %zu, chunk = %zu, remainder = %zu \n",
-            (size_t)count, (size_t)c, (size_t)r );
-#endif
 
     MPI_Datatype chunks;
     MPI_Type_vector(c, bigmpi_int_max, bigmpi_int_max, oldtype, &chunks);
