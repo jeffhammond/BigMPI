@@ -7,9 +7,12 @@ LD = $(CC)
 # BIGMPI_MAX_INT allow one to debug without requiring
 # 4+ GiB of memory for every test.  This value must
 # be set to something less than INT_MAX.
-CPPFLAGS  = -I. -I../include -DBIGMPI_MAX_INT=1000000
+CPPFLAGS  = -I. -I../include -DBIGMPI_MAX_INT=1000000L
 # Pedantic debug output that only developers should care about.
 #CPPFLAGS += -DBIGMPI_DEBUG
+# Avoid using user-defined reduction operations.
+CPPFLAGS += -DBIGMPI_CLEAVER
+
 CFLAGS = $(FLAGS) -std=c99 $(CPPFLAGS)
 FFLAGS = $(FLAGS) -std=f95
 LDFLAGS = $(CFLAGS)
