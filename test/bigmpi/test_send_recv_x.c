@@ -46,6 +46,8 @@ int main(int argc, char * argv[])
     memset(buf_send, rank, (size_t)n);
     memset(buf_recv, rank, (size_t)n);
 
+    size_t errors = 0;
+
     for (int r = 1; r < size; r++) {
 
         /* pairwise communication */
@@ -54,21 +56,33 @@ int main(int argc, char * argv[])
                             buf_recv, n, MPI_CHAR, 0 /* src */, r /* tag */,
                             MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            verify_buffer(buf_recv, n, 0);
+            errors = verify_buffer(buf_recv, n, r);
+            if (errors > 0) {
+                printf("There were %zu errors!\n", errors);
+                for (size_t i=0; i<(size_t)n; i++) {
+                    printf("buf_recv[%zu] = %d (expected %d)\n", i, buf_recv[i], r);
+                }
+            }
         }
         else if (rank==0) {
             MPIX_Sendrecv_x(buf_send, n, MPI_CHAR, r /* dst */, r /* tag */,
                             buf_recv, n, MPI_CHAR, r /* src */, r /* tag */,
                             MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            verify_buffer(buf_recv, n, r);
+            errors = verify_buffer(buf_recv, n, r);
+            if (errors > 0) {
+                printf("There were %zu errors!\n", errors);
+                for (size_t i=0; i<(size_t)n; i++) {
+                    printf("buf_recv[%zu] = %d (expected %d)\n", i, buf_recv[i], r);
+                }
+            }
         }
     }
 
     MPI_Free_mem(buf_send);
     MPI_Free_mem(buf_recv);
 
-    if (rank==0) {
+    if (rank==0 && errors==0) {
         printf("SUCCESS\n");
     }
 

@@ -57,7 +57,12 @@ int main(int argc, char * argv[])
     if (rank==0) {
         double val = (double)size*(size+1.)/2.;
         size_t errors = verify_doubles(rbuf, n, val);
-        if (errors) return errors;
+        if (errors) {
+            for (MPI_Count i=0; i<n; i++) {
+                printf("rbuf[%zu] = %lf \n", (size_t)i, rbuf[i]);
+            }
+            fflush(stdout);
+        }
     }
 
     MPI_Free_mem(sbuf);

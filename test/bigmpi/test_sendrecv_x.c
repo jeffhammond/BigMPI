@@ -52,7 +52,10 @@ int main(int argc, char * argv[])
         else if (rank==0) {
             MPIX_Recv_x(buf, n, MPI_CHAR, r /* src */, r /* tag */, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            verify_buffer(buf, n, r);
+            size_t errors = verify_buffer(buf, n, r);
+            if (errors > 0) {
+                printf("There were %zu errors!", errors);
+            }
         }
     }
 

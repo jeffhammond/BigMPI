@@ -67,7 +67,10 @@ int main(int argc, char * argv[])
         }
 
         if (rank==0) {
-            verify_buffer(buf, n, r);
+            size_t errors = verify_buffer(buf, n, r);
+            if (errors > 0) {
+                printf("There were %zu errors!", errors);
+            }
         }
     }
 
