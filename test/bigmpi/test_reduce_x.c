@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
     MPI_Alloc_mem(bytes, MPI_INFO_NULL, &rbuf);
 
     for (MPI_Count i=0; i<n; i++) {
-        sbuf[i] = (double)rank;
+        sbuf[i] = (double)rank+1.;
     }
     for (MPI_Count i=0; i<n; i++) {
         rbuf[i] = 0.0;
@@ -54,12 +54,14 @@ int main(int argc, char * argv[])
     /* collective communication */
     MPIX_Reduce_x(sbuf, rbuf, n, MPI_DOUBLE, MPI_SUM, 0 /* root */, MPI_COMM_WORLD);
 
+    size_t errors = 0;
     if (rank==0) {
         double val = (double)size*(size+1.)/2.;
-        size_t errors = verify_doubles(rbuf, n, val);
+        errors = verify_doubles(rbuf, n, val);
         if (errors) {
+            printf("There were %zu errors out of %zu elements!\n", errors, (size_t)n);
             for (MPI_Count i=0; i<n; i++) {
-                printf("rbuf[%zu] = %lf \n", (size_t)i, rbuf[i]);
+                printf("rbuf[%zu] = %lf (expected %lf) \n", (size_t)i, rbuf[i], val);
             }
             fflush(stdout);
         }
@@ -68,7 +70,7 @@ int main(int argc, char * argv[])
     MPI_Free_mem(sbuf);
     MPI_Free_mem(rbuf);
 
-    if (rank==0) {
+    if (rank==0 && errors==0) {
         printf("SUCCESS\n");
     }
 

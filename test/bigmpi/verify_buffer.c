@@ -26,7 +26,8 @@ size_t verify_doubles(double *buf, MPI_Count count, double expected_value)
 
     size_t errors = 0;
     for (size_t i = 0; i < (size_t)count; i++) {
-        errors += ( fabs(buf[i]-expected_value) > 1e-12 );
+        double absdiff = fabs(buf[i] - expected_value);
+        if (absdiff>1.e-4) errors++;
     }
     return errors;
 }
