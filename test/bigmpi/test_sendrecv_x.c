@@ -17,8 +17,7 @@ const MPI_Count test_int_max = INT_MAX;
 
 /* Yes, it is technically unsafe to cast MPI_Count to MPI_Aint or size_t without checking,
  * given that MPI_Count might be 128b and MPI_Aint and size_t might be 64b, but BigMPI
- * does not aspire to support communication of more than 8 EiB messages at a time.
- * If your system has more than 8 EiB of memory, please contact me, as I would like to use it :-) */
+ * does not aspire to support communication of more than 8 EiB messages at a time. */
 
 int main(int argc, char * argv[])
 {
