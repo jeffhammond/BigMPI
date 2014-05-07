@@ -15,13 +15,6 @@ const MPI_Count test_int_max = BIGMPI_MAX_INT;
 const MPI_Count test_int_max = INT_MAX;
 #endif
 
-int MPIX_Isend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request);
-int MPIX_Irecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Request *request);
-
-int MPIX_Sendrecv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype, int dest, int sendtag,
-                    void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int source, int recvtag, MPI_Comm comm, MPI_Status *status);
-int MPIX_Sendrecv_replace_x(void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int sendtag, int source, int recvtag, MPI_Comm comm, MPI_Status *status);
-
 /* Yes, it is technically unsafe to cast MPI_Count to MPI_Aint or size_t without checking,
  * given that MPI_Count might be 128b and MPI_Aint and size_t might be 64b, but BigMPI
  * does not aspire to support communication of more than 8 EiB messages at a time. */
