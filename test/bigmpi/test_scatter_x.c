@@ -3,6 +3,7 @@
 #include <limits.h>
 #include <string.h>
 #include <strings.h>
+#include <assert.h>
 
 #include <mpi.h>
 #include "bigmpi.h"
@@ -40,27 +41,31 @@ int main(int argc, char * argv[])
     char * buf_send = NULL;
     char * buf_recv = NULL;
 
-    MPI_Alloc_mem((MPI_Aint)n,        MPI_INFO_NULL, &buf_send);
-    MPI_Alloc_mem((MPI_Aint)n * size, MPI_INFO_NULL, &buf_recv);
-
-    memset(buf_send, rank, (size_t)n);
-    memset(buf_recv, -1,   (size_t)n * size);
-
-    /* collective communication */
-    MPIX_Gather_x(buf_send, n, MPI_CHAR,
-                  buf_recv, n, MPI_CHAR,
-                  0 /* root */, MPI_COMM_WORLD);
+    MPI_Alloc_mem((MPI_Aint)n * size, MPI_INFO_NULL, &buf_send);
+    assert(buf_send!=NULL);
+    MPI_Alloc_mem((MPI_Aint)n,        MPI_INFO_NULL, &buf_recv);
+    assert(buf_recv!=NULL);
 
     if (rank==0) {
         for (int i = 0; i < size; ++i) {
-            verify_buffer(buf_recv + i * n, n, i);
+            for (int j = 0; j < n; ++j) {
+                buf_send[i*n+j] = (unsigned char)i;
+            }
         }
     }
+    memset(buf_recv, -1, (size_t)n);
+
+    /* collective communication */
+    MPIX_Scatter_x(buf_send, n, MPI_CHAR,
+                   buf_recv, n, MPI_CHAR,
+                   0 /* root */, MPI_COMM_WORLD);
+
+    size_t errors = verify_buffer(buf_recv, n, rank);
 
     MPI_Free_mem(buf_send);
     MPI_Free_mem(buf_recv);
 
-    if (rank==0) {
+    if (rank==0 && errors==0) {
         printf("SUCCESS\n");
     }
 
