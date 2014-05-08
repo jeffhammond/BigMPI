@@ -43,6 +43,7 @@ int main(int argc, char * argv[])
 
     memset(buf, rank, (size_t)n);
 
+    size_t errors = 0;
     for (int r = 1; r < size; r++) {
 
         MPI_Request req;
@@ -60,7 +61,7 @@ int main(int argc, char * argv[])
         }
 
         if (rank==0) {
-            size_t errors = verify_buffer(buf, n, r);
+            errors += verify_buffer(buf, n, r);
             if (errors > 0) {
                 printf("There were %zu errors!", errors);
             }
@@ -69,7 +70,7 @@ int main(int argc, char * argv[])
 
     MPI_Free_mem(buf);
 
-    if (rank==0) {
+    if (rank==0 && errors==0) {
         printf("SUCCESS\n");
     }
 

@@ -51,16 +51,17 @@ int main(int argc, char * argv[])
                   buf_recv, n, MPI_CHAR,
                   0 /* root */, MPI_COMM_WORLD);
 
+    size_t errors = 0;
     if (rank==0) {
         for (int i = 0; i < size; ++i) {
-            verify_buffer(buf_recv + i * n, n, i);
+            errors += verify_buffer(buf_recv + i * n, n, i);
         }
     }
 
     MPI_Free_mem(buf_send);
     MPI_Free_mem(buf_recv);
 
-    if (rank==0) {
+    if (rank==0 && errors==0) {
         printf("SUCCESS\n");
     }
 

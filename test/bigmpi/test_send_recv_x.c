@@ -43,6 +43,7 @@ int main(int argc, char * argv[])
 
     memset(buf, rank, (size_t)n);
 
+    size_t errors = 0;
     for (int r = 1; r < size; r++) {
 
         /* pairwise communication */
@@ -52,7 +53,7 @@ int main(int argc, char * argv[])
         else if (rank==0) {
             MPIX_Recv_x(buf, n, MPI_CHAR, r /* src */, r /* tag */, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-            size_t errors = verify_buffer(buf, n, r);
+            errors += verify_buffer(buf, n, r);
             if (errors > 0) {
                 printf("There were %zu errors!", errors);
             }
@@ -61,7 +62,7 @@ int main(int argc, char * argv[])
 
     MPI_Free_mem(buf);
 
-    if (rank==0) {
+    if (rank==0 && errors==0) {
         printf("SUCCESS\n");
     }
 
