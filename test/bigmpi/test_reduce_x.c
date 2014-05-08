@@ -27,8 +27,8 @@ int main(int argc, char * argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    if (size<2) {
-        printf("Use 2 or more processes. \n");
+    if (size<1) {
+        printf("Use 1 or more processes. \n");
         MPI_Finalize();
         return 1;
     }
@@ -61,7 +61,8 @@ int main(int argc, char * argv[])
         if (errors) {
             printf("There were %zu errors out of %zu elements!\n", errors, (size_t)n);
             for (MPI_Count i=0; i<n; i++) {
-                printf("rbuf[%zu] = %lf (expected %lf) \n", (size_t)i, rbuf[i], val);
+                printf("rbuf[%zu] = %lf (expected %lf - %s) \n",
+                        (size_t)i, rbuf[i], val, rbuf[i]==val ? "RIGHT" : "WRONG");
             }
             fflush(stdout);
         }
