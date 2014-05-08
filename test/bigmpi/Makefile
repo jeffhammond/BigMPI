@@ -33,4 +33,5 @@ clean:
 
 realclean: clean
 	-rm -f $(TESTS)
+	-rm -f *.x.dSYM
 
