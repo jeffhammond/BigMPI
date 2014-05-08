@@ -92,24 +92,25 @@ int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
 #ifdef BIGMPI_CLEAVER
         int c = (int)(count/bigmpi_int_max);
         int r = (int)(count%bigmpi_int_max);
+        int typesize;
+        MPI_Type_size(datatype, &typesize);
         if (sendbuf==MPI_IN_PLACE) {
             int commrank;
             MPI_Comm_rank(comm, &commrank);
-
             for (int i=0; i<c; i++) {
-                MPI_Reduce(commrank==root ? MPI_IN_PLACE : &recvbuf[i*bigmpi_int_max],
-                           &recvbuf[i*bigmpi_int_max],
+                MPI_Reduce(commrank==root ? MPI_IN_PLACE : recvbuf+i*bigmpi_int_max*typesize,
+                           recvbuf+i*bigmpi_int_max*typesize,
                            bigmpi_int_max, datatype, op, root, comm);
             }
-            MPI_Reduce(commrank==root ? MPI_IN_PLACE : &recvbuf[c*bigmpi_int_max],
-                       &recvbuf[c*bigmpi_int_max],
+            MPI_Reduce(commrank==root ? MPI_IN_PLACE : recvbuf+c*bigmpi_int_max*typesize,
+                       recvbuf+c*bigmpi_int_max*typesize,
                        r, datatype, op, root, comm);
         } else {
             for (int i=0; i<c; i++) {
-                MPI_Reduce(&sendbuf[i*bigmpi_int_max], &recvbuf[i*bigmpi_int_max],
+                MPI_Reduce(sendbuf+i*bigmpi_int_max*typesize, recvbuf+i*bigmpi_int_max*typesize,
                            bigmpi_int_max, datatype, op, root, comm);
             }
-            MPI_Reduce(&sendbuf[c*bigmpi_int_max], &recvbuf[c*bigmpi_int_max],
+            MPI_Reduce(sendbuf+c*bigmpi_int_max*typesize, recvbuf+c*bigmpi_int_max*typesize,
                        r, datatype, op, root, comm);
         }
         return MPI_SUCCESS;
@@ -158,19 +159,21 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
 #ifdef BIGMPI_CLEAVER
         int c = (int)(count/bigmpi_int_max);
         int r = (int)(count%bigmpi_int_max);
+        int typesize;
+        MPI_Type_size(datatype, &typesize);
         if (sendbuf==MPI_IN_PLACE) {
             for (int i=0; i<c; i++) {
-                MPI_Allreduce(MPI_IN_PLACE, &recvbuf[i*bigmpi_int_max],
+                MPI_Allreduce(MPI_IN_PLACE, recvbuf+i*bigmpi_int_max*typesize,
                               bigmpi_int_max, datatype, op, comm);
             }
-            MPI_Allreduce(MPI_IN_PLACE, &recvbuf[c*bigmpi_int_max],
+            MPI_Allreduce(MPI_IN_PLACE, recvbuf+c*bigmpi_int_max*typesize,
                           r, datatype, op, comm);
         } else {
             for (int i=0; i<c; i++) {
-                MPI_Allreduce(&sendbuf[c*bigmpi_int_max], &recvbuf[i*bigmpi_int_max],
+                MPI_Allreduce(sendbuf+c*bigmpi_int_max*typesize, recvbuf+i*bigmpi_int_max*typesize,
                               bigmpi_int_max, datatype, op, comm);
             }
-            MPI_Allreduce(&sendbuf[c*bigmpi_int_max], &recvbuf[c*bigmpi_int_max],
+            MPI_Allreduce(sendbuf+c*bigmpi_int_max*typesize, recvbuf+c*bigmpi_int_max*typesize,
                           r, datatype, op, comm);
         }
         return MPI_SUCCESS;
