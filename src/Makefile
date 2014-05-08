@@ -11,7 +11,7 @@ CPPFLAGS  = -I. -I../include -DBIGMPI_MAX_INT=1000000L
 # Pedantic debug output that only developers should care about.
 #CPPFLAGS += -DBIGMPI_DEBUG
 # Avoid using user-defined reduction operations.
-CPPFLAGS += -DBIGMPI_CLEAVER
+#CPPFLAGS += -DBIGMPI_CLEAVER
 
 CFLAGS = $(FLAGS) -std=c99 $(CPPFLAGS)
 FFLAGS = $(FLAGS) -std=f95

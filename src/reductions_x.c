@@ -25,12 +25,17 @@ void BigMPI_##OP##_x(void * invec, void * inoutvec, int * len, MPI_Datatype * bi
     int c = (int)(count/bigmpi_int_max);                                                \
     int r = (int)(count%bigmpi_int_max);                                                \
                                                                                         \
+    int typesize;                                                                       \
+    MPI_Type_size(basetype, &typesize);                                                 \
     for (int i=0; i<c; i++) {                                                           \
-        MPI_Reduce_local(&invec[i*bigmpi_int_max], &inoutvec[i*bigmpi_int_max],         \
+        MPI_Reduce_local(invec+i*bigmpi_int_max*typesize,                               \
+                         inoutvec+i*bigmpi_int_max*typesize,                            \
                          bigmpi_int_max, basetype, MPI_##OP);                           \
     }                                                                                   \
-    MPI_Reduce_local(&invec[c*bigmpi_int_max], &inoutvec[c*bigmpi_int_max],             \
+    MPI_Reduce_local(invec+c*bigmpi_int_max*typesize,                                   \
+                     inoutvec+c*bigmpi_int_max*typesize,                                \
                      r, basetype, MPI_##OP);                                            \
+                                                                                        \
     return;                                                                             \
 }
 
