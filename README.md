@@ -43,12 +43,19 @@ BigMPI functions use the MPIX namespace because they are not in the
 MPI standard.
 
 ## Limitations
-Even though `MPI_Count` might be 128b, I am only supporting
-64b counts (because of `MPI_Aint` limitations and desire to use `size_t`
-in my unit tests), so BigMPI is not going to solve your problem if you
+Even though `MPI_Count` might be 128b, BigMPI only supports
+64b counts (because of `MPI_Aint` limitations and a desire to use `size_t`
+in unit tests), so BigMPI is not going to solve your problem if you
 want to communicate more than 8 EiB of data in a single message.
 Such computers do not exist nor is it likely that they will exist
 in the foreseeable future.
+
+BigMPI only supports built-in datatypes.  If you are already using
+derived-datatypes, then you should already be able to handle large
+counts without BigMPI.
+
+BigMPI currently does not support `MAX_LOC` or `MIN_LOC` reduction
+operations but will likely do so in the future.
 
 BigMPI requires C99.  If your compiler does not support C99, get a
 new compiler.
