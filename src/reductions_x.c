@@ -27,13 +27,13 @@ void BigMPI_##OP##_x(void * invec, void * inoutvec, int * len, MPI_Datatype * bi
                                                                                         \
     int typesize;                                                                       \
     MPI_Type_size(basetype, &typesize);                                                 \
-    for (int i=0; i<c; i++) {                                                           \
-        MPI_Reduce_local(invec+i*bigmpi_int_max*typesize,                               \
-                         inoutvec+i*bigmpi_int_max*typesize,                            \
+    for (ptrdiff_t i=0; i<c; i++) {                                                     \
+        MPI_Reduce_local(invec+i*bigmpi_int_max*(size_t)typesize,                       \
+                         inoutvec+i*bigmpi_int_max*(size_t)typesize,                    \
                          bigmpi_int_max, basetype, MPI_##OP);                           \
     }                                                                                   \
-    MPI_Reduce_local(invec+c*bigmpi_int_max*typesize,                                   \
-                     inoutvec+c*bigmpi_int_max*typesize,                                \
+    MPI_Reduce_local(invec+c*bigmpi_int_max*(size_t)typesize,                           \
+                     inoutvec+c*bigmpi_int_max*(size_t)typesize,                        \
                      r, basetype, MPI_##OP);                                            \
                                                                                         \
     return;                                                                             \
@@ -97,20 +97,22 @@ int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
         if (sendbuf==MPI_IN_PLACE) {
             int commrank;
             MPI_Comm_rank(comm, &commrank);
-            for (int i=0; i<c; i++) {
-                MPI_Reduce(commrank==root ? MPI_IN_PLACE : recvbuf+i*bigmpi_int_max*typesize,
-                           recvbuf+i*bigmpi_int_max*typesize,
+            for (ptrdiff_t i=0; i<c; i++) {
+                MPI_Reduce(commrank==root ? MPI_IN_PLACE : recvbuf+i*bigmpi_int_max*(size_t)typesize,
+                           recvbuf+i*bigmpi_int_max*(size_t)typesize,
                            bigmpi_int_max, datatype, op, root, comm);
             }
-            MPI_Reduce(commrank==root ? MPI_IN_PLACE : recvbuf+c*bigmpi_int_max*typesize,
-                       recvbuf+c*bigmpi_int_max*typesize,
+            MPI_Reduce(commrank==root ? MPI_IN_PLACE : recvbuf+c*bigmpi_int_max*(size_t)typesize,
+                       recvbuf+c*bigmpi_int_max*(size_t)typesize,
                        r, datatype, op, root, comm);
         } else {
-            for (int i=0; i<c; i++) {
-                MPI_Reduce(sendbuf+i*bigmpi_int_max*typesize, recvbuf+i*bigmpi_int_max*typesize,
+            for (ptrdiff_t i=0; i<c; i++) {
+                MPI_Reduce(sendbuf+i*bigmpi_int_max*(size_t)typesize,
+                           recvbuf+i*bigmpi_int_max*(size_t)typesize,
                            bigmpi_int_max, datatype, op, root, comm);
             }
-            MPI_Reduce(sendbuf+c*bigmpi_int_max*typesize, recvbuf+c*bigmpi_int_max*typesize,
+            MPI_Reduce(sendbuf+c*bigmpi_int_max*(size_t)typesize,
+                       recvbuf+c*bigmpi_int_max*(size_t)typesize,
                        r, datatype, op, root, comm);
         }
         return MPI_SUCCESS;
@@ -135,7 +137,8 @@ int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
             memcpy(tempbuf, recvbuf, (size_t)buf_size);
         }
 
-        int rc = MPI_Reduce( sendbuf==MPI_IN_PLACE ? tempbuf : sendbuf, recvbuf, 1, bigtype, bigop, root, comm);
+        int rc = MPI_Reduce(sendbuf==MPI_IN_PLACE ? tempbuf : sendbuf,
+                            recvbuf, 1, bigtype, bigop, root, comm);
 
         if (sendbuf==MPI_IN_PLACE) {
             MPI_Free_mem(&tempbuf);
@@ -162,18 +165,20 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
         int typesize;
         MPI_Type_size(datatype, &typesize);
         if (sendbuf==MPI_IN_PLACE) {
-            for (int i=0; i<c; i++) {
-                MPI_Allreduce(MPI_IN_PLACE, recvbuf+i*bigmpi_int_max*typesize,
+            for (ptrdiff_t i=0; i<c; i++) {
+                MPI_Allreduce(MPI_IN_PLACE, recvbuf+i*bigmpi_int_max*(size_t)typesize,
                               bigmpi_int_max, datatype, op, comm);
             }
-            MPI_Allreduce(MPI_IN_PLACE, recvbuf+c*bigmpi_int_max*typesize,
+            MPI_Allreduce(MPI_IN_PLACE, recvbuf+c*bigmpi_int_max*(size_t)typesize,
                           r, datatype, op, comm);
         } else {
-            for (int i=0; i<c; i++) {
-                MPI_Allreduce(sendbuf+c*bigmpi_int_max*typesize, recvbuf+i*bigmpi_int_max*typesize,
+            for (ptrdiff_t i=0; i<c; i++) {
+                MPI_Allreduce(sendbuf+c*bigmpi_int_max*(size_t)typesize,
+                              recvbuf+i*bigmpi_int_max*(size_t)typesize,
                               bigmpi_int_max, datatype, op, comm);
             }
-            MPI_Allreduce(sendbuf+c*bigmpi_int_max*typesize, recvbuf+c*bigmpi_int_max*typesize,
+            MPI_Allreduce(sendbuf+c*bigmpi_int_max*(size_t)typesize,
+                          recvbuf+c*bigmpi_int_max*(size_t)typesize,
                           r, datatype, op, comm);
         }
         return MPI_SUCCESS;
@@ -196,7 +201,8 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
             if (tempbuf==NULL) { MPI_Abort(comm, 1); }
             memcpy(tempbuf, recvbuf, (size_t)buf_size);
         }
-        int rc = MPI_Allreduce(sendbuf==MPI_IN_PLACE ? tempbuf : sendbuf, recvbuf, 1, bigtype, bigop, comm);
+        int rc = MPI_Allreduce(sendbuf==MPI_IN_PLACE ? tempbuf : sendbuf,
+                               recvbuf, 1, bigtype, bigop, comm);
         if (sendbuf==MPI_IN_PLACE) {
             MPI_Free_mem(&tempbuf);
         }
