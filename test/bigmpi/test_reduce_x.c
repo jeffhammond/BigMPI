@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
         if (errors) {
             printf("There were %zu errors out of %zu elements!\n", errors, (size_t)n);
             for (MPI_Count i=0; i<n; i++) {
-                printf("rbuf[%zu] = %lf (expected %lf - %s) \n",
+                printf("rbuf[%zu] = %lf (expected %lf - %s)\n",
                         (size_t)i, rbuf[i], val, rbuf[i]==val ? "RIGHT" : "WRONG");
             }
             fflush(stdout);
