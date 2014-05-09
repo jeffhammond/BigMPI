@@ -25,9 +25,21 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
     /* TODO Implement something other than brute-force search for prime factors. */
 
     /* Is it better to do the division as MPI_Count or double? */
-    MPI_Count lowguess = in/bigmpi_int_max+1;
+    MPI_Count lo = in/bigmpi_int_max+1;
+    MPI_Count hi = (MPI_Count)floor(sqrt((double)in));
 
-
+    printf("(lo,hi) = (%zu,%zu)\n", (size_t)lo, (size_t)hi);
+    for (MPI_Count g=lo; g<hi; g++) {
+        MPI_Count rem = in%g;
+        printf("in=%zu, g=%zu, mod(in,g)=%zu\n", (size_t)in, (size_t)g, (size_t)rem);
+        if (rem==0) {
+            *a = (int)g;
+            *b = (int)(in/g);
+            printf("a=%d, b=%d\n", *a, *b);
+            return 0;
+        }
+    }
+    printf("failed to find valid factorization of %zu...\n",(size_t)in);
     return 1;
 }
 #endif
@@ -54,6 +66,14 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     /* The count has to fit into MPI_Aint for BigMPI to work. */
     assert(count<bigmpi_count_max);
 
+#ifdef BIGMPI_AVOID_TYPE_CREATE_STRUCT
+    int a, b;
+    int notprime = BigMPI_Factorize_count(count, &a, &b);
+    if (notprime) {
+        MPI_Type_vector(a, b, b, oldtype, newtype);
+        return MPI_SUCCESS;
+    }
+#endif
     MPI_Count c = count/bigmpi_int_max;
     MPI_Count r = count%bigmpi_int_max;
 
