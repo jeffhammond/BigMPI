@@ -130,58 +130,76 @@ int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datat
     /* Step 1: Decode the type_create_struct call. */
 
     MPI_Type_get_envelope(intype, &nint, &nadd, &ndts, &combiner);
-    assert(combiner==MPI_COMBINER_STRUCT);
-    assert(nint==3);
-    assert(nadd==2);
-    assert(ndts==2);
+    if (combiner==MPI_COMBINER_STRUCT) {
+        assert(nint==3);
+        assert(nadd==2);
+        assert(ndts==2);
 
-    int cnbls[3]; /* {count, blocklengths[]} */
-    MPI_Aint displacements[2]; /* {0,remdisp} */
-    MPI_Datatype types[2]; /* {chunks,remainder} */;
-    MPI_Type_get_contents(intype, 3, 2, 2, cnbls, displacements, types);
-    assert(cnbls[0]==2);
-    assert(cnbls[1]==1);
-    assert(cnbls[2]==1);
-    assert(displacements[0]==0);
+        int cnbls[3]; /* {count, blocklengths[]} */
+        MPI_Aint displacements[2]; /* {0,remdisp} */
+        MPI_Datatype types[2]; /* {chunks,remainder} */;
+        MPI_Type_get_contents(intype, 3, 2, 2, cnbls, displacements, types);
+        assert(cnbls[0]==2);
+        assert(cnbls[1]==1);
+        assert(cnbls[2]==1);
+        assert(displacements[0]==0);
 
-    /* Step 2: Decode the type_vector call. */
+        /* Step 2: Decode the type_vector call. */
 
-    MPI_Type_get_envelope(types[0], &nint, &nadd, &ndts, &combiner);
-    assert(combiner==MPI_COMBINER_VECTOR);
-    assert(nint==3);
-    assert(nadd==0);
-    assert(ndts==1);
+        MPI_Type_get_envelope(types[0], &nint, &nadd, &ndts, &combiner);
+        assert(combiner==MPI_COMBINER_VECTOR);
+        assert(nint==3);
+        assert(nadd==0);
+        assert(ndts==1);
 
-    int cbs[3]; /* {count,blocklength,stride} */
-    MPI_Datatype vbasetype[1];
-    MPI_Type_get_contents(types[0], 3, 0, 1, cbs, NULL, vbasetype);
-    assert(/* blocklength = */ cbs[1]==bigmpi_int_max);
-    assert(/* stride = */ cbs[2]==bigmpi_int_max);
+        int cbs[3]; /* {count,blocklength,stride} */
+        MPI_Datatype vbasetype[1];
+        MPI_Type_get_contents(types[0], 3, 0, 1, cbs, NULL, vbasetype);
+        assert(/* blocklength = */ cbs[1]==bigmpi_int_max);
+        assert(/* stride = */ cbs[2]==bigmpi_int_max);
 
-    /* chunk count - see above */
-    MPI_Count c = cbs[0];
+        /* chunk count - see above */
+        MPI_Count c = cbs[0];
 
-    /* Step 3: Decode the type_contiguous call. */
+        /* Step 3: Decode the type_contiguous call. */
 
-    MPI_Type_get_envelope(types[1], &nint, &nadd, &ndts, &combiner);
-    assert(combiner==MPI_COMBINER_CONTIGUOUS);
-    assert(nint==1);
-    assert(nadd==0);
-    assert(ndts==1);
+        MPI_Type_get_envelope(types[1], &nint, &nadd, &ndts, &combiner);
+        assert(combiner==MPI_COMBINER_CONTIGUOUS);
+        assert(nint==1);
+        assert(nadd==0);
+        assert(ndts==1);
 
-    int ccc[1]; /* {count} */
-    MPI_Datatype cbasetype[1];
-    MPI_Type_get_contents(types[1], 1, 0, 1, ccc, NULL, cbasetype);
+        int ccc[1]; /* {count} */
+        MPI_Datatype cbasetype[1];
+        MPI_Type_get_contents(types[1], 1, 0, 1, ccc, NULL, cbasetype);
 
-    /* remainder - see above */
-    MPI_Count r = ccc[0];
+        /* remainder - see above */
+        MPI_Count r = ccc[0];
 
-    /* The underlying type of the vector and contig types must match. */
-    assert(cbasetype[0]==vbasetype[0]);
-    *basetype = cbasetype[0];
+        /* The underlying type of the vector and contig types must match. */
+        assert(cbasetype[0]==vbasetype[0]);
+        *basetype = cbasetype[0];
 
-    /* This should not overflow because everything is already MPI_Count type. */
-    *count = c*bigmpi_int_max+r;
+        /* This should not overflow because everything is already MPI_Count type. */
+        *count = c*bigmpi_int_max+r;
 
+    } else if (combiner==MPI_COMBINER_VECTOR) {
+        assert(nint==3);
+        assert(nadd==0);
+        assert(ndts==1);
+
+        int cbs[3]; /* {count,blocklength,stride} */
+        MPI_Datatype vbasetype[1];
+        MPI_Type_get_contents(intype, 3, 0, 1, cbs, NULL, vbasetype);
+        MPI_Count a = cbs[0];   /* count */
+        MPI_Count b = cbs[1];   /* blocklength */
+        assert(cbs[1]==cbs[2]); /* blocklength==stride */
+
+        *count = a*b;
+        *basetype = vbasetype[0];
+
+    } else {
+        assert(combiner==MPI_COMBINER_CONTIGUOUS || combiner==MPI_COMBINER_VECTOR);
+    }
     return MPI_SUCCESS;
 }
