@@ -253,3 +253,61 @@ int MPIX_Reduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count re
     }
     return MPI_SUCCESS;
 }
+
+int MPIX_Ireduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
+                   MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request * req)
+{
+    if (likely (count <= bigmpi_int_max )) {
+        return MPI_Ireduce(sendbuf, recvbuf, (int)count, datatype, op, root, comm, req);
+    } else {
+
+        MPI_Datatype bigtype;
+        MPIX_Type_contiguous_x(count, datatype, &bigtype);
+        MPI_Type_commit(&bigtype);
+
+        MPI_Op bigop;
+        BigMPI_Op_create(op, &bigop);
+
+        if (sendbuf==MPI_IN_PLACE) {
+            printf("BigMPI does not support in-place here yet.  Sorry. \n");
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
+
+        int rc = MPI_Ireduce(sendbuf, recvbuf, 1, bigtype, bigop, root, comm, req);
+
+        MPI_Type_free(&bigtype);
+        MPI_Op_free(&bigop);
+
+        return rc;
+
+    }
+}
+
+int MPIX_Iallreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
+                     MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request * req)
+{
+    if (likely (count <= bigmpi_int_max )) {
+        return MPI_Iallreduce(sendbuf, recvbuf, (int)count, datatype, op, comm, req);
+    } else {
+
+        MPI_Datatype bigtype;
+        MPIX_Type_contiguous_x(count, datatype, &bigtype);
+        MPI_Type_commit(&bigtype);
+
+        MPI_Op bigop;
+        BigMPI_Op_create(op, &bigop);
+
+        if (sendbuf==MPI_IN_PLACE) {
+            printf("BigMPI does not support in-place here yet.  Sorry. \n");
+            MPI_Abort(MPI_COMM_WORLD, 1);
+        }
+
+        int rc = MPI_Iallreduce(sendbuf, recvbuf, 1, bigtype, bigop, comm, req);
+
+        MPI_Type_free(&bigtype);
+        MPI_Op_free(&bigop);
+
+        return rc;
+
+    }
+}
