@@ -54,11 +54,20 @@ BigMPI only supports built-in datatypes.  If you are already using
 derived-datatypes, then you should already be able to handle large
 counts without BigMPI.
 
-BigMPI currently does not support `MAX_LOC` or `MIN_LOC` reduction
-operations but will likely do so in the future.
+BigMPI currently does not support `MAX_LOC` or `MIN_LOC` reductions
+but will likely do so in the future.
+
+Support for `MPI_IN_PLACE` is not implemented in some cases and
+implemented inefficiently in others.
+Using `MPI_IN_PLACE` is discouraged at the present time.
+We hope to support it more effectively in the future.
 
 BigMPI requires C99.  If your compiler does not support C99, get a
 new compiler.
+
+BigMPI only has C bindings right now.
+Fortran 2003 bindings are planned.
+If C++ bindings are important to you, please create an issue for this.
 
 ## Supported Functions
 I believe that point-to-point, one-sided, broadcast and reductions
