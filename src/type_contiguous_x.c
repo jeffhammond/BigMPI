@@ -2,8 +2,35 @@
 
 /* This function does all the heavy lifting in BigMPI. */
 
-#define MPI_ASSERT(e)  \
-        ((void) ((e) ? 0 : MPI_Abort(MPI_COMM_WORLD,1) ))
+#ifdef BIGMPI_AVOID_TYPE_CREATE_STRUCT
+#include <math.h>
+/*
+ * Synopsis
+ *
+ * int BigMPI_Factorize_count(MPI_Count c, int * a, int *b)
+ *
+ *  Input Parameter
+ *
+ *   c                  large count
+ *
+ * Output Parameters
+ *
+ *   a, b               integers such that c=a*b and a,b<INT_MAX
+ *   rc                 returns 0 if a,b found (success), else 1 (failure)
+ *
+ */
+static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
+{
+    /* THIS FUNCTION IS NOT OPTIMIZED AND MAY RUN VERY SLOWLY IN SOME CASES */
+    /* TODO Implement something other than brute-force search for prime factors. */
+
+    /* Is it better to do the division as MPI_Count or double? */
+    MPI_Count lowguess = in/bigmpi_int_max+1;
+
+
+    return 1;
+}
+#endif
 
 /*
  * Synopsis
