@@ -27,8 +27,8 @@ int main(int argc, char * argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    if (size<2) {
-        printf("Use 2 or more processes. \n");
+    if (size<1) {
+        printf("Use 1 or more processes. \n");
         MPI_Finalize();
         return 1;
     }
