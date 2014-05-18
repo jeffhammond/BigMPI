@@ -31,3 +31,12 @@ size_t verify_doubles(double *buf, MPI_Count count, double expected_value)
     }
     return errors;
 }
+
+void set_doubles(double *buf, MPI_Count count, double value)
+{
+    assert(count<SIZE_MAX);
+
+    for (size_t i = 0; i < (size_t)count; i++) {
+        buf[i] = value;
+    }
+}
