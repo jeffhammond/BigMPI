@@ -279,12 +279,11 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 
     /* Do the local comm first with nonblocking to avoid deadlock. */
     if (root) {
-        int tag = size;
         MPI_Request reqs[2];
         MPI_Aint lb /* unused */, extent;
         MPI_Type_get_extent(recvtype, &lb, &extent);
-        MPIX_Irecv_x(recvbuf+adispls[root]*extent, recvcounts[root], recvtype, root, tag, comm, &reqs[0]);
-        MPIX_Isend_x(sendbuf, sendcount, sendtype, root, tag, comm, &reqs[1]);
+        MPIX_Irecv_x(recvbuf+adispls[root]*extent, recvcounts[root], recvtype, root, rank /* tag */, comm, &reqs[0]);
+        MPIX_Isend_x(sendbuf, sendcount, sendtype, root, rank /* tag */, comm, &reqs[1]);
         MPI_Waitall(2, reqs, MPI_STATUSES_IGNORE);
     }
 
@@ -292,15 +291,14 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     if (root) {
         for (int i=0; i<size; i++) {
             if (i!=root) {
-                int tag = i;
                 MPI_Aint lb /* unused */, extent;
                 MPI_Type_get_extent(recvtype, &lb, &extent);
-                MPIX_Recv_x(recvbuf+adispls[i]*extent, recvcounts[i], recvtype, i, tag, comm, MPI_STATUS_IGNORE);
+                MPIX_Recv_x(recvbuf+adispls[i]*extent, recvcounts[i], recvtype,
+                            i /* source */, i /* tag */, comm, MPI_STATUS_IGNORE);
             }
         }
     } else {
-        int tag = rank;
-        MPIX_Send_x(sendbuf, sendcount, sendtype, root, tag, comm);
+        MPIX_Send_x(sendbuf, sendcount, sendtype, root, i /* tag */, comm);
     }
     return rc;
 }
