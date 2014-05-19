@@ -264,6 +264,13 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 {
     int rc = MPI_SUCCESS;
 
+    int is_intercomm;
+    MPI_Comm_test_inter(comm, &is_intercomm);
+    if (is_intercomm) {
+        printf("BigMPI does not support intercommunicators yet.  Please file an issue on GitHub.\n");
+        MPI_Abort(comm,1);
+    }
+
     int size, rank;
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
