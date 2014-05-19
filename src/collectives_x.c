@@ -362,3 +362,34 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
     }
     return rc;
 }
+
+int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count *sendcounts, const MPI_Aint *sdispls, MPI_Datatype sendtype,
+                     void *recvbuf, const MPI_Count *recvcounts, const MPI_Aint *rdispls, MPI_Datatype recvtype,
+                     MPI_Comm comm)
+{
+    int rc = MPI_SUCCESS;
+
+    int is_intercomm;
+    MPI_Comm_test_inter(comm, &is_intercomm);
+    if (is_intercomm) {
+        printf("BigMPI does not support intercommunicators yet.\n");
+        MPI_Abort(comm,1);
+    }
+
+    int size, rank;
+    MPI_Comm_size(comm, &size);
+    MPI_Comm_rank(comm, &rank);
+
+    /* There is no way to implement large-count using MPI_Alltoallv because displs is an int. */
+
+    MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request));
+    for (int i=0; i<size; i++) {
+        MPI_Aint lb /* unused */, extent;
+        MPI_Type_get_extent(sendtype, &lb, &extent);
+        MPIX_Isend_x(sendbuf+sdispls[i]*extent, sendcounts[i], sendtype, i /* source */, i /* tag */, comm, &reqs[i]);
+        MPI_Type_get_extent(recvtype, &lb, &extent);
+        MPIX_Irecv_x(recvbuf+rdispls[i]*extent, recvcounts[i], recvtype, i, i /* tag */, comm, &reqs[size+i]);
+    }
+    MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
+    return rc;
+}
