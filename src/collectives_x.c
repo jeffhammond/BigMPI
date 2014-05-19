@@ -267,7 +267,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     int is_intercomm;
     MPI_Comm_test_inter(comm, &is_intercomm);
     if (is_intercomm) {
-        printf("BigMPI does not support intercommunicators yet.  Please file an issue on GitHub.\n");
+        printf("BigMPI does not support intercommunicators yet.\n");
         MPI_Abort(comm,1);
     }
 
