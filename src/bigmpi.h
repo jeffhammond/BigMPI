@@ -111,9 +111,14 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count *sendcounts, const MPI_
                     void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype,
                     int root, MPI_Comm comm);
 int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                      void *recvbuf, const MPI_Count *recvcounts, const MPI_Aint *displs, MPI_Datatype recvtype, MPI_Comm comm);
+                      void *recvbuf, const MPI_Count *recvcounts, const MPI_Aint *displs, MPI_Datatype recvtype,
+                      MPI_Comm comm);
 int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count *sendcounts, const MPI_Aint *sdispls, MPI_Datatype sendtype,
-                     void *recvbuf, const MPI_Count *recvcounts, const MPI_Aint *rdispls, MPI_Datatype recvtype, MPI_Comm comm);
+                     void *recvbuf, const MPI_Count *recvcounts, const MPI_Aint *rdispls, MPI_Datatype recvtype,
+                     MPI_Comm comm);
+int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], const MPI_Datatype sendtypes[],
+                     void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], const MPI_Datatype recvtypes[],
+                     MPI_Comm comm);
 
 #if 0
 
@@ -170,8 +175,6 @@ int MPIX_Ineighbor_alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[]
 
 /* These are like the v-collectives, only worse... */
 
-int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[],
-                     void *recvbuf, const MPI_Count recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm);
 int MPIX_Ialltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[],
                       void *recvbuf, const MPI_Count recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm,
                       MPI_Request *request);
