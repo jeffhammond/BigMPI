@@ -255,31 +255,50 @@ int MPIX_Ialltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
     return rc;
 }
 
-#if 0
+/* TODO: The displacements vector cannot be represented in the existing set of MPI-3
+         functions because it is an integer rather than an MPI_Aint. */
 
-TODO: The displacements vector is going to be hard...
-
-int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcounts, MPI_Datatype sendtype,
-                   void *recvbuf, MPI_Count recvcounts, MPI_Count displs, MPI_Datatype recvtype,
+int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+                   void *recvbuf, MPI_Count * recvcounts, MPI_Aint * adispls, MPI_Datatype recvtype,
                    int root, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
-        rc = MPI_Gatherv(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, root, comm);
+    int size, rank;
+    MPI_Comm_size(comm, &size);
+    MPI_Comm_rank(comm, &rank);
+
+    /* There is no way to implement large-count using MPI_Gatherv because displs is an int. */
+    if (root) {
+        /* Do the local comm first with nonblocking to avoid deadlock. */
+        int tag = size;
+        MPI_Request reqs[2];
+        MPI_Aint lb /* unused */, extent;
+        MPI_Type_get_extent(recvtype, &lb, &extent);
+        MPIX_Irecv_x(recvbuf+adispls[root]*extent, recvcounts[root], recvtype, root, tag, comm, &reqs[0]);
+        MPIX_Isend_x(sendbuf, sendcount, sendtype, root, tag, comm, &reqs[1]);
+        MPI_Waitall(2, reqs, MPI_STATUSES_IGNORE);
+        /* Nonlocal comms, i.e. skipping rank==root. */
+        for (int i=0; i<root; i++) {
+            int tag = i;
+            MPI_Aint lb /* unused */, extent;
+            MPI_Type_get_extent(recvtype, &lb, &extent);
+            MPIX_Recv_x(recvbuf+adispls[i]*extent, recvcounts[i], recvtype, i, tag, comm, MPI_STATUS_IGNORE);
+        }
+        for (int i=(root+1); i<size; i++) {
+            int tag = i;
+            MPI_Aint lb /* unused */, extent;
+            MPI_Type_get_extent(recvtype, &lb, &extent);
+            MPIX_Recv_x(recvbuf+adispls[i]*extent, recvcounts[i], recvtype, i, tag, comm, MPI_STATUS_IGNORE);
+        }
     } else {
-        MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
-        MPI_Type_commit(&newsendtype);
-        MPI_Type_commit(&newrecvtype);
-        rc = MPI_Gatherv(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, root, comm);
-        MPI_Type_free(&newsendtype);
-        MPI_Type_free(&newrecvtype);
+        int tag = rank;
+        MPIX_Send_x(sendbuf, sendcount, sendtype, root, tag, comm);
     }
     return rc;
 }
 
+#if 0
 int MPIX_Scatterv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                    void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
