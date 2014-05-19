@@ -20,7 +20,7 @@ libbigmpi_la_LDFLAGS = -version-info $(libbigmpi_abi_version)
 libbigmpii_la_SOURCES = $(libbigmpi_la_SOURCES)
 libbigmpii_la_LDFLAGS = $(libbigmpi_abi_version)
 
-include_HEADERS = src/bigmpi.h
+include_HEADERS = src/bigmpi.h src/bigmpi_impl.h
 
 bin_PROGRAMS =
 check_PROGRAMS = 
