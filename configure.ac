@@ -1,10 +1,10 @@
 dnl
-dnl Copyright (C) 2010. See COPYRIGHT in top-level directory.
+dnl Copyright (C) 2014. See LICENSE in top-level directory.
 dnl
 
 AC_PREREQ(2.62)
 
-AC_INIT([armci],[0])
+AC_INIT([bigmpi],[0])
 AC_CONFIG_AUX_DIR(m4)
 AC_CONFIG_MACRO_DIR(m4)
 AM_INIT_AUTOMAKE([-Wall -Werror foreign 1.11 color-tests parallel-tests subdir-objects])
@@ -39,7 +39,7 @@ else
 fi
 
 # ABI version
-AC_SUBST(libarmci_abi_version)
+AC_SUBST(libbigmpi_abi_version)
 
 # Release version
 # Produce a numeric version assuming the following format:
@@ -89,11 +89,11 @@ BIGMPI_NUMVERSION=`expr $V1$V2$V3$V4$V5 + 0`
 AC_SUBST(BIGMPI_NUMVERSION)
 AC_SUBST(BIGMPI_VERSION)
 
-AC_CONFIG_HEADER(src/armciconf.h)
+AC_CONFIG_HEADER(src/bigmpiconf.h)
 AH_TOP([/* -*- Mode: C; c-basic-offset:4 ; -*- */
 /*
- *  (C) 2010 by Argonne National Laboratory.
- *      See COPYRIGHT in top-level directory.
+ *  (C) 2014 by Jeff Hammond.
+ *      See LICENSE in top-level directory.
  */
 #ifndef _BIGMPICONF_H_
 #define _BIGMPICONF_H_
