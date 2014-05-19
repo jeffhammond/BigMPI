@@ -259,7 +259,7 @@ int MPIX_Ialltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
          functions because it is an integer rather than an MPI_Aint. */
 
 int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                   void *recvbuf, MPI_Count * recvcounts, const MPI_Aint * adispls, MPI_Datatype recvtype,
+                   void *recvbuf, const MPI_Count * recvcounts, const MPI_Aint * adispls, MPI_Datatype recvtype,
                    int root, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -302,7 +302,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     return rc;
 }
 
-int MPIX_Scatterv_x(const void *sendbuf, MPI_Count * sendcounts, const MPI_Aint * adispls, MPI_Datatype sendtype,
+int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count * sendcounts, const MPI_Aint * adispls, MPI_Datatype sendtype,
                    void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -346,7 +346,7 @@ int MPIX_Scatterv_x(const void *sendbuf, MPI_Count * sendcounts, const MPI_Aint 
 }
 
 int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                      void *recvbuf, MPI_Count * recvcounts, const MPI_Aint * adispls, MPI_Datatype recvtype,
+                      void *recvbuf, const MPI_Count * recvcounts, const MPI_Aint * adispls, MPI_Datatype recvtype,
                       MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -359,24 +359,6 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
         MPIX_Gatherv_x(sendbuf, sendcount, sendtype,
                        recvbuf, recvcounts, adispls, recvtype,
                        i, comm);
-    }
-    return rc;
-}
-
-int MPIX_Alltoallv_x(const void *sendbuf, MPI_Count sendcounts, const MPI_Aint * sdispls, MPI_Datatype sendtype,
-                    void *recvbuf, MPI_Count recvcount, const MPI_Aint * rdispls, MPI_Datatype recvtype,
-                    MPI_Comm comm)
-{
-    int rc = MPI_SUCCESS;
-
-    int size;
-    MPI_Comm_size(comm, &size);
-
-    /* There is no way to implement large-count using MPI_Allscatterv because displs is an int. */
-    for (int i=0; i<size; i++) {
-        MPIX_Scatterv_x(sendbuf, sendcounts, sendtype,
-                        recvbuf, recvcount, rdispls, recvtype,
-                        i, comm);
     }
     return rc;
 }
