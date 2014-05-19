@@ -257,55 +257,16 @@ int MPIX_Ialltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
 
 #if 0
 
-FIXME: need to copy the recvcounts vector with downcasting or otherwise figure this out.
+TODO: The displacements vector is going to be hard...
 
-int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                   void *recvbuf, const MPI_Count *recvcounts, const int *displs, MPI_Datatype recvtype, int root, MPI_Comm comm)
-{
-    int rc = MPI_SUCCESS;
-
-    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
-        rc = MPI_Gatherv(sendbuf, (int)sendcount, sendtype,
-                         recvbuf, newrecvcounts, recvtype,
-                         root, comm);
-    } else {
-        /* We do not specialize for case where only one of the counts is big
-         * because datatype construction overhead is trivial compared to moving
-         * >2 GiB. */
-        MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
-        MPI_Type_commit(&newsendtype);
-        MPI_Type_commit(&newrecvtype);
-        rc = MPI_Gather(sendbuf, 1, newsendtype,
-                        recvbuf, 1, newrecvtype,
-                        root, comm);
-        MPI_Type_free(&newsendtype);
-        MPI_Type_free(&newrecvtype);
-    }
-    return rc;
-}
-#endif
-
-int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                  void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
+int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcounts, MPI_Datatype sendtype,
+                   void *recvbuf, MPI_Count recvcounts, MPI_Count displs, MPI_Datatype recvtype,
+                   int root, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
 
     if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
         rc = MPI_Gatherv(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, root, comm);
-    } else if (sendcount > bigmpi_int_max && recvcount <= bigmpi_int_max ) {
-        MPI_Datatype newsendtype;
-        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
-        MPI_Type_commit(&newsendtype);
-        rc = MPI_Gatherv(sendbuf, 1, newsendtype, recvbuf, (int)recvcount, recvtype, root, comm);
-        MPI_Type_free(&newsendtype);
-    } else if (sendcount <= bigmpi_int_max && recvcount > bigmpi_int_max ) {
-        MPI_Datatype newrecvtype;
-        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
-        MPI_Type_commit(&newrecvtype);
-        rc = MPI_Gatherv(sendbuf, (int)sendcount, sendtype, recvbuf, 1, newrecvtype, root, comm);
-        MPI_Type_free(&newrecvtype);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
         MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
@@ -417,3 +378,4 @@ int MPIX_Alltoallv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
     }
     return rc;
 }
+#endif
