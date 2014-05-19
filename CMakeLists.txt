@@ -27,4 +27,4 @@ include_directories(${MPI_INCLUDE_PATH})
 add_custom_target(test echo "Tests passed.")
 
 add_subdirectory(src)
-add_subdirectory(test)
+add_subdirectory(tests)
