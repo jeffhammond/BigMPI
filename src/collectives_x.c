@@ -259,7 +259,7 @@ int MPIX_Ialltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
          functions because it is an integer rather than an MPI_Aint. */
 
 int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                   void *recvbuf, MPI_Count * recvcounts, MPI_Aint * adispls, MPI_Datatype recvtype,
+                   void *recvbuf, MPI_Count * recvcounts, const MPI_Aint * adispls, MPI_Datatype recvtype,
                    int root, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -302,7 +302,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     return rc;
 }
 
-int MPIX_Scatterv_x(const void *sendbuf, MPI_Count * sendcounts, MPI_Aint * adispls, MPI_Datatype sendtype,
+int MPIX_Scatterv_x(const void *sendbuf, MPI_Count * sendcounts, const MPI_Aint * adispls, MPI_Datatype sendtype,
                    void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -345,72 +345,38 @@ int MPIX_Scatterv_x(const void *sendbuf, MPI_Count * sendcounts, MPI_Aint * adis
     return rc;
 }
 
-#if 0
-
 int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                     void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+                      void *recvbuf, MPI_Count * recvcounts, const MPI_Aint * adispls, MPI_Datatype recvtype,
+                      MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
-        rc = MPI_Allgatherv(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm);
-    } else if (sendcount > bigmpi_int_max && recvcount <= bigmpi_int_max ) {
-        MPI_Datatype newsendtype;
-        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
-        MPI_Type_commit(&newsendtype);
-        rc = MPI_Allgatherv(sendbuf, 1, newsendtype, recvbuf, (int)recvcount, recvtype, comm);
-        MPI_Type_free(&newsendtype);
-    } else if (sendcount <= bigmpi_int_max && recvcount > bigmpi_int_max ) {
-        MPI_Datatype newrecvtype;
-        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
-        MPI_Type_commit(&newrecvtype);
-        rc = MPI_Allgatherv(sendbuf, (int)sendcount, sendtype, recvbuf, 1, newrecvtype, comm);
-        MPI_Type_free(&newrecvtype);
-    } else {
-        /* We do not specialize for case where only one of the counts is big
-         * because datatype construction overhead is trivial compared to moving
-         * >2 GiB. */
-        MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
-        MPI_Type_commit(&newsendtype);
-        MPI_Type_commit(&newrecvtype);
-        rc = MPI_Allgatherv(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, comm);
-        MPI_Type_free(&newsendtype);
-        MPI_Type_free(&newrecvtype);
+    int size;
+    MPI_Comm_size(comm, &size);
+
+    /* There is no way to implement large-count using MPI_Allgatherv because displs is an int. */
+    for (int i=0; i<size; i++) {
+        MPIX_Gatherv_x(sendbuf, sendcount, sendtype,
+                       recvbuf, recvcounts, adispls, recvtype,
+                       i, comm);
     }
     return rc;
 }
 
-int MPIX_Alltoallv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                    void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+int MPIX_Alltoallv_x(const void *sendbuf, MPI_Count sendcounts, const MPI_Aint * sdispls, MPI_Datatype sendtype,
+                    void *recvbuf, MPI_Count recvcount, const MPI_Aint * rdispls, MPI_Datatype recvtype,
+                    MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
 
-    if (likely (sendcount <= bigmpi_int_max && recvcount <= bigmpi_int_max )) {
-        rc = MPI_Alltoallv(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm);
-    } else if (sendcount > bigmpi_int_max && recvcount <= bigmpi_int_max ) {
-        MPI_Datatype newsendtype;
-        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
-        MPI_Type_commit(&newsendtype);
-        rc = MPI_Alltoallv(sendbuf, 1, newsendtype, recvbuf, (int)recvcount, recvtype, comm);
-        MPI_Type_free(&newsendtype);
-    } else if (sendcount <= bigmpi_int_max && recvcount > bigmpi_int_max ) {
-        MPI_Datatype newrecvtype;
-        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
-        MPI_Type_commit(&newrecvtype);
-        rc = MPI_Alltoallv(sendbuf, (int)sendcount, sendtype, recvbuf, 1, newrecvtype, comm);
-        MPI_Type_free(&newrecvtype);
-    } else {
-        MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
-        MPI_Type_commit(&newsendtype);
-        MPI_Type_commit(&newrecvtype);
-        rc = MPI_Alltoallv(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, comm);
-        MPI_Type_free(&newsendtype);
-        MPI_Type_free(&newrecvtype);
+    int size;
+    MPI_Comm_size(comm, &size);
+
+    /* There is no way to implement large-count using MPI_Allscatterv because displs is an int. */
+    for (int i=0; i<size; i++) {
+        MPIX_Scatterv_x(sendbuf, sendcounts, sendtype,
+                        recvbuf, recvcount, rdispls, recvtype,
+                        i, comm);
     }
     return rc;
 }
-#endif
