@@ -35,21 +35,17 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
     MPI_Count hi = (MPI_Count)floor(sqrt((double)in));
 
     if (debug) printf("(lo,hi) = (%zu,%zu)\n", (size_t)lo, (size_t)hi);
-    double t0 = MPI_Wtime();
     for (MPI_Count g=lo; g<hi; g++) {
         MPI_Count rem = in%g;
-        if (debug) printf("in=%zu, g=%zu, mod(in,g)=%zu\n", (size_t)in, (size_t)g, (size_t)rem);
+        if (unlikely(debug)) printf("in=%zu, g=%zu, mod(in,g)=%zu\n", (size_t)in, (size_t)g, (size_t)rem);
         if (rem==0) {
             *a = (int)g;
             *b = (int)(in/g);
-            if (debug) printf("a=%d, b=%d\n", *a, *b);
-            double t1 = MPI_Wtime();
-            if (debug) printf("found a valid factorization of %zu in %lf seconds.\n", (size_t)in, t1-t0);
+            if (unlikely(debug)) printf("a=%d, b=%d\n", *a, *b);
             return 0;
         }
     }
-    double t2 = MPI_Wtime();
-    if (debug) printf("failed to find a valid factorization of %zu in %lf seconds.\n", (size_t)in, t2-t0);
+    if (debug) printf("failed to find a valid factorization of %zu.\n", (size_t)in);
     return 1;
 }
 #endif
