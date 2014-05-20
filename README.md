@@ -35,6 +35,7 @@ BigMPI:
 ```
 
 ## Interface
+
 The API follows the pattern of `MPI_Type_size(_x)` in that all BigMPI
 functions are identical to their corresponding MPI ones except that
 they end with `_x` to indicate that the count arguments have the type
@@ -43,6 +44,7 @@ BigMPI functions use the MPIX namespace because they are not in the
 MPI standard.
 
 ## Limitations
+
 Even though `MPI_Count` might be 128b, BigMPI only supports
 64b counts (because of `MPI_Aint` limitations and a desire to use `size_t`
 in unit tests), so BigMPI is not going to solve your problem if you
@@ -70,16 +72,12 @@ Fortran 2003 bindings are planned.
 If C++ bindings are important to you, please create an issue for this.
 
 ## Supported Functions
+
 I believe that point-to-point, one-sided, broadcast and reductions
 are the only functions worth supporting but I added some of the other 
 collectives anyways.
- he other collectives clearly aren't scalable because they are going
-to move O(nproc*count) data, which is obviously a lot of memory in the
-case of e.g. allgather of >2GiB for more than a few dozen procs.
-so I will not support these unless >1 users claim it is necessary.
-The v-collectives are a pain because one needs to create a new count
-vector or do other inefficient things (like implement collectives using
-point-to-point).
+The v-collectives require a point-to-point implementation, but
+we do not believe this causes a significant loss of performance.
 
 ## Technical details
 
