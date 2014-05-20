@@ -411,9 +411,10 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
-    /* There is no way to implement large-count using MPI_Alltoallv because displs is an int. */
+    /* There is no way to implement large-count using MPI_Alltoallw because displs is an int. */
 
     MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request));
+    assert(reqs!=NULL);
     for (int i=0; i<size; i++) {
         MPI_Aint lb /* unused */, extent;
         MPI_Type_get_extent(sendtypes[i], &lb, &extent);
@@ -422,5 +423,6 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
         MPIX_Irecv_x(recvbuf+rdispls[i]*extent, recvcounts[i], recvtypes[i], i, i /* tag */, comm, &reqs[size+i]);
     }
     MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
+    free(reqs);
     return rc;
 }
