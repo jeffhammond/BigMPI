@@ -74,10 +74,23 @@ int MPIX_Sendrecv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
         rc = MPI_Sendrecv(sendbuf, (int)sendcount, sendtype, dest, sendtag,
                           recvbuf, (int)recvcount, recvtype, source, recvtag,
                           comm, status);
+    } else if (sendcount <= bigmpi_int_max && recvcount > bigmpi_int_max ) {
+        MPI_Datatype newrecvtype;
+        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
+        MPI_Type_commit(&newrecvtype);
+        rc = MPI_Sendrecv(sendbuf, (int)sendcount, sendtype, dest, sendtag,
+                          recvbuf, 1, newrecvtype, source, recvtag,
+                          comm, status);
+        MPI_Type_free(&newrecvtype);
+    } else if (sendcount > bigmpi_int_max && recvcount <= bigmpi_int_max ) {
+        MPI_Datatype newsendtype;
+        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
+        MPI_Type_commit(&newsendtype);
+        rc = MPI_Sendrecv(sendbuf, 1, newsendtype, dest, sendtag,
+                          recvbuf, (int)recvcount, recvtype, source, recvtag,
+                          comm, status);
+        MPI_Type_free(&newsendtype);
     } else {
-        /* We do not specialize for case where only one of the counts is big
-         * because datatype construction overhead is trivial compared to moving
-         * >2 GiB. */
         MPI_Datatype newsendtype, newrecvtype;
         MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
         MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
