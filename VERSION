@@ -1,5 +1,5 @@
 # Version
-ARMCI_VERSION=0.1
+BIGMPI_VERSION=0.1
 
 # For libtool ABI versioning rules see:
 # http://www.nondot.org/sabre/Mirrored/libtool-2.1a/libtool_6.html#SEC36
@@ -16,4 +16,4 @@ ARMCI_VERSION=0.1
 #     4. If any interfaces have been removed since the last public
 #     release, then set age to 0.
 
-libarmci_abi_version=1:0:0
+libbigmpi_abi_version=1:0:0
