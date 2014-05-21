@@ -15,7 +15,7 @@ TESTS  = test_sendrecv_x.x test_isend_irecv_x.x test_send_recv_x.x
 TESTS += test_bcast_x.x test_reduce_x.x test_allreduce_x.x
 TESTS += test_gather_x.x test_scatter_x.x test_alltoall_x.x
 TESTS += test_rma_x.x test_rma2_x.x
-TESTS += test_contig_x.x
+TESTS += test_contig_x.x test_factorize.x
 
 all: $(TESTS)
 
