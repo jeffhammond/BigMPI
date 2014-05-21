@@ -7,7 +7,7 @@ BigMPI is designed for the common case where one has a 64b address
 space and is unable to do MPI communication on more than 2^31 elements
 despite having sufficient memory to allocate such buffers.
 BigMPI does not attempt to support large-counts on systems where
-C int and void* are both 32b.
+C `int` and `void*` are both 32b.
 
 ## Motivation
 
@@ -21,7 +21,7 @@ There is a natural workaround using MPI derived datatypes, but this is
 a burden on users who today may not be using derived datatypes.
 
 This project aspires to make it as easy as possible to support arbitrarily
-large counts (2^63 elements exceeds the local storage compacity of computers 
+large counts (2^63 elements exceeds the local storage compacity of computers
 for the foreseeable future).
 
 This is an example of the code change required to support large counts using
@@ -71,7 +71,7 @@ If C++ bindings are important to you, please create an issue for this.
 
 ## Supported Functions
 I believe that point-to-point, one-sided, broadcast and reductions
-are the only functions worth supporting but I added some of the other 
+are the only functions worth supporting but I added some of the other
 collectives anyways.
  he other collectives clearly aren't scalable because they are going
 to move O(nproc*count) data, which is obviously a lot of memory in the
