@@ -1,6 +1,8 @@
 #ifndef BIGMPI_TYPES_H_INCLUDED
 #define BIGMPI_TYPES_H_INCLUDED
 
+extern int bigmpi_types_defined;
+
 /*
  *   The layouts for the types MPI_TYPE_COUNT etc are simply
  *   struct {
