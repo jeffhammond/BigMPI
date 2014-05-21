@@ -74,7 +74,8 @@ int BigMPI_Op_create(MPI_Op op, MPI_Op * bigop)
     else if (op==MPI_BXOR) bigfn = BigMPI_BXOR_x;
 #if 0
     /* TODO: Figure out how to support these.  The results of multiple
-     *       calls to Reduce_local will need to be combined... */
+     *       calls to Reduce_local will need to be combined.
+     *       A non-standard pair-type will have to be defined as well. */
     else if (op==MPI_MAXLOC) MPI_User_function * bigfn = BigMPI_MAXLOC_x;
     else if (op==MPI_MINLOC) MPI_User_function * bigfn = BigMPI_MINLOC_x;
 #endif
@@ -135,7 +136,7 @@ int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
             MPI_Aint buf_size = (MPI_Aint)count * extent;
 
             MPI_Alloc_mem(buf_size, MPI_INFO_NULL, &tempbuf);
-            if (tempbuf==NULL) { MPI_Abort(comm, 1); }
+            assert(tempbuf!=NULL);
             memcpy(tempbuf, recvbuf, (size_t)buf_size);
         }
 
@@ -200,7 +201,7 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
             MPI_Aint buf_size = (MPI_Aint)count * extent;
 
             MPI_Alloc_mem(buf_size, MPI_INFO_NULL, &tempbuf);
-            if (tempbuf==NULL) { MPI_Abort(comm, 1); }
+            assert(tempbuf!=NULL);
             memcpy(tempbuf, recvbuf, (size_t)buf_size);
         }
         int rc = MPI_Allreduce(sendbuf==MPI_IN_PLACE ? tempbuf : sendbuf,
@@ -245,7 +246,7 @@ int MPIX_Reduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count re
 
         void * tempbuf = NULL;
         MPI_Alloc_mem(buf_size, MPI_INFO_NULL, &tempbuf);
-        if (tempbuf==NULL) { MPI_Abort(comm, 1); }
+        assert(tempbuf!=NULL);
 
         MPIX_Reduce_x(sendbuf==MPI_IN_PLACE ? recvbuf : sendbuf,
                       tempbuf, sendcount, datatype, op, root, comm);
