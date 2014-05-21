@@ -3,6 +3,8 @@
 
 #include <mpi.h>
 
+#include "bigmpi_types.h"
+
 /* This function does the heavy lifting in BigMPI. */
 
 int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
