@@ -76,8 +76,8 @@ int BigMPI_Op_create(MPI_Op op, MPI_Op * bigop)
     /* TODO: Figure out how to support these.  The results of multiple
      *       calls to Reduce_local will need to be combined.
      *       A non-standard pair-type will have to be defined as well. */
-    else if (op==MPI_MAXLOC) MPI_User_function * bigfn = BigMPI_MAXLOC_x;
-    else if (op==MPI_MINLOC) MPI_User_function * bigfn = BigMPI_MINLOC_x;
+    else if (op==MPI_MAXLOC) bigfn = BigMPI_MAXLOC_x;
+    else if (op==MPI_MINLOC) bigfn = BigMPI_MINLOC_x;
 #endif
     else {
         printf("BigMPI does not support this op.  Sorry. \n");
