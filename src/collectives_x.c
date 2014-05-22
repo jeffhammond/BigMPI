@@ -295,6 +295,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     if (root) {
         for (int i=0; i<size; i++) {
             if (i!=root) {
+                /* TODO: Use nonblocking and waitall here instead. */
                 MPI_Aint lb /* unused */, extent;
                 MPI_Type_get_extent(recvtype, &lb, &extent);
                 MPIX_Recv_x(recvbuf+adispls[i]*extent, recvcounts[i], recvtype,
@@ -343,6 +344,7 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
     if (root) {
         for (int i=0; i<size; i++) {
             if (i!=root) {
+                /* TODO: Use nonblocking and waitall here instead. */
                 MPI_Aint lb /* unused */, extent;
                 MPI_Type_get_extent(sendtype, &lb, &extent);
                 MPIX_Send_x(sendbuf+adispls[i]*extent, sendcounts[i], sendtype,
@@ -370,6 +372,7 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
     MPI_Comm_size(comm, &size);
 
     /* There is no way to implement large-count using MPI_Allgatherv because displs is an int. */
+    /* TODO: Implement using nonblocking point-to-point directly. */
     for (int i=0; i<size; i++) {
         MPIX_Gatherv_x(sendbuf, sendcount, sendtype,
                        recvbuf, recvcounts, adispls, recvtype,
