@@ -19,7 +19,7 @@ extern MPI_Datatype MPI_INT_COUNT;
 extern MPI_Datatype MPI_LONG_DOUBLE_COUNT;
 
 /* These functions are only required to instantiate {MAX,MIN}LOC datatypes
- * and is thus not required in programs that do not need these operations. */
+ * and are thus not required in programs that do not need these operations. */
 
 int BigMPI_Initialize_types(void);
 int BigMPI_Finalize_types(void);
