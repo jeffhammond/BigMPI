@@ -100,9 +100,6 @@ int MPIX_Allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
         rc = MPI_Allgather(sendbuf, (int)sendcount, sendtype, recvbuf, 1, newrecvtype, comm);
         MPI_Type_free(&newrecvtype);
     } else {
-        /* We do not specialize for case where only one of the counts is big
-         * because datatype construction overhead is trivial compared to moving
-         * >2 GiB. */
         MPI_Datatype newsendtype, newrecvtype;
         MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
         MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
