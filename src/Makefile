@@ -22,9 +22,11 @@ LIBS =
 
 .PHONY: all clean realclean install
 
-LIBRARY = libbigmpi.a
-OBJECTS = type_contiguous_x.o sendrecv_x.o collectives_x.o reductions_x.o rma_x.o bigmpi_types.o
-TESTS   =
+LIBRARY  = libbigmpi.a
+OBJECTS  = type_contiguous_x.o
+OBJECTS += sendrecv_x.o collectives_x.o reductions_x.o rma_x.o
+OBJECTS += bigmpi_types.o bigmpi_comms.o
+TESTS    =
 
 all: $(LIBRARY)
 
