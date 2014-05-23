@@ -276,11 +276,11 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-#ifdef BIGMPI_VCOLLS_P2P
     int size, rank;
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
+#ifdef BIGMPI_VCOLLS_P2P
     /* There is no easy way to implement large-count using MPI_Gatherv because displs is an int. */
 
     /* Do the local comm first to avoid deadlock. */
@@ -328,11 +328,11 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-#ifdef BIGMPI_VCOLLS_P2P
     int size, rank;
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
+#ifdef BIGMPI_VCOLLS_P2P
     /* There is no easy way to implement large-count using MPI_Gatherv because displs is an int. */
 
     /* Do the local comm first to avoid deadlock. */
@@ -403,11 +403,11 @@ int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
         MPI_Abort(MPI_COMM_WORLD, 1);
     }
 
-#ifdef BIGMPI_VCOLLS_P2P
     int size, rank;
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
+#ifdef BIGMPI_VCOLLS_P2P
     /* There is no easy way to implement large-count using MPI_Alltoallv because displs is an int. */
 
     MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request));
