@@ -20,4 +20,6 @@ extern MPI_Comm MPI_GRAPH_WORLD_ROOTZERO;
 int BigMPI_Initialize_comms(void);
 int BigMPI_Finalize_comms(void);
 
+int BigMPI_Create_graph_comm(MPI_Comm comm_old, int root, MPI_Comm * comm_dist_graph);
+
 #endif // BIGMPI_COMMS_H_INCLUDED

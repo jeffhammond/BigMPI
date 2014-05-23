@@ -12,6 +12,8 @@ CPPFLAGS  = -I. -I../include -DBIGMPI_MAX_INT=1000000L
 CPPFLAGS += -DBIGMPI_DEBUG
 # Avoid using user-defined reduction operations.
 #CPPFLAGS += -DBIGMPI_CLEAVER
+# Implement v-collectives using Send-Recv
+#CPPFLAGS += -DBIGMPI_VCOLLS_P2P
 CPPFLAGS += -DBIGMPI_AVOID_TYPE_CREATE_STRUCT
 
 CFLAGS = $(FLAGS) -std=c99 $(CPPFLAGS)
