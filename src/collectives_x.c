@@ -263,15 +263,11 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 
     int is_intercomm;
     MPI_Comm_test_inter(comm, &is_intercomm);
-    if (is_intercomm) {
-        printf("BigMPI does not support intercommunicators yet.\n");
-        MPI_Abort(comm,1);
-    }
+    if (is_intercomm)
+        BigMPI_Error("BigMPI does not support intercommunicators yet.\n");
 
-    if (sendbuf==MPI_IN_PLACE) {
-        printf("BigMPI does not support in-place in the v-collectives.  Sorry. \n");
-        MPI_Abort(MPI_COMM_WORLD, 1);
-    }
+    if (sendbuf==MPI_IN_PLACE)
+        BigMPI_Error("BigMPI does not support in-place in the v-collectives.  Sorry. \n");
 
     int size, rank;
     MPI_Comm_size(comm, &size);
@@ -315,15 +311,11 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
 
     int is_intercomm;
     MPI_Comm_test_inter(comm, &is_intercomm);
-    if (is_intercomm) {
-        printf("BigMPI does not support intercommunicators yet.\n");
-        MPI_Abort(comm,1);
-    }
+    if (is_intercomm)
+        BigMPI_Error("BigMPI does not support intercommunicators yet.\n");
 
-    if (sendbuf==MPI_IN_PLACE) {
-        printf("BigMPI does not support in-place in the v-collectives.  Sorry. \n");
-        MPI_Abort(MPI_COMM_WORLD, 1);
-    }
+    if (sendbuf==MPI_IN_PLACE)
+        BigMPI_Error("BigMPI does not support in-place in the v-collectives.  Sorry. \n");
 
     int size, rank;
     MPI_Comm_size(comm, &size);
@@ -390,15 +382,11 @@ int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
 
     int is_intercomm;
     MPI_Comm_test_inter(comm, &is_intercomm);
-    if (is_intercomm) {
-        printf("BigMPI does not support intercommunicators yet.\n");
-        MPI_Abort(comm,1);
-    }
+    if (is_intercomm)
+        BigMPI_Error("BigMPI does not support intercommunicators yet.\n");
 
-    if (sendbuf==MPI_IN_PLACE) {
-        printf("BigMPI does not support in-place in the v-collectives.  Sorry. \n");
-        MPI_Abort(MPI_COMM_WORLD, 1);
-    }
+    if (sendbuf==MPI_IN_PLACE)
+        BigMPI_Error("BigMPI does not support in-place in the v-collectives.  Sorry. \n");
 
     int size, rank;
     MPI_Comm_size(comm, &size);
@@ -429,15 +417,11 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
 
     int is_intercomm;
     MPI_Comm_test_inter(comm, &is_intercomm);
-    if (is_intercomm) {
-        printf("BigMPI does not support intercommunicators yet.\n");
-        MPI_Abort(comm,1);
-    }
+    if (is_intercomm)
+        BigMPI_Error("BigMPI does not support intercommunicators yet.\n");
 
-    if (sendbuf==MPI_IN_PLACE) {
-        printf("BigMPI does not support in-place in the v-collectives.  Sorry. \n");
-        MPI_Abort(MPI_COMM_WORLD, 1);
-    }
+    if (sendbuf==MPI_IN_PLACE)
+        BigMPI_Error("BigMPI does not support in-place in the v-collectives.  Sorry. \n");
 
     int size, rank;
     MPI_Comm_size(comm, &size);
