@@ -273,7 +273,8 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
-#ifdef BIGMPI_VCOLLS_P2P
+#ifndef BIGMPI_VCOLLS_P2P
+#else // BIGMPI_VCOLLS_P2P
     /* There is no easy way to implement large-count using MPI_Gatherv because displs is an int. */
 
     /* Do the local comm first to avoid deadlock. */
@@ -299,7 +300,6 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     } else {
         MPIX_Send_x(sendbuf, sendcount, sendtype, root, rank /* tag */, comm);
     }
-#else // BIGMPI_VCOLLS_P2P
 #endif // BIGMPI_VCOLLS_P2P
     return rc;
 }
@@ -321,7 +321,8 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
-#ifdef BIGMPI_VCOLLS_P2P
+#ifndef BIGMPI_VCOLLS_P2P
+#else // BIGMPI_VCOLLS_P2P
     /* There is no easy way to implement large-count using MPI_Gatherv because displs is an int. */
 
     /* Do the local comm first to avoid deadlock. */
@@ -347,7 +348,6 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
     } else {
         MPIX_Recv_x(recvbuf, recvcount, recvtype, root, rank /* tag */, comm, MPI_STATUS_IGNORE);
     }
-#else // BIGMPI_VCOLLS_P2P
 #endif // BIGMPI_VCOLLS_P2P
     return rc;
 }
@@ -361,23 +361,15 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
     int size;
     MPI_Comm_size(comm, &size);
 
-#ifdef BIGMPI_VCOLLS_P2P
-    /* There is no easy way to implement large-count using MPI_Allgatherv because displs is an int. */
-    MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request)); assert(reqs!=NULL);
-    for (int i=0; i<size; i++) {
-        MPI_Aint lb /* unused */, extent;
-        MPI_Type_get_extent(recvtypes[i], &lb, &extent);
-        MPIX_Irecv_x(recvbuf+rdispls[i]*extent, recvcounts[i], recvtypes[i], i, i /* tag */, comm, &reqs[i]);
-        MPIX_Isend_x(sendbuf, sendcount, sendtype, i /* source */, i /* tag */, comm, &reqs[size+i]);
-    }
-    MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
-    free(reqs);
-#else // BIGMPI_VCOLLS_P2P
-#error TODO deal with displacements - both send and recv
-
+#ifndef BIGMPI_VCOLLS_P2P
+    void        ** newsendbufs   = malloc(size*sizeof(void*));        assert(newsendbufs!=NULL);
     int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
     MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
-    MPI_Aint     * newsenddispls = malloc(size*sizeof(MPI_Aint));     assert(newsenddispls!=NULL);
+
+    /* Allgather sends the same data to every process. */
+    for (int i=0; i<size; i++) {
+        newsendbufs[i] = (void*)sendbuf;
+    }
 
     if (sendcount <= bigmpi_int_max ) {
         for (int i=0; i<size; i++) {
@@ -390,6 +382,13 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
             MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtypes[i]);
             MPI_Type_commit(&newsendtypes[i]);
         }
+    }
+
+    MPI_Aint * sdispls = malloc(size*sizeof(MPI_Aint)); assert(sdispls!=NULL);
+    MPI_Aint lb /* unused */, extent;
+    MPI_Type_get_extent(recvtype, &lb, &extent);
+    for (int i=0; i<size; i++) {
+        sdispls[i] = (MPI_Aint)i*extent;
     }
 
     int          * newrecvcounts = malloc(size*sizeof(int));          assert(newrecvcounts!=NULL);
@@ -407,20 +406,33 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
 
     MPI_Comm comm_dist_graph;
     BigMPI_Create_graph_comm(comm, -1, &comm_dist_graph);
-    rc = MPI_Neighbor_alltoallw(sendbuf, newsendcounts, sdispls, newsendtypes,
-                                recvbuf, newrecvcounts, rdispls, newrecvtypes, comm_dist_graph);
+    rc = MPI_Neighbor_alltoallw(newsendbufs, newsendcounts, sdispls, newsendtypes,
+                                recvbuf,     newrecvcounts, adispls, newrecvtypes, comm_dist_graph);
     MPI_Comm_free(&comm_dist_graph);
 
+    free(newsendbufs);
     free(newsendcounts);
     for (int i=0; i<size; i++) {
         MPI_Type_free(&newsendtypes[i]);
     }
     free(newsendtypes);
+    free(sdispls);
     free(newrecvcounts);
     for (int i=0; i<size; i++) {
         MPI_Type_free(&newrecvtypes[i]);
     }
     free(newrecvtypes);
+#else // BIGMPI_VCOLLS_P2P
+    /* There is no easy way to implement large-count using MPI_Allgatherv because displs is an int. */
+    MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request)); assert(reqs!=NULL);
+    for (int i=0; i<size; i++) {
+        MPI_Aint lb /* unused */, extent;
+        MPI_Type_get_extent(recvtypes[i], &lb, &extent);
+        MPIX_Irecv_x(recvbuf+rdispls[i]*extent, recvcounts[i], recvtypes[i], i, i /* tag */, comm, &reqs[i]);
+        MPIX_Isend_x(sendbuf, sendcount, sendtype, i /* source */, i /* tag */, comm, &reqs[size+i]);
+    }
+    MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
+    free(reqs);
 #endif // BIGMPI_VCOLLS_P2P
     return rc;
 }
@@ -443,21 +455,7 @@ int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
-#ifdef BIGMPI_VCOLLS_P2P
-    /* There is no easy way to implement large-count using MPI_Alltoallv because displs is an int. */
-
-    MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request));
-    for (int i=0; i<size; i++) {
-        MPI_Aint lb /* unused */, extent;
-        MPI_Type_get_extent(recvtype, &lb, &extent);
-        MPIX_Irecv_x(recvbuf+rdispls[i]*extent, recvcounts[i], recvtype, i, i /* tag */, comm, &reqs[i]);
-        MPI_Type_get_extent(sendtype, &lb, &extent);
-        MPIX_Isend_x(sendbuf+sdispls[i]*extent, sendcounts[i], sendtype, i /* source */, i /* tag */, comm, &reqs[size+i]);
-    }
-    MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
-#else // BIGMPI_VCOLLS_P2P
-#error TODO deal with displacements - both send and recv
-
+#ifndef BIGMPI_VCOLLS_P2P
     int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
     MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
 
@@ -516,6 +514,17 @@ int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
         }
         free(newrecvtypes);
     }
+#else // BIGMPI_VCOLLS_P2P
+    /* There is no easy way to implement large-count using MPI_Alltoallv because displs is an int. */
+    MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request));
+    for (int i=0; i<size; i++) {
+        MPI_Aint lb /* unused */, extent;
+        MPI_Type_get_extent(recvtype, &lb, &extent);
+        MPIX_Irecv_x(recvbuf+rdispls[i]*extent, recvcounts[i], recvtype, i, i /* tag */, comm, &reqs[i]);
+        MPI_Type_get_extent(sendtype, &lb, &extent);
+        MPIX_Isend_x(sendbuf+sdispls[i]*extent, sendcounts[i], sendtype, i /* source */, i /* tag */, comm, &reqs[size+i]);
+    }
+    MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
 #endif // BIGMPI_VCOLLS_P2P
     return rc;
 }
@@ -538,20 +547,7 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
-#ifdef BIGMPI_VCOLLS_P2P
-    /* There is no easy way to implement large-count using MPI_Alltoallw because displs is an int. */
-
-    MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request)); assert(reqs!=NULL);
-    for (int i=0; i<size; i++) {
-        MPI_Aint lb /* unused */, extent;
-        MPI_Type_get_extent(recvtypes[i], &lb, &extent);
-        MPIX_Irecv_x(recvbuf+rdispls[i]*extent, recvcounts[i], recvtypes[i], i, i /* tag */, comm, &reqs[i]);
-        MPI_Type_get_extent(sendtypes[i], &lb, &extent);
-        MPIX_Isend_x(sendbuf+sdispls[i]*extent, sendcounts[i], sendtypes[i], i /* source */, i /* tag */, comm, &reqs[size+i]);
-    }
-    MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
-    free(reqs);
-#else // BIGMPI_VCOLLS_P2P
+#ifndef BIGMPI_VCOLLS_P2P
     int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
     MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
 
@@ -609,6 +605,18 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
         }
         free(newrecvtypes);
     }
+#else // BIGMPI_VCOLLS_P2P
+    /* There is no easy way to implement large-count using MPI_Alltoallw because displs is an int. */
+    MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request)); assert(reqs!=NULL);
+    for (int i=0; i<size; i++) {
+        MPI_Aint lb /* unused */, extent;
+        MPI_Type_get_extent(recvtypes[i], &lb, &extent);
+        MPIX_Irecv_x(recvbuf+rdispls[i]*extent, recvcounts[i], recvtypes[i], i, i /* tag */, comm, &reqs[i]);
+        MPI_Type_get_extent(sendtypes[i], &lb, &extent);
+        MPIX_Isend_x(sendbuf+sdispls[i]*extent, sendcounts[i], sendtypes[i], i /* source */, i /* tag */, comm, &reqs[size+i]);
+    }
+    MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
+    free(reqs);
 #endif // BIGMPI_VCOLLS_P2P
     return rc;
 }
