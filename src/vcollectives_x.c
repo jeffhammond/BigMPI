@@ -134,8 +134,6 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
 
     /* TODO This really needs to be checked. */
     MPI_Aint * sdispls = malloc(size*sizeof(MPI_Aint)); assert(sdispls!=NULL);
-    MPI_Aint lb /* unused */, extent;
-    MPI_Type_get_extent(recvtype, &lb, &extent);
     for (int i=0; i<size; i++) {
         /* The same buffer will be sent over and over, so displacement is always the same. */
         sdispls[i] = 0;
