@@ -9,6 +9,7 @@
 #include <mpi.h>
 
 #include "bigmpi.h"
+#include "bigmpi_internals.h"
 
 #include "likely.h"
 

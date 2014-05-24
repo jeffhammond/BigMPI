@@ -20,7 +20,7 @@ void BigMPI_Error_impl(const char *file, const int line, const char *func, const
     va_end(ap);
 
     int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD,rank);
+    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
 
     fprintf(stderr, "[%d] BigMPI Internal error in %s (%s:%d)\n[%d] Message: %s\n",
             rank, func, file, line, rank, string);
