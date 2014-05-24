@@ -58,9 +58,8 @@ int BigMPI_Initialize_types(void)
              * an integer, then there is no need for BigMPI in the first place. */
             types[1] = MPI_INT;
         } else {
-            printf("Could not determine the storage size of MPI_Count and thus\n"
-                   "cannot create a pair-type associated therewith.\n");
-            MPI_Abort(MPI_COMM_WORLD,sizeof(MPI_Count));
+            BigMPI_Error("Could not determine the storage size of MPI_Count and thus\n"
+                         "cannot create a pair-type associated therewith.\n");
         }
         MPI_Type_create_struct(2, blocklengths, displacements, types, &otype);
         MPI_Type_commit(&otype);

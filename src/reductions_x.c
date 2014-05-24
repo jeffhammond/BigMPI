@@ -80,8 +80,7 @@ int BigMPI_Op_create(MPI_Op op, MPI_Op * bigop)
     else if (op==MPI_MINLOC) bigfn = BigMPI_MINLOC_x;
 #endif
     else {
-        printf("BigMPI does not support this op.  Sorry. \n");
-        MPI_Abort(MPI_COMM_WORLD, 1);
+        BigMPI_Error("BigMPI does not support this op.  Sorry. \n");
     }
     return MPI_Op_create(bigfn, commute, bigop);
 }
@@ -271,10 +270,8 @@ int MPIX_Ireduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
         MPI_Op bigop;
         BigMPI_Op_create(op, &bigop);
 
-        if (sendbuf==MPI_IN_PLACE) {
-            printf("BigMPI does not support in-place here yet.  Sorry. \n");
-            MPI_Abort(MPI_COMM_WORLD, 1);
-        }
+        if (sendbuf==MPI_IN_PLACE)
+            BigMPI_Error("BigMPI does not support in-place here yet.  Sorry. \n");
 
         int rc = MPI_Ireduce(sendbuf, recvbuf, 1, bigtype, bigop, root, comm, req);
 
@@ -300,10 +297,8 @@ int MPIX_Iallreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
         MPI_Op bigop;
         BigMPI_Op_create(op, &bigop);
 
-        if (sendbuf==MPI_IN_PLACE) {
-            printf("BigMPI does not support in-place here yet.  Sorry. \n");
-            MPI_Abort(MPI_COMM_WORLD, 1);
-        }
+        if (sendbuf==MPI_IN_PLACE)
+            BigMPI_Error("BigMPI does not support in-place here yet.  Sorry. \n");
 
         int rc = MPI_Iallreduce(sendbuf, recvbuf, 1, bigtype, bigop, comm, req);
 
