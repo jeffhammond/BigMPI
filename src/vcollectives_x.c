@@ -24,29 +24,19 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 #ifndef BIGMPI_VCOLLS_P2P
 #else // BIGMPI_VCOLLS_P2P
     /* There is no easy way to implement large-count using MPI_Gatherv because displs is an int. */
-
-    /* Do the local comm first to avoid deadlock. */
     if (root) {
-        MPI_Aint lb /* unused */, extent;
-        MPI_Type_get_extent(recvtype, &lb, &extent);
-        MPIX_Sendrecv_x(sendbuf, sendcount, sendtype, root, root /* tag */,
-                        recvbuf+adispls[root]*extent, recvcounts[root], recvtype, root, root /* tag */,
-                        comm, MPI_STATUS_IGNORE);
-    }
-
-    /* Do the nonlocal comms... */
-    if (root) {
+        MPI_Request * reqs = malloc(size*sizeof(MPI_Request)); assert(reqs!=NULL);
         for (int i=0; i<size; i++) {
-            if (i!=root) {
-                /* TODO: Use nonblocking and waitall here instead. */
                 MPI_Aint lb /* unused */, extent;
                 MPI_Type_get_extent(recvtype, &lb, &extent);
-                MPIX_Recv_x(recvbuf+adispls[i]*extent, recvcounts[i], recvtype,
-                            i /* source */, i /* tag */, comm, MPI_STATUS_IGNORE);
-            }
+                MPIX_Irecv_x(recvbuf+adispls[i]*extent, recvcounts[i], recvtype,
+                             i /* source */, i /* tag */, comm, &reqs[i]);
         }
-    } else {
-        MPIX_Send_x(sendbuf, sendcount, sendtype, root, rank /* tag */, comm);
+    }
+    MPIX_Send_x(sendbuf, sendcount, sendtype, root, rank /* tag */, comm);
+    if (root) {
+        MPI_Waitall(size, reqs, MPI_STATUSES_IGNORE);
+        free(reqs);
     }
 #endif // BIGMPI_VCOLLS_P2P
     return rc;
