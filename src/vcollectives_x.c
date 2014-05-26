@@ -408,53 +408,68 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
 #ifndef BIGMPI_VCOLLS_P2P
     int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
     MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
+    MPI_Aint     * newsdispls    = malloc(size*sizeof(MPI_Aint));     assert(newsdispls!=NULL);
 
     int send_recv_diff = 0;
     for (int i=0; i<size; i++) {
         if (sendcounts[i] <= bigmpi_int_max ) {
             newsendcounts[i] = sendcounts[i];
             newsendtypes[i]  = sendtypes[i];
+            newsdispls[i]    = sdispls[i];
         } else {
             newsendcounts[i] = 1;
             MPIX_Type_contiguous_x(sendcounts[i], sendtypes[i], &newsendtypes[i]);
             MPI_Type_commit(&newsendtypes[i]);
+            MPI_Aint lb /* unused */, oldextent, newextent;
+            MPI_Type_get_extent(sendtypes[i], &lb, &oldextent);
+            MPI_Type_get_extent(newsendtypes[i], &lb, &newextent);
+            newsdispls[i] = sdispls[i]*oldextent/newextent;
         }
 
         /* check if send and recv count+type vectors for identicality and reuse former if yes */
-        send_recv_diff += (sendcounts[i]!=recvcounts[i] || sendtypes[i]!=recvtypes[i]);
+        send_recv_diff += (sendcounts[i]!=recvcounts[i] || sendtypes[i]!=recvtypes[i] || sdispls[i]!=rdispls[i]);
     }
 
     int          * newrecvcounts = NULL;
     MPI_Datatype * newrecvtypes  = NULL;
+    MPI_Aint     * newrdispls    = NULL;
 
     if (send_recv_diff==0) {
         newrecvcounts = newsendcounts;
         newrecvtypes  = newsendtypes;
+        newrdispls    = newsdispls;
     } else {
         newrecvcounts = malloc(size*sizeof(int));          assert(newrecvcounts!=NULL);
         newrecvtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newrecvtypes!=NULL);
+        newsdispls    = malloc(size*sizeof(MPI_Aint));     assert(newsdispls!=NULL);
         for (int i=0; i<size; i++) {
             if (recvcounts[i] <= bigmpi_int_max ) {
                 newrecvcounts[i] = recvcounts[i];
                 newrecvtypes[i]  = recvtypes[i];
+                newsdispls[i]    = sdispls[i];
             } else {
                 newrecvcounts[i] = 1;
                 MPIX_Type_contiguous_x(recvcounts[i], recvtypes[i], &newrecvtypes[i]);
                 MPI_Type_commit(&newrecvtypes[i]);
+                MPI_Aint lb /* unused */, oldextent, newextent;
+                MPI_Type_get_extent(recvtypes[i], &lb, &oldextent);
+                MPI_Type_get_extent(newrecvtypes[i], &lb, &newextent);
+                newrdispls[i] = rdispls[i]*oldextent/newextent;
             }
         }
     }
 
     MPI_Comm comm_dist_graph;
     BigMPI_Create_graph_comm(comm, -1, &comm_dist_graph);
-    rc = MPI_Neighbor_alltoallw(sendbuf, newsendcounts, sdispls, newsendtypes,
-                                recvbuf, newrecvcounts, rdispls, newrecvtypes, comm_dist_graph);
+    rc = MPI_Neighbor_alltoallw(sendbuf, newsendcounts, newsdispls, newsendtypes,
+                                recvbuf, newrecvcounts, newrdispls, newrecvtypes, comm_dist_graph);
     MPI_Comm_free(&comm_dist_graph);
 
     free(newsendcounts);
     for (int i=0; i<size; i++) {
         MPI_Type_free(&newsendtypes[i]);
     }
+    free(newsdispls);
     free(newsendtypes);
     if (send_recv_diff==0) {
         free(newrecvcounts);
@@ -462,6 +477,7 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
             MPI_Type_free(&newrecvtypes[i]);
         }
         free(newrecvtypes);
+        free(newrdispls);
     }
 #else // BIGMPI_VCOLLS_P2P
     /* There is no easy way to implement large-count using MPI_Alltoallw because displs is an int. */
