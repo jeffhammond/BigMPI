@@ -63,6 +63,8 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     assert(count<bigmpi_count_max);
 
 #ifdef BIGMPI_AVOID_TYPE_CREATE_STRUCT
+    /* There is no need for this code path in homogeneous execution,
+     * but it is useful to exercise anyways. */
     int a, b;
     int notprime = BigMPI_Factorize_count(count, &a, &b);
     if (notprime) {
