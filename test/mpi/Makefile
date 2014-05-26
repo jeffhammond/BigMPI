@@ -5,7 +5,7 @@ CFLAGS = $(FLAGS) -std=c99
 
 .PHONY: all clean realclean
 
-TESTS = reduce_scatter.x
+TESTS = reduce_scatter.x scatterv.x
 
 all: $(TESTS)
 
