@@ -1,5 +1,9 @@
 #include "bigmpi_impl.h"
 
+/* TODO Implement utility functions that do the
+ * (counts[],type,displs[]) to (newcounts[],newtypes[],newdispls[])
+ * conversion so that we can reduce the code size and increase readability. */
+
 /* The displacements vector cannot be represented in the existing set of MPI-3
    functions because it is an integer rather than an MPI_Aint. */
 
