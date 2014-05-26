@@ -1,8 +1,53 @@
 #include "bigmpi_impl.h"
 
-/* TODO Implement utility functions that do the
- * (counts[],type,displs[]) to (newcounts[],newtypes[],newdispls[])
- * conversion so that we can reduce the code size and increase readability. */
+/*
+ * Synopsis
+ *
+ * void convert_vectors(..)
+ *
+ *  Input Parameter
+ *
+ *  int          num                length of all vectors (unless splat true)
+ *  int          splat_old_type     if non-zero, reuse oldtypes[0] instead of iterating over vector (v-to-w)
+ *  int          zero_new_displs    set the displacement to zero (scatter/gather)
+ *  MPI_Count    oldcounts          vector of counts
+ *  MPI_Datatype oldtype            single type (MPI_DATATYPE_NULL if splat_old_type==0)
+ *  MPI_Datatype oldtypes           vector of types (NULL if splat_old_type!=0)
+ *  MPI_Aint     olddispls          vector of displacements
+ *
+ * Output Parameters
+ *
+ *  MPI_Count    newcounts
+ *  MPI_Datatype newtypes
+ *  MPI_Aint     newdispls
+ *
+ */
+static void convert_vectors(int                num,
+                            int                splat_old_type,
+                            int                zero_new_displs,
+                            const MPI_Count    oldcounts[],
+                            const MPI_Datatype oldtypes[],
+                            const MPI_Aint     olddispls[],
+                                  MPI_Count    newcounts[],
+                                  MPI_Datatype newtypes[],
+                                  MPI_Aint     newdispls[])
+{
+    for (int i=0; i<size; i++) {
+        /* counts */
+        newcounts[i] = 1;
+
+        /* types */
+        MPIX_Type_contiguous_x(oldcounts[i], splat_old_type ? oldtype : oldtypes[i], &newtypes[i]);
+        MPI_Type_commit(&newtypes[i]);
+
+        /* displacements */
+        MPI_Aint lb /* unused */, oldextent, newextent;
+        MPI_Type_get_extent(splat_old_type ? oldtype : oldtypes[i], &lb, &oldextent);
+        MPI_Type_get_extent(newtypes[i], &lb, &newextent);
+        newdispls[i] = (zero_new_displs ? 0 : olddispls[i]*oldextent/newextent);
+    }
+    return;
+}
 
 /* The displacements vector cannot be represented in the existing set of MPI-3
    functions because it is an integer rather than an MPI_Aint. */
