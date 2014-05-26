@@ -95,7 +95,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     return rc;
 }
 
-int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint adispls[], MPI_Datatype sendtype,
+int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], MPI_Datatype sendtype,
                     void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -116,73 +116,56 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
 
     /* FIXME Displacements stuff ala gatherv... */
 
-    void        ** newsendbufs   = malloc(size*sizeof(void*));        assert(newsendbufs!=NULL);
     int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
     MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
-
-    /* Allgather sends the same data to every process. */
-    for (int i=0; i<size; i++) {
-        newsendbufs[i] = (void*)sendbuf;
-    }
+    MPI_Aint     * newsdispls    = malloc(size*sizeof(MPI_Aint));     assert(newsdispls!=NULL);
 
     if (rank!=root) {
         for (int i=0; i<size; i++) {
             newsendcounts[i] = 0;
-            newsendtypes[i]  = sendtype;
+            newsendtypes[i]  = MPI_DATATYPE_NULL;
+            newsdispls[i]    = 0;
         }
     } else {
         for (int i=0; i<size; i++) {
-            if (sendcounts[i] <= bigmpi_int_max ) {
-                newsendcounts[i] = sendcounts[i];
-                newsendtypes[i]  = sendtype;
-            } else {
-                newsendcounts[i] = 1;
-                MPIX_Type_contiguous_x(sendcounts[i], sendtype, &newsendtypes[i]);
-                MPI_Type_commit(&newsendtypes[i]);
-            }
+            newsendcounts[i] = 1;
+            MPIX_Type_contiguous_x(sendcounts[i], sendtype, &newsendtypes[i]);
+            MPI_Type_commit(&newsendtypes[i]);
+            /* TODO displs extent stuff */
         }
     }
 
-    /* TODO This really needs to be checked. */
-    MPI_Aint * rdispls = malloc(size*sizeof(MPI_Aint)); assert(rdispls!=NULL);
-    for (int i=0; i<size; i++) {
-        /* The same buffer will be sent over and over, so displacement is always the same. */
-        rdispls[i] = 0;
-    }
-
+    void        ** newrecvbufs   = malloc(size*sizeof(void*));        assert(newrecvbufs!=NULL);
     int          * newrecvcounts = malloc(size*sizeof(int));          assert(newrecvcounts!=NULL);
     MPI_Datatype * newrecvtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newrecvtypes!=NULL);
-    if (recvcount <= bigmpi_int_max ) {
-        for (int i=0; i<size; i++) {
-            newrecvcounts[i] = recvcount;
-            newrecvtypes[i]  = recvtype;
-        }
-    } else {
-        for (int i=0; i<size; i++) {
-            newrecvcounts[i] = 1;
-            MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtypes[i]);
-            MPI_Type_commit(&newrecvtypes[i]);
-        }
+    MPI_Aint     * newrdispls    = malloc(size*sizeof(MPI_Aint));     assert(newrdispls!=NULL);
+    for (int i=0; i<size; i++) {
+        newrecvbufs[i] = (void*)recvbuf;
+        newrecvcounts[i] = 1;
+        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtypes[i]);
+        MPI_Type_commit(&newrecvtypes[i]);
+        newrdispls[i] = 0;
     }
 
     MPI_Comm comm_dist_graph;
     BigMPI_Create_graph_comm(comm, root, &comm_dist_graph);
-    rc = MPI_Neighbor_alltoallw(newsendbufs, newsendcounts, adispls, newsendtypes,
-                                recvbuf,     newrecvcounts, rdispls, newrecvtypes, comm_dist_graph);
+    rc = MPI_Neighbor_alltoallw(sendbuf,     newsendcounts, newsdispls, newsendtypes,
+                                newrecvbufs, newrecvcounts, newrdispls, newrecvtypes, comm_dist_graph);
     MPI_Comm_free(&comm_dist_graph);
 
-    free(newsendbufs);
     free(newsendcounts);
     for (int i=0; i<size; i++) {
         MPI_Type_free(&newsendtypes[i]);
     }
     free(newsendtypes);
-    free(rdispls);
+    free(newsdispls);
+    free(newrecvbufs);
     free(newrecvcounts);
     for (int i=0; i<size; i++) {
         MPI_Type_free(&newrecvtypes[i]);
     }
     free(newrecvtypes);
+    free(newrdispls);
 #else // BIGMPI_VCOLLS_P2P
     /* There is no easy way to implement large-count using MPI_Scatterv because displs is an int. */
     if (root) {
@@ -405,7 +388,6 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
 
     int send_recv_diff = 0;
     for (int i=0; i<size; i++) {
-    {
         /* We have use a derived type in every case, regardless of the count, because
          * the displacement vector will not be able to hold the offset without them. */
         newsendcounts[i] = 1;
