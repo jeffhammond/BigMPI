@@ -8,31 +8,39 @@
  *  Input Parameter
  *
  *  int          num                length of all vectors (unless splat true)
- *  int          splat_old_type     if non-zero, reuse oldtypes[0] instead of iterating over vector (v-to-w)
- *  int          zero_new_displs    set the displacement to zero (scatter/gather)
+ *  int          splat_old_count    if non-zero, use oldcount instead of iterating over vector (v-to-w)
+ *  MPI_Count    oldcount           single count (ignored if splat_old_count==0)
  *  MPI_Count    oldcounts          vector of counts
+ *  int          splat_old_type     if non-zero, use oldtype instead of iterating over vector (v-to-w)
  *  MPI_Datatype oldtype            single type (MPI_DATATYPE_NULL if splat_old_type==0)
  *  MPI_Datatype oldtypes           vector of types (NULL if splat_old_type!=0)
- *  MPI_Aint     olddispls          vector of displacements
+ *  int          zero_new_displs    set the displacement to zero (scatter/gather)
+ *  MPI_Aint     olddispls          vector of displacements (NULL if zero_new_displs!=0)
  *
  * Output Parameters
  *
- *  MPI_Count    newcounts
+ *  int          newcounts
  *  MPI_Datatype newtypes
  *  MPI_Aint     newdispls
  *
  */
 static void BigMPI_Convert_vectors(int                num,
-                                   int                splat_old_type,
-                                   int                zero_new_displs,
+                                   int                splat_old_count,
+                                   const MPI_Count    oldcount,
                                    const MPI_Count    oldcounts[],
+                                   int                splat_old_type,
                                    const MPI_Datatype oldtype,
                                    const MPI_Datatype oldtypes[],
+                                   int                zero_new_displs,
                                    const MPI_Aint     olddispls[],
-                                         MPI_Count    newcounts[],
+                                         int          newcounts[],
                                          MPI_Datatype newtypes[],
                                          MPI_Aint     newdispls[])
 {
+    assert(splat_old_count || (oldcounts!=NULL));
+    assert(splat_old_type  || (oldtypes!=NULL));
+    assert(zero_new_displs || (olddispls!=NULL));
+
     for (int i=0; i<num; i++) {
         /* counts */
         newcounts[i] = 1;
@@ -82,27 +90,30 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     MPI_Aint     * newrdispls    = malloc(size*sizeof(MPI_Aint));     assert(newrdispls!=NULL);
 
     /* Allgather sends the same data to every process. */
-    for (int i=0; i<size; i++) {
-        newsendbufs[i] = (void*)sendbuf;
-        newsendcounts[i] = 1;
-        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtypes[i]);
-        MPI_Type_commit(&newsendtypes[i]);
-        /* The same buffer will be sent over and over, so displacement is always the same. */
-        newsdispls[i] = 0;
 
-        if (rank!=root) {
-            newrecvcounts[i] = 0;
-            newrecvtypes[i]  = MPI_DATATYPE_NULL;
-            newrdispls[i]    = 0;
-        } else {
-            newrecvcounts[i] = 1;
-            MPIX_Type_contiguous_x(recvcounts[i], recvtype, &newrecvtypes[i]);
-            MPI_Type_commit(&newrecvtypes[i]);
-            MPI_Aint lb /* unused */, oldextent, newextent;
-            MPI_Type_get_extent(recvtype, &lb, &oldextent);
-            MPI_Type_get_extent(newrecvtypes[i], &lb, &newextent);
-            newrdispls[i] = rdispls[i]*oldextent/newextent;
-        }
+    /* Consider rolling this info BigMPI_Convert_vectors... */
+    for (int i=0; i<size; i++) {
+        newsendbufs[i] = (void*) sendbuf;
+    }
+
+    BigMPI_Convert_vectors(size,
+                           1 /* splat count */, sendcount, NULL,
+                           1 /* splat type */, sendtype, NULL,
+                           1 /* zero displs */, NULL,
+                           newsendcounts, newsendtypes, newsdispls);
+
+    if (rank==root) {
+        BigMPI_Convert_vectors(size,
+                               0 /* splat count */, 0, recvcounts,
+                               1 /* splat type */, recvtype, NULL,
+                               0 /* zero displs */, rdispls,
+                               newrecvcounts, newrecvtypes, newrdispls);
+    } else {
+        BigMPI_Convert_vectors(size,
+                               1 /* splat count */, 0, NULL,
+                               1 /* splat type */, MPI_DATATYPE_NULL, NULL,
+                               1 /* zero displs */, NULL,
+                               newrecvcounts, newrecvtypes, newrdispls);
     }
 
     MPI_Comm comm_dist_graph;
