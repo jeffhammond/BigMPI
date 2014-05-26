@@ -22,17 +22,18 @@
  *  MPI_Aint     newdispls
  *
  */
-static void convert_vectors(int                num,
-                            int                splat_old_type,
-                            int                zero_new_displs,
-                            const MPI_Count    oldcounts[],
-                            const MPI_Datatype oldtypes[],
-                            const MPI_Aint     olddispls[],
-                                  MPI_Count    newcounts[],
-                                  MPI_Datatype newtypes[],
-                                  MPI_Aint     newdispls[])
+static void BigMPI_Convert_vectors(int                num,
+                                   int                splat_old_type,
+                                   int                zero_new_displs,
+                                   const MPI_Count    oldcounts[],
+                                   const MPI_Datatype oldtype,
+                                   const MPI_Datatype oldtypes[],
+                                   const MPI_Aint     olddispls[],
+                                         MPI_Count    newcounts[],
+                                         MPI_Datatype newtypes[],
+                                         MPI_Aint     newdispls[])
 {
-    for (int i=0; i<size; i++) {
+    for (int i=0; i<num; i++) {
         /* counts */
         newcounts[i] = 1;
 
