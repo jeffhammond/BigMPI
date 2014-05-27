@@ -153,7 +153,11 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
         MPI_Waitall(size, reqs, MPI_STATUSES_IGNORE);
         free(reqs);
     }
-#endif // BIGMPI_VCOLLS_P2P
+#elif defined(BIGMPI_VCOLLS_RMA)
+    BigMPI_Error("TODO: BIGMPI_VCOLLS_RMA\n");
+#else // BIGMPI_VCOLLS
+#error NO VCOLLS IMPLEMENTATION CHOSEN!
+#endif // BIGMPI_VCOLLS
     return rc;
 }
 
@@ -243,7 +247,11 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
         MPI_Waitall(size, reqs, MPI_STATUSES_IGNORE);
         free(reqs);
     }
-#endif // BIGMPI_VCOLLS_P2P
+#elif defined(BIGMPI_VCOLLS_RMA)
+    BigMPI_Error("TODO: BIGMPI_VCOLLS_RMA\n");
+#else // BIGMPI_VCOLLS
+#error NO VCOLLS IMPLEMENTATION CHOSEN!
+#endif // BIGMPI_VCOLLS
     return rc;
 }
 
@@ -271,7 +279,11 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
     }
     MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
     free(reqs);
-#endif // BIGMPI_VCOLLS_P2P
+#elif defined(BIGMPI_VCOLLS_RMA)
+    BigMPI_Error("TODO: BIGMPI_VCOLLS_RMA\n");
+#else // BIGMPI_VCOLLS
+#error NO VCOLLS IMPLEMENTATION CHOSEN!
+#endif // BIGMPI_VCOLLS
     return rc;
 }
 
@@ -308,7 +320,11 @@ int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
         MPIX_Isend_x(sendbuf+sdispls[i]*extent, sendcounts[i], sendtype, i /* source */, i /* tag */, comm, &reqs[size+i]);
     }
     MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
-#endif // BIGMPI_VCOLLS_P2P
+#elif defined(BIGMPI_VCOLLS_RMA)
+    BigMPI_Error("TODO: BIGMPI_VCOLLS_RMA\n");
+#else // BIGMPI_VCOLLS
+#error NO VCOLLS IMPLEMENTATION CHOSEN!
+#endif // BIGMPI_VCOLLS
     return rc;
 }
 
@@ -398,8 +414,8 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
     }
     MPI_Win_fence(0, win);
     MPI_Win_free(&win);
-#else
+#else // BIGMPI_VCOLLS
 #error NO VCOLLS IMPLEMENTATION CHOSEN!
-#endif // BIGMPI_VCOLLS_P2P
+#endif // BIGMPI_VCOLLS
     return rc;
 }
