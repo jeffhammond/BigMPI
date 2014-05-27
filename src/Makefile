@@ -12,8 +12,16 @@ CPPFLAGS  = -I. -I../include -DBIGMPI_MAX_INT=1000000L
 CPPFLAGS += -DBIGMPI_DEBUG
 # Avoid using user-defined reduction operations.
 #CPPFLAGS += -DBIGMPI_CLEAVER
+
+# CHOOSE 1 OF THE FOLLOWING 3
+# Implement v-collectives using Neighborhood_alltoallw
+#CPPFLAGS += -DBIGMPI_VCOLLS_NBHD_ALLTOALLW
 # Implement v-collectives using Send-Recv
 #CPPFLAGS += -DBIGMPI_VCOLLS_P2P
+# Implement v-collectives using RMA
+CPPFLAGS += -DBIGMPI_VCOLLS_RMA
+
+# Try to use MPI_TYPE_VECTOR if count not prime...
 CPPFLAGS += -DBIGMPI_AVOID_TYPE_CREATE_STRUCT
 
 CFLAGS = $(FLAGS) -std=c99 $(CPPFLAGS)
