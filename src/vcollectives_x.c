@@ -337,24 +337,17 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
     MPI_Datatype * newrecvtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newrecvtypes!=NULL);
     MPI_Aint     * newrdispls    = malloc(size*sizeof(MPI_Aint));     assert(newrdispls!=NULL);
 
-    for (int i=0; i<size; i++) {
-        MPI_Aint lb /* unused */, oldextent, newextent;
-        /* We have use a derived type in every case, regardless of the count, because
-         * the displacement vector will not be able to hold the offset without them. */
-        newsendcounts[i] = 1;
-        MPIX_Type_contiguous_x(sendcounts[i], sendtypes[i], &newsendtypes[i]);
-        MPI_Type_commit(&newsendtypes[i]);
-        MPI_Type_get_extent(sendtypes[i], &lb, &oldextent);
-        MPI_Type_get_extent(newsendtypes[i], &lb, &newextent);
-        newsdispls[i] = sdispls[i]*oldextent/newextent;
+    BigMPI_Convert_vectors(size,
+                           0 /* splat count */, 0, sendcounts,
+                           0 /* splat type */, 0, sendtypes,
+                           0 /* zero displs */, sdispls,
+                           newsendcounts, newsendtypes, newsdispls);
 
-        newrecvcounts[i] = 1;
-        MPIX_Type_contiguous_x(recvcounts[i], recvtypes[i], &newrecvtypes[i]);
-        MPI_Type_commit(&newrecvtypes[i]);
-        MPI_Type_get_extent(recvtypes[i], &lb, &oldextent);
-        MPI_Type_get_extent(newrecvtypes[i], &lb, &newextent);
-        newrdispls[i] = rdispls[i]*oldextent/newextent;
-    }
+    BigMPI_Convert_vectors(size,
+                           0 /* splat count */, 0, recvcounts,
+                           0 /* splat type */, 0, recvtypes,
+                           0 /* zero displs */, rdispls,
+                           newrecvcounts, newrecvtypes, newrdispls);
 
     MPI_Comm comm_dist_graph;
     BigMPI_Create_graph_comm(comm, -1, &comm_dist_graph);
