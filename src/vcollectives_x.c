@@ -259,6 +259,7 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
 #if defined(BIGMPI_VCOLLS_NBHD_ALLTOALLW)
     /* TODO Copy-and-paste from Gatherv_x implementation once that is debugged.
      *      Just remote the root specialization to get all-case. */
+    BigMPI_Error("TODO: BIGMPI_VCOLLS_NBHD_ALLTOALLW\n");
 #elif defined(BIGMPI_VCOLLS_P2P)
     /* There is no easy way to implement large-count using MPI_Allgatherv because displs is an int. */
     MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request)); assert(reqs!=NULL);
@@ -293,8 +294,9 @@ int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
     MPI_Comm_rank(comm, &rank);
 
 #if defined(BIGMPI_VCOLLS_NBHD_ALLTOALLW)
-    /* TODO Copy-and-paste from Gatherv_x implementation once that is debugged.
-     *      Just remote the root specialization to get all-case. */
+    /* TODO Copy-and-paste from Scatterv_x or Alltoallw_x implementation once that is debugged.
+     *      Just remote the root specialization (in the case of Scatterv_x) to get all-case. */
+    BigMPI_Error("TODO: BIGMPI_VCOLLS_NBHD_ALLTOALLW\n");
 #elif defined(BIGMPI_VCOLLS_P2P)
     /* There is no easy way to implement large-count using MPI_Alltoallv because displs is an int. */
     MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request));
