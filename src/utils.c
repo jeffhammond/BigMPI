@@ -68,6 +68,14 @@ void BigMPI_Convert_vectors(int                num,
     assert(splat_old_type  || (oldtypes!=NULL));
     assert(zero_new_displs || (olddispls!=NULL));
 
+    MPI_Aint lb /* unused */, oldextent;
+    if (splat_old_type) {
+        MPI_Type_get_extent(oldtype, &lb, &oldextent);
+    } else {
+        /* !splat_old_type implies ALLTOALLW, which implies no displacement zeroing. */
+        assert(!zero_new_displs);
+    }
+
     for (int i=0; i<num; i++) {
         /* counts */
         newcounts[i] = 1;
@@ -77,10 +85,16 @@ void BigMPI_Convert_vectors(int                num,
         MPI_Type_commit(&newtypes[i]);
 
         /* displacements */
-        MPI_Aint lb /* unused */, oldextent, newextent;
-        MPI_Type_get_extent(splat_old_type ? oldtype : oldtypes[i], &lb, &oldextent);
-        MPI_Type_get_extent(newtypes[i], &lb, &newextent);
-        newdispls[i] = (zero_new_displs ? 0 : olddispls[i]*oldextent/newextent);
+        MPI_Aint newextent;
+        /* If we are not splatting old type, it implies ALLTOALLW,
+         * which does not scale the displacement by the type extent,
+         * nor would we ever zero the displacements. */
+        if (splat_old_type) {
+            MPI_Type_get_extent(newtypes[i], &lb, &newextent);
+            newdispls[i] = (zero_new_displs ? 0 : olddispls[i]*oldextent/newextent);
+        } else {
+            newdispls[i] = olddispls[i];
+        }
     }
     return;
 }
