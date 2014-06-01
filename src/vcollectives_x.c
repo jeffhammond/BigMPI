@@ -8,13 +8,13 @@ typedef enum { NEIGHBORHOOD_ALLTOALLW, NONBLOCKING_BCAST, P2P, RMA } method_t;
 
 int BigMPI_Collective(collective_t coll, method_t method,
                       const void *sendbuf,
-                      MPI_Count sendcount, MPI_Count sendcounts[],
-                      MPI_Aint senddispls[],
-                      MPI_Datatype sendtype, MPI_Datatype sendtypes[],
+                      const MPI_Count sendcount, const MPI_Count sendcounts[],
+                      const MPI_Aint senddispls[],
+                      const MPI_Datatype sendtype, const MPI_Datatype sendtypes[],
                       void *recvbuf,
                       const MPI_Count recvcount, const MPI_Count recvcounts[],
                       const MPI_Aint recvdispls[],
-                      MPI_Datatype recvtype, MPI_Datatype recvtypes[],
+                      const MPI_Datatype recvtype, const MPI_Datatype recvtypes[],
                       int root,
                       MPI_Comm comm)
 {
@@ -307,5 +307,9 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], const MPI_Datatype recvtypes[],
                      MPI_Comm comm)
 {
-    return MPI_SUCCESS;
+    method_t method = P2P;
+    return BigMPI_Collective(ALLTOALLW, method,
+                             sendbuf, -1 /* sendcount */, sendcounts, sdispls, MPI_DATATYPE_NULL, sendtypes,
+                             recvbuf, -1 /* recvcount */, recvcounts, rdispls, MPI_DATATYPE_NULL, recvtypes,
+                             -1 /* root */, comm);
 }
