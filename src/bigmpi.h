@@ -3,16 +3,16 @@
 
 #include <mpi.h>
 
-#include "bigmpi_comms.h"
-
 /* This function does the heavy lifting in BigMPI. */
 
 int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
 
-/* This function is primarily for internal use but some users may want to use it
- * so it will be in the public API, albeit with a different namespace. */
+/* These functions are primarily for internal use but some users may want to use them
+ * so they will be in the public API, albeit with a different namespace. */
 
 int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datatype * basetype);
+
+int BigMPI_Create_graph_comm(MPI_Comm comm_old, int root, MPI_Comm * comm_dist_graph);
 
 /* All of these functions should just be calling MPIX_Type_contiguous_x and
  * then the associated MPI function with count=1 and the newtype if the count
