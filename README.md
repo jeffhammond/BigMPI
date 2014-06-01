@@ -56,9 +56,6 @@ BigMPI only supports built-in datatypes.  If you are already using
 derived-datatypes, then you should already be able to handle large
 counts without BigMPI.
 
-BigMPI currently does not support `MAX_LOC` or `MIN_LOC` reductions
-but will likely do so in the future.
-
 Support for `MPI_IN_PLACE` is not implemented in some cases and
 implemented inefficiently in others.
 Using `MPI_IN_PLACE` is discouraged at the present time.
