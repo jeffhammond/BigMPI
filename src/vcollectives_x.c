@@ -22,7 +22,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     MPI_Comm_rank(comm, &rank);
 
 #if defined(BIGMPI_VCOLLS_NBHD_ALLTOALLW)
-    void        ** newsendbufs   = malloc(size*sizeof(void*));        assert(newsendbufs!=NULL);
+    const void  ** newsendbufs   = malloc(size*sizeof(void*));        assert(newsendbufs!=NULL);
     int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
     MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
     MPI_Aint     * newsdispls    = malloc(size*sizeof(MPI_Aint));     assert(newsdispls!=NULL);
@@ -35,7 +35,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 
     /* Consider rolling this info BigMPI_Convert_vectors... */
     for (int i=0; i<size; i++) {
-        newsendbufs[i] = (void*) sendbuf;
+        newsendbufs[i] = sendbuf;
     }
 
     BigMPI_Convert_vectors(size,
