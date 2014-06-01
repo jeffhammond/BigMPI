@@ -45,22 +45,7 @@ int BigMPI_Initialize_types(void)
         MPI_Aint disp             = extent;
         int blocklengths[2]       = {1,1};
         MPI_Aint displacements[2] = {0,disp};
-        MPI_Datatype types[2]     = {itype,MPI_DATATYPE_NULL};
-        /* TODO This does not seem like the right way to do this.
-         *      Does C have a typeof operator?
-         *      At the very least, deduce what MPI_Count is at configure-time. */
-        if (sizeof(MPI_Count)==sizeof(long long)) {
-            types[1] = MPI_LONG_LONG;
-        } else if (sizeof(MPI_Count)==sizeof(long)) {
-            types[1] = MPI_LONG;
-        } else if (sizeof(MPI_Count)==sizeof(int)) {
-            /* This case is pointless because if MPI_Count is only the size of
-             * an integer, then there is no need for BigMPI in the first place. */
-            types[1] = MPI_INT;
-        } else {
-            BigMPI_Error("Could not determine the storage size of MPI_Count and thus\n"
-                         "cannot create a pair-type associated therewith.\n");
-        }
+        MPI_Datatype types[2]     = {itype,MPI_COUNT};
         MPI_Type_create_struct(2, blocklengths, displacements, types, &otype);
         MPI_Type_commit(&otype);
     }
