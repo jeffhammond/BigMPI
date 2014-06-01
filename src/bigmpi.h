@@ -3,7 +3,6 @@
 
 #include <mpi.h>
 
-#include "bigmpi_types.h"
 #include "bigmpi_comms.h"
 
 /* This function does the heavy lifting in BigMPI. */

@@ -35,7 +35,7 @@ LIBS =
 LIBRARY  = libbigmpi.a
 OBJECTS  = type_contiguous_x.o
 OBJECTS += sendrecv_x.o collectives_x.o vcollectives_x.o reductions_x.o rma_x.o
-OBJECTS += bigmpi_types.o bigmpi_comms.o bigmpi_internals.o
+OBJECTS += bigmpi_comms.o bigmpi_internals.o
 TESTS    =
 
 all: $(LIBRARY)
