@@ -42,9 +42,8 @@ int BigMPI_Initialize_types(void)
         MPI_Aint lb /* unused */, extent;
         MPI_Type_get_extent(itype, &lb, &extent);
 
-        MPI_Aint disp             = extent;
         int blocklengths[2]       = {1,1};
-        MPI_Aint displacements[2] = {0,disp};
+        MPI_Aint displacements[2] = {0,extent};
         MPI_Datatype types[2]     = {itype,MPI_COUNT};
         MPI_Type_create_struct(2, blocklengths, displacements, types, &otype);
         MPI_Type_commit(&otype);
