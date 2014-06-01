@@ -120,26 +120,25 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], const MPI_Datatype recvtypes[],
                      MPI_Comm comm);
 
-#if 0
-
-/* UNSUPPORTED */
-
 /* These will eventually be supported.  All will be turned into Neighborhood_alltoallw. */
 
 int MPIX_Neighbor_allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                              void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+                              void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm);
 int MPIX_Neighbor_alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                             void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
+                             void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm);
 int MPIX_Neighbor_allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                               void *recvbuf, const MPI_Count recvcounts[], const int displs[],
-                               MPI_Datatype recvtype, MPI_Comm comm)
+                               void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint displs[],
+                               MPI_Datatype recvtype, MPI_Comm comm);
 int MPIX_Neighbor_alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[],
                               MPI_Datatype sendtype, void *recvbuf, const MPI_Count recvcounts[],
-                              const int rdispls[], MPI_Datatype recvtype, MPI_Comm comm)
-                               MPI_Request *request);
+                              const MPI_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm comm);
 int MPIX_Neighbor_alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[],
                               const MPI_Datatype sendtypes[], void *recvbuf, const MPI_Count recvcounts[],
                               const MPI_Aint rdispls[], const MPI_Datatype recvtypes[], MPI_Comm comm);
+
+#if 0
+
+/* UNSUPPORTED */
 
 /* These are equivalent to reduce+scatterv and will likely be supported in the future. */
 
@@ -168,11 +167,11 @@ int MPIX_Ineighbor_alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Data
                              void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm,
                              MPI_Request *request);
 int MPIX_Ineighbor_allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                                void *recvbuf, const MPI_Count recvcounts[], const int displs[],
+                                void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint displs[],
                                 MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request);
-int MPIX_Ineighbor_alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[],
+int MPIX_Ineighbor_alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[],
                                MPI_Datatype sendtype, void *recvbuf, const MPI_Count recvcounts[],
-                               const int rdispls[], MPI_Datatype recvtype, MPI_Comm comm,
+                               const MPI_Aint rdispls[], MPI_Datatype recvtype, MPI_Comm comm,
 int MPIX_Ineighbor_alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[],
                                const MPI_Aint sdispls[], const MPI_Datatype sendtypes[],
                                void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[],
@@ -183,19 +182,19 @@ int MPIX_Ineighbor_alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[]
  * be deallocated until the operation has completed, but there is no mechanism to do that. */
 
 int MPIX_Igatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                    void *recvbuf, const MPI_Count recvcounts[], const int displs[], MPI_Datatype recvtype,
+                    void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint displs[], MPI_Datatype recvtype,
                     int root, MPI_Comm comm, MPI_Request *request);
-int MPIX_Iscatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const int displs[], MPI_Datatype sendtype,
+int MPIX_Iscatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint displs[], MPI_Datatype sendtype,
                      void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request);
 int MPIX_Iallgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
-                       void *recvbuf, const MPI_Count recvcounts[], const int displs[], MPI_Datatype recvtype,
+                       void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint displs[], MPI_Datatype recvtype,
                        MPI_Comm comm, MPI_Request *request);
-int MPIX_Ialltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[], MPI_Datatype sendtype,
-                      void *recvbuf, const MPI_Count recvcounts[], const int rdispls[], MPI_Datatype recvtype,
+int MPIX_Ialltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], MPI_Datatype sendtype,
+                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                       MPI_Comm comm, MPI_Request *request);
 
-int MPIX_Ialltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const int sdispls[], const MPI_Datatype sendtypes[],
-                      void *recvbuf, const MPI_Count recvcounts[], const int rdispls[], const MPI_Datatype recvtypes[],
+int MPIX_Ialltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], const MPI_Datatype sendtypes[],
+                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], const MPI_Datatype recvtypes[],
                       MPI_Comm comm, MPI_Request *request);
 
 #endif // UNSUPPORTED
