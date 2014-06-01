@@ -12,8 +12,8 @@ int BigMPI_Initialize_comms(void)
     if (bigmpi_comms_defined == 1)
         return MPI_SUCCESS;
 
-    {
-    }
+    BigMPI_Create_graph_comm(MPI_COMM_WORLD, -1, &MPI_GRAPH_WORLD);
+    BigMPI_Create_graph_comm(MPI_COMM_WORLD,  0, &MPI_GRAPH_WORLD_ROOTZERO);
 
     bigmpi_comms_defined = 1;
 
@@ -23,6 +23,8 @@ int BigMPI_Initialize_comms(void)
 int BigMPI_Finalize_comms(void)
 {
     if (bigmpi_comms_defined == 1) {
+        MPI_Comm_free(&MPI_GRAPH_WORLD);
+        MPI_Comm_free(&MPI_GRAPH_WORLD_ROOTZERO);
     }
     bigmpi_comms_defined = 0;
 
