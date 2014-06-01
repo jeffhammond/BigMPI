@@ -50,10 +50,10 @@ PASTE_BIGMPI_REDUCE_OP(LOR)
 PASTE_BIGMPI_REDUCE_OP(BOR)
 PASTE_BIGMPI_REDUCE_OP(LXOR)
 PASTE_BIGMPI_REDUCE_OP(BXOR)
-#if 0
 PASTE_BIGMPI_REDUCE_OP(MAXLOC)
 PASTE_BIGMPI_REDUCE_OP(MINLOC)
-#endif
+
+#undef PASTE_BIGMPI_REDUCE_OP
 
 int BigMPI_Op_create(MPI_Op op, MPI_Op * bigop)
 {
@@ -62,23 +62,18 @@ int BigMPI_Op_create(MPI_Op op, MPI_Op * bigop)
 
     MPI_User_function * bigfn = NULL;
 
-    if      (op==MPI_MAX)  bigfn = BigMPI_MAX_x;
-    else if (op==MPI_MIN)  bigfn = BigMPI_MIN_x;
-    else if (op==MPI_SUM)  bigfn = BigMPI_SUM_x;
-    else if (op==MPI_PROD) bigfn = BigMPI_PROD_x;
-    else if (op==MPI_LAND) bigfn = BigMPI_LAND_x;
-    else if (op==MPI_BAND) bigfn = BigMPI_BAND_x;
-    else if (op==MPI_LOR)  bigfn = BigMPI_LOR_x;
-    else if (op==MPI_BOR)  bigfn = BigMPI_BOR_x;
-    else if (op==MPI_LXOR) bigfn = BigMPI_LXOR_x;
-    else if (op==MPI_BXOR) bigfn = BigMPI_BXOR_x;
-#if 0
-    /* TODO: Figure out how to support these.  The results of multiple
-     *       calls to Reduce_local will need to be combined.
-     *       A non-standard pair-type will have to be defined as well. */
+    if      (op==MPI_MAX)    bigfn = BigMPI_MAX_x;
+    else if (op==MPI_MIN)    bigfn = BigMPI_MIN_x;
+    else if (op==MPI_SUM)    bigfn = BigMPI_SUM_x;
+    else if (op==MPI_PROD)   bigfn = BigMPI_PROD_x;
+    else if (op==MPI_LAND)   bigfn = BigMPI_LAND_x;
+    else if (op==MPI_BAND)   bigfn = BigMPI_BAND_x;
+    else if (op==MPI_LOR)    bigfn = BigMPI_LOR_x;
+    else if (op==MPI_BOR)    bigfn = BigMPI_BOR_x;
+    else if (op==MPI_LXOR)   bigfn = BigMPI_LXOR_x;
+    else if (op==MPI_BXOR)   bigfn = BigMPI_BXOR_x;
     else if (op==MPI_MAXLOC) bigfn = BigMPI_MAXLOC_x;
     else if (op==MPI_MINLOC) bigfn = BigMPI_MINLOC_x;
-#endif
     else {
         BigMPI_Error("BigMPI does not support this op.  Sorry. \n");
     }
