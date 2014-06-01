@@ -22,7 +22,6 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     MPI_Comm_rank(comm, &rank);
 
 #if defined(BIGMPI_VCOLLS_NBHD_ALLTOALLW)
-    const void  ** newsendbufs   = malloc(size*sizeof(void*));        assert(newsendbufs!=NULL);
     int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
     MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
     MPI_Aint     * newsdispls    = malloc(size*sizeof(MPI_Aint));     assert(newsdispls!=NULL);
@@ -32,11 +31,6 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     MPI_Aint     * newrdispls    = malloc(size*sizeof(MPI_Aint));     assert(newrdispls!=NULL);
 
     /* Allgather sends the same data to every process. */
-
-    /* Consider rolling this info BigMPI_Convert_vectors... */
-    for (int i=0; i<size; i++) {
-        newsendbufs[i] = sendbuf;
-    }
 
     BigMPI_Convert_vectors(size,
                            1 /* splat count */, sendcount, NULL,
@@ -60,7 +54,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
 
     MPI_Comm comm_dist_graph;
     BigMPI_Create_graph_comm(comm, root, &comm_dist_graph);
-    rc = MPI_Neighbor_alltoallw(newsendbufs, newsendcounts, newsdispls, newsendtypes,
+    rc = MPI_Neighbor_alltoallw(sendbuf, newsendcounts, newsdispls, newsendtypes,
                                 recvbuf,     newrecvcounts, newrdispls, newrecvtypes, comm_dist_graph);
     MPI_Comm_free(&comm_dist_graph);
 
@@ -69,7 +63,6 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
         MPI_Type_free(&newrecvtypes[i]);
     }
 
-    free(newsendbufs);
     free(newsendcounts);
     free(newsendtypes);
     free(newsdispls);
@@ -127,7 +120,6 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
     MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
     MPI_Aint     * newsdispls    = malloc(size*sizeof(MPI_Aint));     assert(newsdispls!=NULL);
 
-    void        ** newrecvbufs   = malloc(size*sizeof(void*));        assert(newrecvbufs!=NULL);
     int          * newrecvcounts = malloc(size*sizeof(int));          assert(newrecvcounts!=NULL);
     MPI_Datatype * newrecvtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newrecvtypes!=NULL);
     MPI_Aint     * newrdispls    = malloc(size*sizeof(MPI_Aint));     assert(newrdispls!=NULL);
@@ -146,7 +138,6 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
             MPI_Type_get_extent(newsendtypes[i], &lb, &newextent);
             newsdispls[i] = sdispls[i]*oldextent/newextent;
         }
-        newrecvbufs[i] = (void*)recvbuf;
         newrecvcounts[i] = 1;
         MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtypes[i]);
         MPI_Type_commit(&newrecvtypes[i]);
@@ -155,8 +146,8 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
 
     MPI_Comm comm_dist_graph;
     BigMPI_Create_graph_comm(comm, root, &comm_dist_graph);
-    rc = MPI_Neighbor_alltoallw(sendbuf,     newsendcounts, newsdispls, newsendtypes,
-                                newrecvbufs, newrecvcounts, newrdispls, newrecvtypes, comm_dist_graph);
+    rc = MPI_Neighbor_alltoallw(sendbuf, newsendcounts, newsdispls, newsendtypes,
+                                recvbuf, newrecvcounts, newrdispls, newrecvtypes, comm_dist_graph);
     MPI_Comm_free(&comm_dist_graph);
 
     for (int i=0; i<size; i++) {
@@ -168,7 +159,6 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
     free(newsendtypes);
     free(newsdispls);
 
-    free(newrecvbufs);
     free(newrecvcounts);
     free(newrecvtypes);
     free(newrdispls);
