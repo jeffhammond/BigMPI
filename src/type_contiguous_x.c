@@ -66,8 +66,8 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     /* There is no need for this code path in homogeneous execution,
      * but it is useful to exercise anyways. */
     int a, b;
-    int notprime = BigMPI_Factorize_count(count, &a, &b);
-    if (notprime) {
+    int prime = BigMPI_Factorize_count(count, &a, &b);
+    if (!prime) {
         MPI_Type_vector(a, b, b, oldtype, newtype);
         return MPI_SUCCESS;
     }
@@ -140,8 +140,6 @@ int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datat
         MPI_Type_get_contents(intype, 3, 0, 1, cbs, NULL, vbasetype);
         MPI_Count a = cbs[0];   /* count */
         MPI_Count b = cbs[1];   /* blocklength */
-        printf("cbs = %d %d %d \n", cbs[0], cbs[1], cbs[2]);
-#error The following assertion fails, indicating an error in this code or that above.
         assert(cbs[1]==cbs[2]); /* blocklength==stride */
 
         *count = a*b;
