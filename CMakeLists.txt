@@ -27,6 +27,8 @@ endif()
 
 add_definitions(-DBIGMPI_VCOLLS_${BIGMPI_VCOLLS})
 
+set(CMAKE_C_FLAGS "-std=c99")
+
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
 add_definitions(${MPI_COMPILE_FLAGS})
 include_directories(${MPI_INCLUDE_PATH})
