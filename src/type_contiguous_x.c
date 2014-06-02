@@ -128,7 +128,7 @@ int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datat
     /* Step 1: Decode the type_create_struct call. */
 
     MPI_Type_get_envelope(intype, &nint, &nadd, &ndts, &combiner);
-    assert(combiner==MPI_COMBINER_CONTIGUOUS || combiner==MPI_COMBINER_VECTOR);
+    assert(combiner==MPI_COMBINER_STRUCT || combiner==MPI_COMBINER_VECTOR);
 #ifdef BIGMPI_AVOID_TYPE_CREATE_STRUCT
     if (combiner==MPI_COMBINER_VECTOR) {
         assert(nint==3);
@@ -140,6 +140,8 @@ int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datat
         MPI_Type_get_contents(intype, 3, 0, 1, cbs, NULL, vbasetype);
         MPI_Count a = cbs[0];   /* count */
         MPI_Count b = cbs[1];   /* blocklength */
+        printf("cbs = %d %d %d \n", cbs[0], cbs[1], cbs[2]);
+#error The following assertion fails, indicating an error in this code or that above.
         assert(cbs[1]==cbs[2]); /* blocklength==stride */
 
         *count = a*b;
