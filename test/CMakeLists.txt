@@ -10,9 +10,9 @@ foreach(test ${TESTS})
   set(TARGET_RUN_UNIT_TEST run_${executable})
 
   add_executable(${TARGET_UNIT_TEST_EXE} ${test} verify_buffer.c)
-  target_link_libraries(${TARGET_UNIT_TEST_EXE} bigmpi ${MPI_LIBRARIES})
+  target_link_libraries(${TARGET_UNIT_TEST_EXE} bigmpi m ${MPI_LIBRARIES})
 
-  add_custom_target(${TARGET_RUN_UNIT_TEST} echo "running ${TARGET_UNIT_TEST_EXE}" && bash -c "${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2 ${TARGET_UNIT_TEST_EXE}")
+  add_custom_target(${TARGET_RUN_UNIT_TEST} echo "running ${TARGET_UNIT_TEST_EXE}" && bash -c "${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2 ./${TARGET_UNIT_TEST_EXE}")
 
   add_dependencies(test ${TARGET_RUN_UNIT_TEST})
   add_dependencies(${TARGET_RUN_UNIT_TEST} ${TARGET_UNIT_TEST_EXE})
