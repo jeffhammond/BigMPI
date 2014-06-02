@@ -280,27 +280,43 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
                    void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                    int root, MPI_Comm comm)
 {
-    return MPI_SUCCESS;
+    method_t method = P2P;
+    return BigMPI_Collective(GATHERV, method,
+                             sendbuf, sendcount, NULL, NULL, sendtype, NULL,
+                             recvbuf, -1 /* recvcount */, recvcounts, rdispls, recvtype, NULL,
+                             root, comm);
 }
 
 int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                       void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                       MPI_Comm comm)
 {
-    return MPI_SUCCESS;
+    method_t method = P2P;
+    return BigMPI_Collective(ALLGATHERV, method,
+                             sendbuf, sendcount, NULL, NULL, sendtype, NULL,
+                             recvbuf, -1 /* recvcount */, recvcounts, rdispls, recvtype, NULL,
+                             -1 /* root */, comm);
 }
 
 int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], MPI_Datatype sendtype,
                     void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-    return MPI_SUCCESS;
+    method_t method = P2P;
+    return BigMPI_Collective(SCATTERV, method,
+                             sendbuf, -1 /* sendcount */, sendcounts, sdispls, sendtype, NULL,
+                             recvbuf, recvcount, NULL, NULL, recvtype, NULL,
+                             root, comm);
 }
 
 int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], MPI_Datatype sendtype,
                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                      MPI_Comm comm)
 {
-    return MPI_SUCCESS;
+    method_t method = P2P;
+    return BigMPI_Collective(ALLTOALLV, method,
+                             sendbuf, -1 /* sendcount */, sendcounts, sdispls, sendtype, NULL,
+                             recvbuf, -1 /* recvcount */, recvcounts, rdispls, recvtype, NULL,
+                             -1 /* root */, comm);
 }
 
 int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], const MPI_Datatype sendtypes[],
