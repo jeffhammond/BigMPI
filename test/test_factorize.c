@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <limits.h>
 #include <math.h>
@@ -60,7 +61,7 @@ int main(int argc, char* argv[])
         int a, b;
         int rc = BigMPI_Factorize_count(count, &a, &b);
 #ifndef TIMING
-        printf("factorized %lld = %d * %d \n");
+        printf("factorized %lld = %d * %d (rc=%d)\n", count, a, b, rc);
 #endif
     }
 #ifdef TIMING
@@ -68,5 +69,5 @@ int main(int argc, char* argv[])
 #endif
 
     MPI_Finalize();
-    return errors;
+    return 0;
 }
