@@ -46,11 +46,9 @@ int main(int argc, char* argv[])
         if (rank==0) {
             printf("Building and decoding a BigMPI type for count = %zu \n", (size_t)n);
 
-            MPI_Datatype intype = MPI_CHAR, bigtype;
-            MPIX_Type_contiguous_x(n, intype, &bigtype);
-
+            MPI_Datatype intype = MPI_CHAR, bigtype, outtype;
             MPI_Count nout;
-            MPI_Datatype outtype;
+            MPIX_Type_contiguous_x(n, intype, &bigtype);
             BigMPI_Decode_contiguous_x(bigtype, &nout, &outtype);
 
             if (n!=nout) {
