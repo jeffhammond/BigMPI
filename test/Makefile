@@ -1,7 +1,7 @@
 FLAGS = -g -O2 -Wall
 
 CC = mpicc
-CPPFLAGS = -I../../include -DBIGMPI_MAX_INT=1000000L
+CPPFLAGS = -I../include -DBIGMPI_MAX_INT=1000000L
 CFLAGS = $(FLAGS) -std=c99 $(CPPFLAGS)
 
 LD = $(CC)
