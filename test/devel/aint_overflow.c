@@ -8,7 +8,7 @@ int main(int argc, char * argv[])
 {
     printf("INT_MAX = %d\n", INT_MAX);
 
-    int      a = INT_MAX*100;
+    int      a = (int)INT_MAX*100;
     MPI_Aint b = (MPI_Aint)INT_MAX*100;
     int64_t  c = (int64_t)INT_MAX*100;
     uint64_t d = (uint64_t)INT_MAX*100;
