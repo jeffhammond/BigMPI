@@ -25,14 +25,15 @@ void BigMPI_##OP##_x(void * invec, void * inoutvec, int * len, MPI_Datatype * bi
     int c = (int)(count/bigmpi_int_max);                                                \
     int r = (int)(count%bigmpi_int_max);                                                \
                                                                                         \
+    /* Can use typesize rather than extent here because all built-ins lack holes. */    \
     int typesize;                                                                       \
     MPI_Type_size(basetype, &typesize);                                                 \
-    for (ptrdiff_t i=0; i<c; i++) {                                                     \
-        MPI_Reduce_local(invec+i*bigmpi_int_max*(size_t)typesize,                       \
+    for (int i=0; i<c; i++) {                                                           \
+        MPI_Reduce_local(invec+(size_t)i*bigmpi_int_max*(size_t)typesize,               \
                          inoutvec+i*bigmpi_int_max*(size_t)typesize,                    \
                          bigmpi_int_max, basetype, MPI_##OP);                           \
     }                                                                                   \
-    MPI_Reduce_local(invec+c*bigmpi_int_max*(size_t)typesize,                           \
+    MPI_Reduce_local(invec+(size_t)c*bigmpi_int_max*(size_t)typesize,                   \
                      inoutvec+c*bigmpi_int_max*(size_t)typesize,                        \
                      r, basetype, MPI_##OP);                                            \
                                                                                         \

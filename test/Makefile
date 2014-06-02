@@ -1,13 +1,13 @@
 FLAGS = -g -O2 -Wall
 
 CC = mpicc
-CPPFLAGS = -I../../include -DBIGMPI_MAX_INT=1000000L
+CPPFLAGS = -I../include -DBIGMPI_MAX_INT=1000000L
 CFLAGS = $(FLAGS) -std=c99 $(CPPFLAGS)
 
 LD = $(CC)
 LDFLAGS = $(CFLAGS)
 
-LIBS = -L../../lib -lbigmpi verify_buffer.o
+LIBS = -L../lib -lbigmpi verify_buffer.o
 
 .PHONY: all clean realclean test
 
@@ -23,7 +23,7 @@ test: $(TESTS)
 	for i in $(TESTS); do mpirun -np 2 $$i; done
 	for i in $(TESTS); do mpirun -np 2 $$i 1000 0; done
 
-%.x: %.o verify_buffer.o ../../lib/libbigmpi.a
+%.x: %.o verify_buffer.o ../lib/libbigmpi.a
 	$(LD) $(LDFLAGS) $< $(LIBS) -o $@
 
 %.o: %.c ../../include/bigmpi.h

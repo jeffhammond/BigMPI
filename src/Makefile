@@ -17,9 +17,9 @@ CPPFLAGS += -DBIGMPI_DEBUG
 # Implement v-collectives using Neighborhood_alltoallw
 #CPPFLAGS += -DBIGMPI_VCOLLS_NBHD_ALLTOALLW
 # Implement v-collectives using Send-Recv
-#CPPFLAGS += -DBIGMPI_VCOLLS_P2P
+CPPFLAGS += -DBIGMPI_VCOLLS_P2P
 # Implement v-collectives using RMA
-CPPFLAGS += -DBIGMPI_VCOLLS_RMA
+#CPPFLAGS += -DBIGMPI_VCOLLS_RMA
 
 # Try to use MPI_TYPE_VECTOR if count not prime...
 CPPFLAGS += -DBIGMPI_AVOID_TYPE_CREATE_STRUCT
@@ -33,10 +33,9 @@ LIBS =
 .PHONY: all clean realclean install
 
 LIBRARY  = libbigmpi.a
-OBJECTS  = type_contiguous_x.o
+OBJECTS  = type_contiguous_x.o utils.o
 OBJECTS += sendrecv_x.o reductions_x.o rma_x.o
 OBJECTS += collectives_x.o vcollectives_x.o neighborhood_collectives_x.o
-OBJECTS += bigmpi_comms.o bigmpi_internals.o
 TESTS    =
 
 all: $(LIBRARY)

@@ -66,8 +66,8 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
     /* There is no need for this code path in homogeneous execution,
      * but it is useful to exercise anyways. */
     int a, b;
-    int notprime = BigMPI_Factorize_count(count, &a, &b);
-    if (notprime) {
+    int prime = BigMPI_Factorize_count(count, &a, &b);
+    if (!prime) {
         MPI_Type_vector(a, b, b, oldtype, newtype);
         return MPI_SUCCESS;
     }
@@ -128,7 +128,7 @@ int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datat
     /* Step 1: Decode the type_create_struct call. */
 
     MPI_Type_get_envelope(intype, &nint, &nadd, &ndts, &combiner);
-    assert(combiner==MPI_COMBINER_CONTIGUOUS || combiner==MPI_COMBINER_VECTOR);
+    assert(combiner==MPI_COMBINER_STRUCT || combiner==MPI_COMBINER_VECTOR);
 #ifdef BIGMPI_AVOID_TYPE_CREATE_STRUCT
     if (combiner==MPI_COMBINER_VECTOR) {
         assert(nint==3);

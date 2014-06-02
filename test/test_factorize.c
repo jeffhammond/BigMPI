@@ -44,15 +44,18 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
     return 1;
 }
 
+#define TIMING
+
 int main(int argc, char* argv[])
 {
+    int rc;
     MPI_Init(&argc, &argv);
 
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    MPI_Count max = (argc>1) ? atol(argv[1]) : SIZE_MAX;
+    MPI_Count max = (argc>1) ? atol(argv[1]) : 1LL<<60;
     MPI_Count inc = size; /* Incremement by nproc to distribute test work. */
 
     int errors = 0;
@@ -62,16 +65,18 @@ int main(int argc, char* argv[])
 #endif
     for (MPI_Count count=1; count<max; count+=inc) {
         int a, b;
-        int rc = BigMPI_Factorize_count(count, &a, &b);
+        rc = BigMPI_Factorize_count(count, &a, &b);
         errors += rc;
 #ifndef TIMING
-        printf("factorized %lld = %d * %d \n", count, a, b);
+        printf("factorized %zu = %d * %d (rc=%d)\n", (size_t)count, a, b, rc);
 #endif
     }
 #ifdef TIMING
     double t1 = MPI_Wtime();
+    printf("factorize 1 to %zu in %lf s (%lf us per call)\n",
+            (size_t)max, t1-t0, 1.e6*(t1-t0)/(double)max);
 #endif
 
     MPI_Finalize();
-    return errors;
+    return rc;
 }
