@@ -55,12 +55,15 @@ int main(int argc, char* argv[])
     MPI_Count max = (argc>1) ? atol(argv[1]) : SIZE_MAX;
     MPI_Count inc = size; /* Incremement by nproc to distribute test work. */
 
+    int errors = 0;
+
 #ifdef TIMING
     double t0 = MPI_Wtime();
 #endif
     for (MPI_Count count=1; count<max; count+=inc) {
         int a, b;
         int rc = BigMPI_Factorize_count(count, &a, &b);
+        errors += rc;
 #ifndef TIMING
         printf("factorized %lld = %d * %d \n");
 #endif
