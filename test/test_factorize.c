@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
         int rc = BigMPI_Factorize_count(count, &a, &b);
         errors += rc;
 #ifndef TIMING
-        printf("factorized %lld = %d * %d \n");
+        printf("factorized %lld = %d * %d \n", count, a, b);
 #endif
     }
 #ifdef TIMING
