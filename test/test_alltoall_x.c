@@ -69,5 +69,6 @@ int main(int argc, char * argv[])
 
     MPI_Finalize();
 
-    return 0;
+    int rc = (errors > 0) ? 1 : 0;
+    return rc;
 }
