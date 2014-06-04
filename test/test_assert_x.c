@@ -11,7 +11,7 @@
 
 int main(int argc, char ** argv) {
   MPI_Init(&argc, &argv);
-  assert(1);
+  assert(0);
   MPI_Finalize();
 
   return 0;

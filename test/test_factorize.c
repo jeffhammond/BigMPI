@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    MPI_Count max = (argc>1) ? atol(argv[1]) : 1LL<<30;
+    MPI_Count max = (argc>1) ? atol(argv[1]) : 1LL<<60;
     MPI_Count inc = size; /* Incremement by nproc to distribute test work. */
 
 #ifdef TIMING
