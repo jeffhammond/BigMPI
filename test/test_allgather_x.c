@@ -41,24 +41,25 @@ int main(int argc, char * argv[])
     char * buf_send = NULL;
     char * buf_recv = NULL;
 
-    MPI_Alloc_mem((MPI_Aint)n * size, MPI_INFO_NULL, &buf_send);
+    MPI_Alloc_mem((MPI_Aint)n * 1,    MPI_INFO_NULL, &buf_send);
     assert(buf_send!=NULL);
     MPI_Alloc_mem((MPI_Aint)n * size, MPI_INFO_NULL, &buf_recv);
     assert(buf_recv!=NULL);
 
-    for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < n; ++j) {
-            buf_send[i*n+j] = (unsigned char)i;
-        }
+    for (int j = 0; j < n; ++j) {
+        buf_send[j] = (unsigned char)rank;
     }
     memset(buf_recv, -1, (size_t)n);
 
     /* collective communication */
-    MPIX_Alltoall_x(buf_send, n, MPI_CHAR,
-                    buf_recv, n, MPI_CHAR,
-                    MPI_COMM_WORLD);
+    MPIX_Allgather_x(buf_send, n, MPI_CHAR,
+                     buf_recv, n, MPI_CHAR,
+                     MPI_COMM_WORLD);
 
-    size_t errors = verify_buffer(buf_recv, n, rank);
+    size_t errors = 0;
+    for (int i = 0; i < size; ++i) {
+        errors += verify_buffer(buf_recv + i * n, n, i);
+    }
 
     MPI_Free_mem(buf_send);
     MPI_Free_mem(buf_recv);
