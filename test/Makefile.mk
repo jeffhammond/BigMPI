@@ -35,7 +35,6 @@ test          = test/test_bcast_x \
 XFAIL_test    = test/test_assert_x
 
 test_test_bcast_x_LDADD = libbigmpi.la
-test_test_bcast_x_SOURCES = test/verify_buffer.c
 test_test_allreduce_x_LDADD = libbigmpi.la
 test_test_alltoall_x_LDADD = libbigmpi.la
 test_test_assert_x_LDADD = libbigmpi.la
