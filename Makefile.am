@@ -30,7 +30,7 @@ XFAIL_TESTS =
 MPIEXEC = mpiexec -n 2
 TESTS_ENVIRONMENT = $(MPIEXEC)
 
-include tests/Makefile.mk
+include test/Makefile.mk
 
 .PHONY: checkprogs
 checkprogs: $(check_PROGRAMS)
