@@ -10,10 +10,13 @@ lib_LTLIBRARIES = libbigmpi.la
 noinst_LTLIBRARIES = libbigmpii.la
 
 libbigmpi_la_SOURCES = 	src/collectives_x.c \
+			src/vcollectives_x.c \
+			src/neighborhood_collectives_x.c \
 			src/reductions_x.c \
 			src/rma_x.c \
 			src/sendrecv_x.c \
-			src/type_contiguous_x.c
+			src/type_contiguous_x.c \
+			src/utils.c
 
 libbigmpi_la_LDFLAGS = -version-info $(libbigmpi_abi_version)
 
