@@ -4,7 +4,7 @@ foreach(test ${TESTS})
   string(REPLACE ".c" "" buffer0 ${test})
   string(REPLACE "${CMAKE_SOURCE_DIR}" "" buffer1 ${buffer0})
   string(REPLACE "/" _ buffer2 ${buffer1})
-  string(REPLACE "_test" "test" executable ${buffer2})
+  string(REGEX REPLACE "_test_(.+)" "\\1" executable ${buffer2})
 
   set(TARGET_UNIT_TEST_EXE ${executable})
   set(TARGET_RUN_UNIT_TEST run_${executable})
