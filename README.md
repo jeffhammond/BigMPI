@@ -108,3 +108,7 @@ https://github.com/jeffhammond/mpich/tree/type_contiguous_x.
 
 * https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/423
 * https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/430
+
+## Repository Mirrors
+
+* http://git.mpich.org/bigmpi.git/
