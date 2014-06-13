@@ -9,7 +9,7 @@ foreach(test ${TESTS})
   set(TARGET_UNIT_TEST_EXE ${executable})
   set(TARGET_RUN_UNIT_TEST run_${executable})
 
-  add_executable(${TARGET_UNIT_TEST_EXE} ${test} verify_buffer.c)
+  add_executable(${TARGET_UNIT_TEST_EXE} ${test})
   target_link_libraries(${TARGET_UNIT_TEST_EXE} bigmpi m ${MPI_LIBRARIES})
 
   set(exclude_list "test_assert_x;test_factorize")
