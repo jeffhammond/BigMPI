@@ -15,9 +15,10 @@ check_PROGRAMS += test/test_bcast_x \
 		  test/test_rma2_x \
 		  test/test_scatter_x \
 		  test/test_send_recv_x \
-		  test/test_sendrecv_x
+		  test/test_sendrecv_x \
+		  # end
 
-test          = test/test_bcast_x \
+TESTS        += test/test_bcast_x \
 		test/test_allreduce_x \
 		test/test_alltoall_x \
 		test/test_assert_x \
@@ -30,9 +31,11 @@ test          = test/test_bcast_x \
 		test/test_rma2_x \
 		test/test_scatter_x \
 		test/test_send_recv_x \
-		test/test_sendrecv_x
+		test/test_sendrecv_x \
+		# end
 
-XFAIL_test    = test/test_assert_x
+XFAIL_TESTS   += test/test_assert_x \
+		 # end
 
 test_test_bcast_x_LDADD = libbigmpi.la
 test_test_allreduce_x_LDADD = libbigmpi.la
