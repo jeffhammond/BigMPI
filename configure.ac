@@ -155,7 +155,7 @@ AC_ARG_WITH(max-int, AC_HELP_STRING([--with-max-int=num],[Override INT_MAX as ma
 AC_MSG_CHECKING(for maximum integer override)
 AC_MSG_RESULT($with_max_int)
 if test "$with_max_int" -gt 0; then
-   AC_DEFINE_UNQUOTED(MAX_INT,$with_max_int,[Maximum integer])
+   AC_DEFINE_UNQUOTED(BIGMPI_MAX_INT,$with_max_int,[Maximum integer])
 fi
 
 ## Documentation
