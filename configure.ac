@@ -151,7 +151,7 @@ fi
 ## Try to avoid using MPI_Type_create_struct
 AC_ARG_ENABLE(type-struct, AC_HELP_STRING([--disable-type-struct],[Try to avoid using MPI_Type_create_struct]),
                  [ type_struct=$enableval ],
-                 [ type_struct=yes ])
+                 [ type_struct=no ])
 AC_MSG_CHECKING(whether MPI_Type_create_struct is to be avoided)
 AC_MSG_RESULT($type_struct)
 if test "$type_struct" = "no"; then
@@ -166,6 +166,16 @@ AC_MSG_CHECKING(for maximum integer override)
 AC_MSG_RESULT($with_max_int)
 if test "$with_max_int" -gt 0; then
    AC_DEFINE_UNQUOTED(BIGMPI_MAX_INT,$with_max_int,[Maximum integer])
+fi
+
+## Pipeline reductions instead of using user-defined operations
+AC_ARG_ENABLE(reduce-pipelining, AC_HELP_STRING([--enable-reduce-pipelining],[Use pipelined reductions]),
+                 [ pipelined_reductions=$enableval ],
+                 [ pipelined_reductions=yes ])
+AC_MSG_CHECKING(pipelined reductions)
+AC_MSG_RESULT($pipelined_reductions)
+if test "$pipelined_reductions" = "yes"; then
+   AC_DEFINE(BIGMPI_CLEAVER,1,[Defined when pipelined reductions are to be used])
 fi
 
 ## Documentation
