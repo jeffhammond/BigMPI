@@ -1,6 +1,8 @@
 #ifndef BIGMPI_IMPL_H
 #define BIGMPI_IMPL_H
 
+#include "bigmpiconf.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
