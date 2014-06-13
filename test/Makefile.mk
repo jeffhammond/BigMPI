@@ -50,3 +50,5 @@ test_test_rma2_x_LDADD = libbigmpi.la
 test_test_scatter_x_LDADD = libbigmpi.la
 test_test_send_recv_x_LDADD = libbigmpi.la
 test_test_sendrecv_x_LDADD = libbigmpi.la
+
+include test/mpi/Makefile.mk
