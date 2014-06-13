@@ -148,6 +148,16 @@ if test "$safety_enabled" = "no"; then
    AC_DEFINE(NO_SEATBELTS,1,[Defined when safety checks are disabled])
 fi
 
+## Set BigMPI max int to something other than INT_MAX
+## Look for with_aint_size in MPICH configure stuff for examples.
+AC_ARG_WITH(max-int, AC_HELP_STRING([--with-max-int=num],[Override INT_MAX as maximum integer]),,
+                 [ with_max_int=0 ])
+AC_MSG_CHECKING(for maximum integer override)
+AC_MSG_RESULT($with_max_int)
+if test "$with_max_int" -gt 0; then
+   AC_DEFINE_UNQUOTED(MAX_INT,$with_max_int,[Maximum integer])
+fi
+
 ## Documentation
 AC_PATH_PROG([DOXYGEN],[doxygen],,$PATH)
 AC_SUBST(DOXYGEN)
