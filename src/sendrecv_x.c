@@ -123,22 +123,6 @@ int MPIX_Sendrecv_replace_x(void *buf, MPI_Count count, MPI_Datatype datatype, i
 }
 
 
-int MPIX_Bsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
-{
-    int rc = MPI_SUCCESS;
-
-    if (likely (count <= bigmpi_int_max )) {
-        rc = MPI_Bsend(buf, (int)count, datatype, dest, tag, comm);
-    } else {
-        MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
-        MPI_Type_commit(&newtype);
-        rc = MPI_Bsend(buf, 1, newtype, dest, tag, comm);
-        MPI_Type_free(&newtype);
-    }
-    return rc;
-}
-
 int MPIX_Ssend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -166,22 +150,6 @@ int MPIX_Rsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
         MPIX_Type_contiguous_x(count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Rsend(buf, 1, newtype, dest, tag, comm);
-        MPI_Type_free(&newtype);
-    }
-    return rc;
-}
-
-int MPIX_Ibsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
-{
-    int rc = MPI_SUCCESS;
-
-    if (likely (count <= bigmpi_int_max )) {
-        rc = MPI_Ibsend(buf, (int)count, datatype, dest, tag, comm, request);
-    } else {
-        MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
-        MPI_Type_commit(&newtype);
-        rc = MPI_Ibsend(buf, 1, newtype, dest, tag, comm, request);
         MPI_Type_free(&newtype);
     }
     return rc;
