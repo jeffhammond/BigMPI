@@ -9,10 +9,10 @@
 #include <mpi.h>
 #include "bigmpi.h"
 
-int main(int argc, char ** argv) {
+int main(int argc, char ** argv)
+{
   MPI_Init(&argc, &argv);
   assert(0);
   MPI_Finalize();
-
   return 0;
 }

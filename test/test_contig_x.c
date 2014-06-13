@@ -34,6 +34,8 @@ int main(int argc, char* argv[])
 {
     const int e = 60;
 
+    const MPI_Count test_int_max = BigMPI_Get_max_int();
+
     MPI_Init(&argc, &argv);
 
     int rank, size;
