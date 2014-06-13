@@ -148,6 +148,16 @@ if test "$safety_enabled" = "no"; then
    AC_DEFINE(NO_SEATBELTS,1,[Defined when safety checks are disabled])
 fi
 
+## Try to avoid using MPI_Type_create_struct
+AC_ARG_ENABLE(type-struct, AC_HELP_STRING([--disable-type-struct],[Try to avoid using MPI_Type_create_struct]),
+                 [ type_struct=$enableval ],
+                 [ type_struct=yes ])
+AC_MSG_CHECKING(whether MPI_Type_create_struct is to be avoided)
+AC_MSG_RESULT($type_struct)
+if test "$type_struct" = "no"; then
+   AC_DEFINE(BIGMPI_AVOID_TYPE_STRUCT,1,[Defined when MPI_Type_create_struct is to be avoided])
+fi
+
 ## Set BigMPI max int to something other than INT_MAX
 ## Look for with_aint_size in MPICH configure stuff for examples.
 AC_ARG_WITH(max-int, AC_HELP_STRING([--with-max-int=num],[Override INT_MAX as maximum integer]),,
