@@ -14,6 +14,9 @@ int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datat
 
 int BigMPI_Create_graph_comm(MPI_Comm comm_old, int root, MPI_Comm * comm_dist_graph);
 
+/* This is used in tests to query the compile-time setting. */
+MPI_Count BigMPI_Get_max_int(void);
+
 /* All of these functions should just be calling MPIX_Type_contiguous_x and
  * then the associated MPI function with count=1 and the newtype if the count
  * is bigger than INT_MAX and dropping into the regular implementation otherwise. */
