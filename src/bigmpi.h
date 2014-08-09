@@ -7,6 +7,12 @@
 
 int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
 
+/* other datatype creation functions */
+
+int MPIX_Type_create_hvector_x(int count,
+	MPI_Count array_of_blocklengths[], MPI_Aint array_of_displacements[],
+	MPI_Datatype oldtype, MPI_Datatype * newtype);
+
 /* These functions are primarily for internal use but some users may want to use them
  * so they will be in the public API, albeit with a different namespace. */
 
