@@ -2,4 +2,8 @@
 *.o
 *.x
 *~
-
+Makefile.in
+aclocal.m4
+autom4te.cache/
+configure
+src/bigmpiconf.h.in
