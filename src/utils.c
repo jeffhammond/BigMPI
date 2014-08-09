@@ -3,7 +3,11 @@
 /* This is a workaround for tests so that BIGMPI_MAX_INT is visible without header inclusion. */
 MPI_Count BigMPI_Get_max_int(void)
 {
+#ifdef BIGMPI_MAX_INT
     return BIGMPI_MAX_INT;
+#else
+    return INT_MAX;
+#endif
 }
 
 /* Raise an internal fatal BigMPI error.
