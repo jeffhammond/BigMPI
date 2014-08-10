@@ -16,6 +16,7 @@ libbigmpi_la_SOURCES = 	src/collectives_x.c \
 			src/rma_x.c \
 			src/sendrecv_x.c \
 			src/type_contiguous_x.c \
+			src/type_hindexed_x.c  \
 			src/utils.c
 
 libbigmpi_la_LDFLAGS = -version-info $(libbigmpi_abi_version)
