@@ -8,6 +8,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <assert.h>
+#include <stddef.h>
 
 #include <mpi.h>
 
