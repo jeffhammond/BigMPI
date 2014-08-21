@@ -171,7 +171,7 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
                           r, datatype, op, comm);
         } else {
             for (ptrdiff_t i=0; i<c; i++) {
-                MPI_Allreduce(sendbuf+c*bigmpi_int_max*(size_t)typesize,
+                MPI_Allreduce(sendbuf+i*bigmpi_int_max*(size_t)typesize,
                               recvbuf+i*bigmpi_int_max*(size_t)typesize,
                               bigmpi_int_max, datatype, op, comm);
             }
