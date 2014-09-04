@@ -249,6 +249,9 @@ int BigMPI_Collective(collective_t coll, method_t method,
 
     } else if (method==RMA) {
 
+        printf("RMA implementation of v-collectives is incomplete!\n");
+        MPI_Abort(comm, 1);
+
         /* In the RMA implementation, we will treat send as source (buf) and recv as target (win). */
         MPI_Win win;
         /* This is the most (?) conservative approach possible, and assumes that datatypes are
@@ -258,15 +261,15 @@ int BigMPI_Collective(collective_t coll, method_t method,
             MPI_Aint lb /* unused */, extent;
             MPI_Type_get_extent(recvtypes[i], &lb, &extent);
             MPI_Aint offset = recvdispls[i]+recvcounts[i]*extent;
-            max_size = (offset > max_size ? offset : max_size);
+            max_size = ((offset > max_size) ? offset : max_size);
         }
         MPI_Win_create(recvbuf, max_size, 1, MPI_INFO_NULL, comm, &win);
-        MPI_Win_fence(0, win);
+        MPI_Win_fence(MPI_MODE_NOPRECEDE || MPI_MODE_NOSTORE, win);
         for (int i=0; i<size; i++) {
             MPI_Put(sendbuf+senddispls[i], sendcounts[i], sendtypes[i],
                     i, recvdispls[i], recvtypes[i], recvtypes[i], win);
         }
-        MPI_Win_fence(0, win);
+        MPI_Win_fence(MPI_MODE_NOSUCCEED || MPI_MODE_NOSTORE, win);
         MPI_Win_free(&win);
 
     } else {
