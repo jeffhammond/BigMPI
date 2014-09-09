@@ -46,15 +46,15 @@ int MPIX_Type_create_hvector_x(int count,
     blocklens = malloc(count*sizeof(*blocklens));
 
     for (i=0; i<count; i++) {
-	blocklens[i] = 1;
-	MPIX_Type_contiguous_x(array_of_blocklengths[i], oldtype,  &(types[i]));
+        blocklens[i] = 1;
+        MPIX_Type_contiguous_x(array_of_blocklengths[i], oldtype,  &(types[i]));
     }
 
-    ret = MPI_Type_create_struct(count, blocklens, array_of_displacements,
-	    types, newtype);
+    ret = MPI_Type_create_struct(count, blocklens, array_of_displacements, types, newtype);
 
-    for (i=0; i<count; i++)
-	MPI_Type_free(&(types[i]));
+    for (i=0; i<count; i++) {
+        MPI_Type_free(&(types[i]));
+    }
 
     free(types);
     free(blocklens);
