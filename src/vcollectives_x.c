@@ -218,7 +218,7 @@ int BigMPI_Collective(collective_t coll, method_t method,
                         }
                     }
                     MPIX_Isend_x(sendbuf, sendcount, sendtype,
-                                 0 /* target */, 0 /* tag */, comm, &reqs[0]);
+                                 root /* target */, 0 /* tag */, comm, &reqs[0]);
                     MPI_Waitall(nreqs, reqs, MPI_STATUSES_IGNORE);
                     free(reqs);
                 }
@@ -237,7 +237,7 @@ int BigMPI_Collective(collective_t coll, method_t method,
                         }
                     }
                     MPIX_Irecv_x(recvbuf, recvcount, recvtype,
-                                 0 /* source */, 0 /* tag */, comm, &reqs[0]);
+                                 root /* source */, 0 /* tag */, comm, &reqs[0]);
                     MPI_Waitall(nreqs, reqs, MPI_STATUSES_IGNORE);
                     free(reqs);
                 }
