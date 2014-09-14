@@ -28,7 +28,7 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
     MPI_Count lo = in/bigmpi_int_max+1;
     MPI_Count hi = (MPI_Count)floor(sqrt((double)in));
 
-    for (MPI_Count g=lo; g<hi; g++) {
+    for (MPI_Count g=hi; g>lo; g--) {
         MPI_Count rem = in%g;
         if (rem==0) {
             *a = (int)g;
@@ -36,6 +36,8 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
             return 0;
         }
     }
+    *a = 1;
+    *b = -1;
     return 1;
 }
 #endif
