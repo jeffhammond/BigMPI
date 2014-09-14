@@ -1,11 +1,13 @@
 CC     = mpicc
 CFLAGS = -g -O2 -Wall -std=c99
 
-all: reductions
+TESTS = reductions typecontig
 
-reductions: reductions.c
+all: $(TESTS)
+
+%: %.c
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	-rm reductions
+	-rm $(TESTS)
 
