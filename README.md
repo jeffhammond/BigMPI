@@ -110,3 +110,7 @@ https://github.com/jeffhammond/mpich/tree/type_contiguous_x.
 * https://svn.mpi-forum.org/trac/mpi-forum-web/ticket/430
 * [MPI Forum Large Count working group](https://svn.mpi-forum.org/trac/mpi-forum-web/wiki/LargeCountWG)
 * [MPICH Git mirror](http://git.mpich.org/bigmpi.git/)
+
+## Background
+
+* ["Why size_t matters" by Dan Saks](http://www.embedded.com/electronics-blogs/programming-pointers/4026076/Why-size-t-matters)
