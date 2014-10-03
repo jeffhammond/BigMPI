@@ -112,12 +112,12 @@ int main(int argc, char * argv[])
     /* Correctness checking first */
 
     MPI_Barrier(MPI_COMM_WORLD);
-    MPI_Allreduce(sbuf1, rbuf2, n, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce(sbuf1, rbuf1, n, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
     BigMPI_Allreduce(sbuf1, rbuf2, n, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
 
-    double val = (double)size*(size-1)/2.;
+    const double val = (double)size*(size-1)/2.;
     int error1 = verify_doubles(rbuf1, n, val);
     if (error1>0) {
         printf("There were %d errors out of %d elements!\n", error1, n);
