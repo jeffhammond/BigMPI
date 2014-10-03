@@ -162,7 +162,7 @@ int main(int argc, char * argv[])
     /* TODO: reduce errors across all ranks in case root result is correct
      *       but others are wrong. */
     if (rank==0 && error1==0 && error2==0) {
-        printf("dtmpi = %lf dtusr = %lf\n", dtmpi, dtusr);
+        printf("n = %d tmpi = %lf dtusr = %lf\n", n, dtmpi, dtusr);
     }
 
     MPI_Finalize();
