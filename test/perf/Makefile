@@ -9,5 +9,5 @@ all: $(TESTS)
 	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	-rm $(TESTS)
+	-rm -f $(TESTS)
 
