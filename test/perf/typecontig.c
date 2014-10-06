@@ -6,7 +6,7 @@
 #include <math.h>
 #include <mpi.h>
 
-static volatile int bigmpi_int_max = 3;
+const int bigmpi_int_max = INT_MAX;
 
 int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype)
 {
@@ -48,7 +48,8 @@ int main(int argc, char* argv[])
     for (int i=0; i<n; i++) {
         //MPIX_Type_contiguous_x((MPI_Count)i, MPI_DOUBLE, &(dtout[i]));
         //MPI_Type_commit(&(dtout[i]));
-        MPIX_Type_contiguous_x((MPI_Count)i, MPI_DOUBLE, &dtout);
+        MPI_Count bigcount = (i%10)*(MPI_Count)INT_MAX+(i%100);
+        MPIX_Type_contiguous_x(bigcount, MPI_DOUBLE, &dtout);
         MPI_Type_commit(&dtout);
         MPI_Type_free(&dtout);
     }
