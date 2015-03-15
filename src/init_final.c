@@ -43,4 +43,3 @@ int MPIX_Finalize(void)
     return MPI_SUCCESS;
 }
 
-
