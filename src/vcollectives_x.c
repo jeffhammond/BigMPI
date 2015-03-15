@@ -152,15 +152,19 @@ int BigMPI_Collective(collective_t coll, method_t method,
     } else if (method==P2P) {
 
         switch(coll) {
-            case ALLTOALLW:
+            case ALLTOALLW: /* See page 173 of MPI-3 */
                 {
-                    /* See page 173 of MPI-3 */
                     MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request)); assert(reqs!=NULL);
+                    /* No extent calculation because alltoallw does not use that. */
+                    /* Use tag=0 because there is perfect pair-wise matching. */
                     for (int i=0; i<size; i++) {
-                        /* No extent calculation because alltoallw does not use that. */
-                        /* Use tag=0 because there is perfect pair-wise matching without it. */
+                        /* Pre-post all receives... */
                         MPIX_Irecv_x(recvbuf+recvdispls[i], recvcounts[i], recvtypes[i],
                                      i /* source */, 0 /* tag */, comm, &reqs[i]);
+                    }
+                    for (int j=rank; j<(size+rank); j++) {
+                        /* Schedule communication in balanced way... */
+                        int i = j%size;
                         MPIX_Isend_x(sendbuf+senddispls[i], sendcounts[i], sendtypes[i],
                                      i /* target */, 0 /* tag */, comm, &reqs[size+i]);
                     }
@@ -168,17 +172,22 @@ int BigMPI_Collective(collective_t coll, method_t method,
                     free(reqs);
                 }
                 break;
-            case ALLTOALLV:
+            case ALLTOALLV: /* See page 171 of MPI-3 */
                 {
-                    /* See page 171 of MPI-3 */
                     MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request)); assert(reqs!=NULL);
+                    /* Use tag=0 because there is perfect pair-wise matching without it. */
                     for (int i=0; i<size; i++) {
+                        /* Pre-post all receives... */
                         MPI_Aint lb /* unused */, sendextent, recvextent;
                         MPI_Type_get_extent(sendtypes[i], &lb, &sendextent);
-                        MPI_Type_get_extent(recvtypes[i], &lb, &recvextent);
-                        /* Use tag=0 because there is perfect pair-wise matching without it. */
                         MPIX_Irecv_x(recvbuf+recvdispls[i]*recvextent, recvcounts[i], recvtypes[i],
                                      i /* source */, 0 /* tag */, comm, &reqs[i]);
+                    }
+                    for (int j=rank; j<(size+rank); j++) {
+                        /* Schedule communication in balanced way... */
+                        int i = j%size;
+                        MPI_Aint lb /* unused */, sendextent, recvextent;
+                        MPI_Type_get_extent(recvtypes[i], &lb, &recvextent);
                         MPIX_Isend_x(sendbuf+senddispls[i]*sendextent, sendcounts[i], sendtypes[i],
                                      i /* target */, 0 /* tag */, comm, &reqs[size+i]);
                     }
@@ -191,12 +200,17 @@ int BigMPI_Collective(collective_t coll, method_t method,
                     MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request)); assert(reqs!=NULL);
                     MPI_Aint lb /* unused */, sendextent;
                     MPI_Type_get_extent(sendtype, &lb, &sendextent);
+                    /* Use tag=0 because there is perfect pair-wise matching without it. */
                     for (int i=0; i<size; i++) {
+                        /* Pre-post all receives... */
                         MPI_Aint recvextent;
                         MPI_Type_get_extent(recvtypes[i], &lb, &recvextent);
-                        /* Use tag=0 because there is perfect pair-wise matching without it. */
                         MPIX_Irecv_x(recvbuf+recvdispls[i]*recvextent, recvcounts[i], recvtypes[i],
                                      i /* source */, 0 /* tag */, comm, &reqs[i]);
+                    }
+                    for (int j=rank; j<(size+rank); j++) {
+                        /* Schedule communication in balanced way... */
+                        int i = j%size;
                         MPIX_Isend_x(sendbuf, sendcount, sendtype,
                                      i /* target */, 0 /* tag */, comm, &reqs[size+i]);
                     }
