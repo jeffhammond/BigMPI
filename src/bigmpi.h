@@ -23,6 +23,13 @@ int BigMPI_Create_graph_comm(MPI_Comm comm_old, int root, MPI_Comm * comm_dist_g
 /* This is used in tests to query the compile-time setting. */
 MPI_Count BigMPI_Get_max_int(void);
 
+/* Initialization and Finalization routines to setup extended precision datatypes, etc. */
+int MPIX_Init(int * argc, char *** argv);
+int MPIX_Init_thread(int * argc, char *** argv, int requested, int * provided);
+int MPIX_Finalize(void);
+
+extern MPI_Datatype MPIX_GCC_FLOAT128;
+
 /* All of these functions should just be calling MPIX_Type_contiguous_x and
  * then the associated MPI function with count=1 and the newtype if the count
  * is bigger than INT_MAX and dropping into the regular implementation otherwise. */
