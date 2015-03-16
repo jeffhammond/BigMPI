@@ -10,7 +10,7 @@ int MPIX_Init_thread(int * argc, char *** argv, int requested, int * provided)
     int is_init;
     MPI_Initialized(&is_init);
 
-    if (is_init) {
+    if (!is_init) {
         MPI_Init_thread(argc, argv, requested, provided);
         bigmpi_initialized_mpi = 1;
     } else {
