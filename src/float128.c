@@ -18,41 +18,41 @@ void MPI128_##OPNAME(void * invec, void * inoutvec, int * len, MPI_Datatype * ty
 }
 
 /* modification derived from MPICH */
-#define MPI128_BAND(a,b) ((a)&(b))
-#define MPI128_BOR(a,b) ((a)|(b))
-#define MPI128_BXOR(a,b) ((a)^(b))
-#define MPI128_LAND(a,b) ((a)&&(b))
-#define MPI128_LOR(a,b) ((a)||(b))
-#define MPI128_LXOR(a,b) (((a)&&(!b))||((!a)&&(b)))
-#define MPI128_PROD(a,b) ((a)*(b))
-#define MPI128_SUM(a,b) ((a)+(b))
-#define MPI128_MIN(a,b) (((a)>(b))?(b):(a))
-#define MPI128_MAX(a,b) (((b)>(a))?(b):(a))
+#define MPI128_LBAND(a,b) ((a)&(b))
+#define MPI128_LBOR(a,b) ((a)|(b))
+#define MPI128_LBXOR(a,b) ((a)^(b))
+#define MPI128_LLAND(a,b) ((a)&&(b))
+#define MPI128_LLOR(a,b) ((a)||(b))
+#define MPI128_LLXOR(a,b) (((a)&&(!b))||((!a)&&(b)))
+#define MPI128_LPROD(a,b) ((a)*(b))
+#define MPI128_LSUM(a,b) ((a)+(b))
+#define MPI128_LMIN(a,b) (((a)>(b))?(b):(a))
+#define MPI128_LMAX(a,b) (((b)>(a))?(b):(a))
 /* end from MPICH */
 
 /* Create a BigMPI_<op>_x for all built-in ops. */
-PASTE_MPI128_REDUCE_OP(MAX, MPI128_MAX)
-PASTE_MPI128_REDUCE_OP(MIN, MPI128_MIN)
-PASTE_MPI128_REDUCE_OP(SUM, MPI128_SUM)
-PASTE_MPI128_REDUCE_OP(PROD,MPI128_PROD)
-PASTE_MPI128_REDUCE_OP(LAND,MPI128_LAND)
-PASTE_MPI128_REDUCE_OP(LOR, MPI128_LOR)
-PASTE_MPI128_REDUCE_OP(LXOR,MPI128_LXOR)
+PASTE_MPI128_REDUCE_OP(MAX, MPI128_LMAX)
+PASTE_MPI128_REDUCE_OP(MIN, MPI128_LMIN)
+PASTE_MPI128_REDUCE_OP(SUM, MPI128_LSUM)
+PASTE_MPI128_REDUCE_OP(PROD,MPI128_LPROD)
+PASTE_MPI128_REDUCE_OP(LAND,MPI128_LLAND)
+PASTE_MPI128_REDUCE_OP(LOR, MPI128_LLOR)
+PASTE_MPI128_REDUCE_OP(LXOR,MPI128_LLXOR)
 /* TODO
 PASTE_MPI128_REDUCE_OP(MAXLOC,MPI128_LMAXLOC)
 PASTE_MPI128_REDUCE_OP(MINLOC,MPI128_LMINLOC)
 */
 
-#undef MPI128_BAND
-#undef MPI128_BOR
-#undef MPI128_BXOR
-#undef MPI128_LAND
-#undef MPI128_LOR
-#undef MPI128_LXOR
-#undef MPI128_PROD
-#undef MPI128_SUM
-#undef MPI128_MIN
-#undef MPI128_MAX
+#undef MPI128_LBAND
+#undef MPI128_LBOR
+#undef MPI128_LBXOR
+#undef MPI128_LLAND
+#undef MPI128_LLOR
+#undef MPI128_LLXOR
+#undef MPI128_LPROD
+#undef MPI128_LSUM
+#undef MPI128_LMIN
+#undef MPI128_LMAX
 
 #undef PASTE_MPI128_REDUCE_OP
 
@@ -80,4 +80,18 @@ int MPI128_Op_create(MPI_Op op, MPI_Op * bigop)
     MPI_Op_commutative(op, &commute);
 
     return MPI_Op_create(bigfn, commute, bigop);
+}
+
+int MPI128_Allreduce(const void *sendbuf, void *recvbuf, int count,
+                     MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+{
+    if (likely (datatype==MPIX_GCC_FLOAT128)) {
+        MPI_Op bigop;
+        MPI128_Op_create(op, &bigop);
+        MPI_Allreduce(sendbuf, recvbuf, count, datatype, bigop, comm);
+        MPI_Op_free(&bigop);
+    } else {
+        MPI_Allreduce(sendbuf, recvbuf, count, datatype, op, comm);
+    }
+    return MPI_SUCCESS;
 }
