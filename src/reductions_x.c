@@ -58,9 +58,6 @@ PASTE_BIGMPI_REDUCE_OP(MINLOC)
 
 int BigMPI_Op_create(MPI_Op op, MPI_Op * bigop)
 {
-    int commute;
-    MPI_Op_commutative(op, &commute);
-
     MPI_User_function * bigfn = NULL;
 
     if      (op==MPI_MAX)    bigfn = BigMPI_MAX_x;
@@ -78,6 +75,10 @@ int BigMPI_Op_create(MPI_Op op, MPI_Op * bigop)
     else {
         BigMPI_Error("BigMPI does not support this op.  Sorry. \n");
     }
+
+    int commute;
+    MPI_Op_commutative(op, &commute);
+
     return MPI_Op_create(bigfn, commute, bigop);
 }
 
