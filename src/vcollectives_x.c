@@ -175,20 +175,19 @@ int BigMPI_Collective(collective_t coll, method_t method,
             case ALLTOALLV: /* See page 171 of MPI-3 */
                 {
                     MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request)); assert(reqs!=NULL);
+                    MPI_Aint lb /* unused */, sendextent, recvextent;
+                    MPI_Type_get_extent(sendtype, &lb, &sendextent);
+                    MPI_Type_get_extent(recvtype, &lb, &recvextent);
                     /* Use tag=0 because there is perfect pair-wise matching without it. */
                     for (int i=0; i<size; i++) {
                         /* Pre-post all receives... */
-                        MPI_Aint lb /* unused */, sendextent, recvextent;
-                        MPI_Type_get_extent(sendtypes[i], &lb, &sendextent);
-                        MPIX_Irecv_x(recvbuf+recvdispls[i]*recvextent, recvcounts[i], recvtypes[i],
+                        MPIX_Irecv_x(recvbuf+recvdispls[i]*recvextent, recvcounts[i], recvtype,
                                      i /* source */, 0 /* tag */, comm, &reqs[i]);
                     }
                     for (int j=rank; j<(size+rank); j++) {
                         /* Schedule communication in balanced way... */
                         int i = j%size;
-                        MPI_Aint lb /* unused */, sendextent, recvextent;
-                        MPI_Type_get_extent(recvtypes[i], &lb, &recvextent);
-                        MPIX_Isend_x(sendbuf+senddispls[i]*sendextent, sendcounts[i], sendtypes[i],
+                        MPIX_Isend_x(sendbuf+senddispls[i]*sendextent, sendcounts[i], sendtype,
                                      i /* target */, 0 /* tag */, comm, &reqs[size+i]);
                     }
                     MPI_Waitall(2*size, reqs, MPI_STATUSES_IGNORE);
@@ -198,14 +197,12 @@ int BigMPI_Collective(collective_t coll, method_t method,
             case ALLGATHERV:
                 {
                     MPI_Request * reqs = malloc(2*size*sizeof(MPI_Request)); assert(reqs!=NULL);
-                    MPI_Aint lb /* unused */, sendextent;
-                    MPI_Type_get_extent(sendtype, &lb, &sendextent);
+                    MPI_Aint lb /* unused */, recvextent;
+                    MPI_Type_get_extent(recvtype, &lb, &recvextent);
                     /* Use tag=0 because there is perfect pair-wise matching without it. */
                     for (int i=0; i<size; i++) {
                         /* Pre-post all receives... */
-                        MPI_Aint recvextent;
-                        MPI_Type_get_extent(recvtypes[i], &lb, &recvextent);
-                        MPIX_Irecv_x(recvbuf+recvdispls[i]*recvextent, recvcounts[i], recvtypes[i],
+                        MPIX_Irecv_x(recvbuf+recvdispls[i]*recvextent, recvcounts[i], recvtype,
                                      i /* source */, 0 /* tag */, comm, &reqs[i]);
                     }
                     for (int j=rank; j<(size+rank); j++) {
@@ -223,11 +220,11 @@ int BigMPI_Collective(collective_t coll, method_t method,
                     int nreqs = (rank==root ? size+1 : 1);
                     MPI_Request * reqs = malloc(nreqs*sizeof(MPI_Request)); assert(reqs!=NULL);
                     if (rank==root) {
+                        MPI_Aint lb /* unused */, recvextent;
+                        MPI_Type_get_extent(recvtype, &lb, &recvextent);
                         for (int i=0; i<size; i++) {
-                            MPI_Aint lb /* unused */, recvextent;
-                            MPI_Type_get_extent(recvtypes[i], &lb, &recvextent);
                             /* Use tag=0 because there is perfect pair-wise matching without it. */
-                            MPIX_Irecv_x(recvbuf+recvdispls[i]*recvextent, recvcounts[i], recvtypes[i],
+                            MPIX_Irecv_x(recvbuf+recvdispls[i]*recvextent, recvcounts[i], recvtype,
                                          i /* source */, 0 /* tag */, comm, &reqs[i+1]);
                         }
                     }
@@ -242,11 +239,11 @@ int BigMPI_Collective(collective_t coll, method_t method,
                     int nreqs = (rank==root ? size+1 : 1);
                     MPI_Request * reqs = malloc(nreqs*sizeof(MPI_Request)); assert(reqs!=NULL);
                     if (rank==root) {
+                        MPI_Aint lb /* unused */, sendextent;
+                        MPI_Type_get_extent(sendtype, &lb, &sendextent);
                         for (int i=0; i<size; i++) {
-                            MPI_Aint lb /* unused */, sendextent;
-                            MPI_Type_get_extent(sendtypes[i], &lb, &sendextent);
                             /* Use tag=0 because there is perfect pair-wise matching without it. */
-                            MPIX_Isend_x(sendbuf+senddispls[i]*sendextent, sendcounts[i], sendtypes[i],
+                            MPIX_Isend_x(sendbuf+senddispls[i]*sendextent, sendcounts[i], sendtype,
                                          i /* target */, 0 /* tag */, comm, &reqs[i+1]);
                         }
                     }
