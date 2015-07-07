@@ -1,6 +1,10 @@
 BigMPI
 ======
 
+_See the ExaMPI14 [paper](http://dl.acm.org/citation.cfm?id=2690884) 
+([free copy](https://github.com/jeffhammond/BigMPI-paper))
+for a detailed analysis of large-count issues in MPI._
+
 Interface to MPI for large messages, i.e. those where the count argument
 exceeds `INT_MAX` but is still less than `SIZE_MAX`.
 BigMPI is designed for the common case where one has a 64b address
