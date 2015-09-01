@@ -53,6 +53,15 @@ int main(int argc, char * argv[])
         }
     }
 
+    /* collective communication */
+    MPIX_Allgather_x(buf_send, n, MPI_CHAR,
+                     buf_recv, n, MPI_CHAR,
+                     MPI_COMM_WORLD);
+
+    for (int i = 0; i < size; ++i) {
+        errors += verify_buffer(buf_recv + i * n, n, i);
+    }
+
     MPI_Free_mem(buf_send);
     MPI_Free_mem(buf_recv);
 
