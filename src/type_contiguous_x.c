@@ -46,12 +46,14 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
 /*
  * Synopsis
  *
- * int MPIX_Type_contiguous_x(MPI_Count count,
+ * int MPIX_Type_contiguous_x(MPI_Aint offset,
+ *                            MPI_Count count,
  *                            MPI_Datatype   oldtype,
  *                            MPI_Datatype * newtype)
  *
  *  Input Parameters
  *
+ *   offset            byte offset of the start of the contiguous chunk
  *   count             replication count (nonnegative integer)
  *   oldtype           old datatype (handle)
  *
@@ -59,20 +61,31 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
  *
  *   newtype           new datatype (handle)
  *
+ * Notes
+ *
+ *   Following the addition of the offset argument, this function no longer
+ *   matches the signature of MPI_Type_contiguous.  This may constitute
+ *   breaking user experience for some people.  However, the value of
+ *   adding it simplies the primary purpose of this function, which is to
+ *   do the heavy lifting _inside_ of BigMPI.  In particular, it allows
+ *   us to use MPI_Alltoallw instead of MPI_Neighborhood_alltoallw.
+ *
  */
-int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype)
+int MPIX_Type_contiguous_x(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype)
 {
     /* The count has to fit into MPI_Aint for BigMPI to work. */
     assert(count<bigmpi_count_max);
 
 #ifdef BIGMPI_AVOID_TYPE_CREATE_STRUCT
-    /* There is no need for this code path in homogeneous execution,
-     * but it is useful to exercise anyways. */
-    int a, b;
-    int prime = BigMPI_Factorize_count(count, &a, &b);
-    if (!prime) {
-        MPI_Type_vector(a, b, b, oldtype, newtype);
-        return MPI_SUCCESS;
+    if (offset==0) {
+        /* There is no need for this code path in homogeneous execution,
+         * but it is useful to exercise anyways. */
+        int a, b;
+        int prime = BigMPI_Factorize_count(count, &a, &b);
+        if (!prime) {
+            MPI_Type_vector(a, b, b, oldtype, newtype);
+            return MPI_SUCCESS;
+        }
     }
 #endif
     MPI_Count c = count/bigmpi_int_max;
@@ -89,7 +102,7 @@ int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype *
 
     MPI_Aint remdisp          = (MPI_Aint)c*bigmpi_int_max*extent;
     int blocklengths[2]       = {1,1};
-    MPI_Aint displacements[2] = {0,remdisp};
+    MPI_Aint displacements[2] = {offset,offset+remdisp};
     MPI_Datatype types[2]     = {chunks,remainder};
     MPI_Type_create_struct(2, blocklengths, displacements, types, newtype);
 
