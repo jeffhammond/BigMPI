@@ -47,7 +47,7 @@ int MPIX_Type_create_hvector_x(int count,
 
     for (i=0; i<count; i++) {
         blocklens[i] = 1;
-        MPIX_Type_contiguous_x(array_of_blocklengths[i], oldtype,  &(types[i]));
+        MPIX_Type_contiguous_x(0,array_of_blocklengths[i], oldtype,  &(types[i]));
     }
 
     ret = MPI_Type_create_struct(count, blocklens, array_of_displacements, types, newtype);
