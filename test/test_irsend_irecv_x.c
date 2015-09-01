@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
     int l = (argc > 1) ? atoi(argv[1]) : 2;
     int m = (argc > 2) ? atoi(argv[2]) : 17777;
     MPI_Count n = l * test_int_max + m;
-    while (n>=(test_int_max*test_int_max)) n-=test_int_max;
+    // while (n>=(test_int_max*test_int_max)) n-=test_int_max;
 
     char * buf = NULL;
 
