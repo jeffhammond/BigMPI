@@ -91,6 +91,9 @@ int MPIX_Type_contiguous_x(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtyp
     MPI_Count c = count/bigmpi_int_max;
     MPI_Count r = count%bigmpi_int_max;
 
+    assert(c<bigmpi_int_max);
+    assert(r<bigmpi_int_max);
+
     MPI_Datatype chunks;
     MPI_Type_vector(c, bigmpi_int_max, bigmpi_int_max, oldtype, &chunks);
 
