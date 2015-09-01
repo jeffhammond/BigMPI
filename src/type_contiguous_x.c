@@ -28,6 +28,7 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
     MPI_Count lo = in/bigmpi_int_max+1;
     MPI_Count hi = (MPI_Count)floor(sqrt((double)in));
 
+    /* FIXME This is not safe.  Must test for overflow before casting to int. */
     for (MPI_Count g=hi; g>lo; g--) {
         MPI_Count rem = in%g;
         if (rem==0) {
