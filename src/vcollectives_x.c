@@ -134,11 +134,8 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
                 break;
         }
 
-        MPI_Comm comm_dist_graph;
-        BigMPI_Create_graph_comm(comm, root, &comm_dist_graph);
-        rc = MPI_Neighbor_alltoallw(sendbuf, newsendcounts, newsdispls, newsendtypes,
-                                    recvbuf, newrecvcounts, newrdispls, newrecvtypes, comm_dist_graph);
-        MPI_Comm_free(&comm_dist_graph);
+        rc = MPI_Alltoallw(sendbuf, newsendcounts, newsdispls, newsendtypes,
+                           recvbuf, newrecvcounts, newrdispls, newrecvtypes, comm);
 
         for (int i=0; i<size; i++) {
             MPI_Type_free(&newsendtypes[i]);
