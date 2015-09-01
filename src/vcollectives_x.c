@@ -3,10 +3,10 @@
 /* The displacements vector cannot be represented in the existing set of MPI-3
    functions because it is an integer rather than an MPI_Aint. */
 
-typedef enum { GATHERV, SCATTERV, ALLGATHERV, ALLTOALLV, ALLTOALLW } collective_t;
-typedef enum { ALLTOALLW, NEIGHBORHOOD_ALLTOALLW, NONBLOCKING_BCAST, P2P, RMA } method_t;
+typedef enum { GATHERV, SCATTERV, ALLGATHERV, ALLTOALLV, ALLTOALLW } bigmpi_collective_t;
+typedef enum { ALLTOALLW, NEIGHBORHOOD_ALLTOALLW, NONBLOCKING_BCAST, P2P, RMA } bigmpi_method_t;
 
-int BigMPI_Collective(collective_t coll, method_t method,
+int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
                       const void *sendbuf,
                       const MPI_Count sendcount, const MPI_Count sendcounts[],
                       const MPI_Aint senddispls[],
@@ -419,7 +419,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
                    void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                    int root, MPI_Comm comm)
 {
-    method_t method = P2P;
+    bigmpi_method_t method = P2P;
     return BigMPI_Collective(GATHERV, method,
                              sendbuf, sendcount, NULL, NULL, sendtype, NULL,
                              recvbuf, -1 /* recvcount */, recvcounts, rdispls, recvtype, NULL,
@@ -430,7 +430,7 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
                       void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                       MPI_Comm comm)
 {
-    method_t method = P2P;
+    bigmpi_method_t method = P2P;
     return BigMPI_Collective(ALLGATHERV, method,
                              sendbuf, sendcount, NULL, NULL, sendtype, NULL,
                              recvbuf, -1 /* recvcount */, recvcounts, rdispls, recvtype, NULL,
@@ -440,7 +440,7 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
 int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], MPI_Datatype sendtype,
                     void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-    method_t method = P2P;
+    bigmpi_method_t method = P2P;
     return BigMPI_Collective(SCATTERV, method,
                              sendbuf, -1 /* sendcount */, sendcounts, sdispls, sendtype, NULL,
                              recvbuf, recvcount, NULL, NULL, recvtype, NULL,
@@ -451,7 +451,7 @@ int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                      MPI_Comm comm)
 {
-    method_t method = P2P;
+    bigmpi_method_t method = P2P;
     return BigMPI_Collective(ALLTOALLV, method,
                              sendbuf, -1 /* sendcount */, sendcounts, sdispls, sendtype, NULL,
                              recvbuf, -1 /* recvcount */, recvcounts, rdispls, recvtype, NULL,
@@ -462,7 +462,7 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], const MPI_Datatype recvtypes[],
                      MPI_Comm comm)
 {
-    method_t method = P2P;
+    bigmpi_method_t method = P2P;
     return BigMPI_Collective(ALLTOALLW, method,
                              sendbuf, -1 /* sendcount */, sendcounts, sdispls, MPI_DATATYPE_NULL, sendtypes,
                              recvbuf, -1 /* recvcount */, recvcounts, rdispls, MPI_DATATYPE_NULL, recvtypes,
