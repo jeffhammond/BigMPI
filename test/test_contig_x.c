@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 
         /* If bigmpi_int_max is artificially low for debugging,
          * MPI will throw an error inside of MPIX_Type_contiguous_x. */
-        if (n>INT_MAX) {
+        if (n>INT_MAX || n>=(test_int_max*test_int_max) ) {
             MPI_Finalize();
             return errors;
         }
