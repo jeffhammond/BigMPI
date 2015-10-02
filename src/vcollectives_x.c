@@ -34,8 +34,7 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
 
     if (method==ALLTOALLW) {
 
-        printf("ALLTOALL implementation of v-collectives is incomplete!\n");
-        MPI_Abort(comm, 1);
+        BigMPI_Error(" \n");LLTOALL implementation of v-collectives is incomplete!
 
         int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
         MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
