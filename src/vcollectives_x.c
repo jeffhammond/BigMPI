@@ -32,7 +32,123 @@ int BigMPI_Collective(collective_t coll, method_t method,
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
-    if (method==NEIGHBORHOOD_ALLTOALLW) {
+    if (method==ALLTOALLW) {
+
+        BigMPI_Error(" \n");LLTOALL implementation of v-collectives is incomplete!
+
+        int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
+        MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
+        MPI_Aint     * newsdispls    = malloc(size*sizeof(MPI_Aint));     assert(newsdispls!=NULL);
+
+        int          * newrecvcounts = malloc(size*sizeof(int));          assert(newrecvcounts!=NULL);
+        MPI_Datatype * newrecvtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newrecvtypes!=NULL);
+        MPI_Aint     * newrdispls    = malloc(size*sizeof(MPI_Aint));     assert(newrdispls!=NULL);
+
+        switch(coll) {
+            case ALLTOALLW:
+                assert(root == -1);
+                BigMPI_Convert_vectors(size,
+                                       0 /* splat count */, 0, sendcounts,
+                                       0 /* splat type */, 0, sendtypes,
+                                       0 /* zero displs */, senddispls,
+                                       newsendcounts, newsendtypes, newsdispls);
+                BigMPI_Convert_vectors(size,
+                                       0 /* splat count */, 0, recvcounts,
+                                       0 /* splat type */, 0, recvtypes,
+                                       0 /* zero displs */, recvdispls,
+                                       newrecvcounts, newrecvtypes, newrdispls);
+                break;
+            case ALLTOALLV:
+                assert(root == -1);
+                BigMPI_Convert_vectors(size,
+                                       0 /* splat count */, 0, sendcounts,
+                                       1 /* splat type */, sendtype, NULL,
+                                       0 /* zero displs */, senddispls,
+                                       newsendcounts, newsendtypes, newsdispls);
+                BigMPI_Convert_vectors(size,
+                                       0 /* splat count */, 0, recvcounts,
+                                       1 /* splat type */, recvtype, NULL,
+                                       0 /* zero displs */, recvdispls,
+                                       newrecvcounts, newrecvtypes, newrdispls);
+                break;
+            case ALLGATHERV:
+                assert(root == -1);
+                BigMPI_Convert_vectors(size,
+                                       1 /* splat count */, sendcount, NULL,
+                                       1 /* splat type */, sendtype, NULL,
+                                       1 /* zero displs */, NULL,
+                                       newsendcounts, newsendtypes, newsdispls);
+                BigMPI_Convert_vectors(size,
+                                       0 /* splat count */, 0, recvcounts,
+                                       1 /* splat type */, recvtype, NULL,
+                                       0 /* zero displs */, recvdispls,
+                                       newrecvcounts, newrecvtypes, newrdispls);
+                break;
+            case GATHERV:
+                assert(root != -1);
+                BigMPI_Convert_vectors(size,
+                                       1 /* splat count */, sendcount, NULL,
+                                       1 /* splat type */, sendtype, NULL,
+                                       1 /* zero displs */, NULL,
+                                       newsendcounts, newsendtypes, newsdispls);
+                /* Gatherv: Only the root receives data. */
+                if (rank==root) {
+                    BigMPI_Convert_vectors(size,
+                                           0 /* splat count */, 0, recvcounts,
+                                           1 /* splat type */, recvtype, NULL,
+                                           0 /* zero displs */, recvdispls,
+                                           newrecvcounts, newrecvtypes, newrdispls);
+                } else {
+                    BigMPI_Convert_vectors(size,
+                                           1 /* splat count */, 0, NULL,
+                                           1 /* splat type */, MPI_DATATYPE_NULL, NULL,
+                                           1 /* zero displs */, NULL,
+                                           newrecvcounts, newrecvtypes, newrdispls);
+                }
+                break;
+            case SCATTERV:
+                assert(root != -1);
+                /* Scatterv: Only the root sends data. */
+                if (rank==root) {
+                    BigMPI_Convert_vectors(size,
+                                           0 /* splat count */, 0, sendcounts,
+                                           1 /* splat type */, sendtype, NULL,
+                                           0 /* zero displs */, senddispls,
+                                           newsendcounts, newsendtypes, newsdispls);
+                } else {
+                    BigMPI_Convert_vectors(size,
+                                           1 /* splat count */, 0, NULL,
+                                           1 /* splat type */, MPI_DATATYPE_NULL, NULL,
+                                           1 /* zero displs */, NULL,
+                                           newsendcounts, newsendtypes, newsdispls);
+                }
+                BigMPI_Convert_vectors(size,
+                                       1 /* splat count */, recvcount, NULL,
+                                       1 /* splat type */, recvtype, NULL,
+                                       1 /* zero displs */, NULL,
+                                       newrecvcounts, newrecvtypes, newrdispls);
+                break;
+            default:
+                BigMPI_Error("Invalid collective chosen. \n");
+                break;
+        }
+
+        rc = MPI_Alltoallw(sendbuf, newsendcounts, newsdispls, newsendtypes,
+                           recvbuf, newrecvcounts, newrdispls, newrecvtypes, comm);
+
+        for (int i=0; i<size; i++) {
+            MPI_Type_free(&newsendtypes[i]);
+            MPI_Type_free(&newrecvtypes[i]);
+        }
+        free(newsendcounts);
+        free(newsdispls);
+        free(newsendtypes);
+
+        free(newrecvcounts);
+        free(newrecvtypes);
+        free(newrdispls);
+
+    } else if (method==NEIGHBORHOOD_ALLTOALLW) {
 
         int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
         MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
