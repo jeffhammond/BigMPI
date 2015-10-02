@@ -3,6 +3,10 @@
 
 #include <mpi.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* This function does the heavy lifting in BigMPI. */
 
 int MPIX_Type_contiguous_x(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
@@ -217,5 +221,9 @@ int MPIX_Ineighbor_alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[]
                                const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Request *request);
 
 #endif // UNSUPPORTED
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // BIGMPI_H_INCLUDED
