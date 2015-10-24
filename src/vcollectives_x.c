@@ -9,7 +9,7 @@ typedef enum { GATHERV,
                ALLTOALLV,
                ALLTOALLW } bigmpi_collective_t;
 
-typedef enum { ALLTOALLW,
+typedef enum { ALLTOALLW_OFFSET,
 #if MPI_VERSION >= 3
                NEIGHBORHOOD_ALLTOALLW,
 #endif
@@ -42,9 +42,9 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
     MPI_Comm_size(comm, &size);
     MPI_Comm_rank(comm, &rank);
 
-    if (method==ALLTOALLW) {
+    if (method==ALLTOALLW_OFFSET) {
 
-        BigMPI_Error(" \n");LLTOALL implementation of v-collectives is incomplete!
+        BigMPI_Error("ALLTOALL_OFFSET implementation of v-collectives is incomplete!\n");
 
         int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
         MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
