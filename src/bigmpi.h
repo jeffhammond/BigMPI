@@ -7,6 +7,10 @@
 extern "C" {
 #endif
 
+#if MPI_VERSION <3
+typedef MPI_Aint MPI_Count;
+#endif
+
 /* This function does the heavy lifting in BigMPI. */
 
 int MPIX_Type_contiguous_x(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
