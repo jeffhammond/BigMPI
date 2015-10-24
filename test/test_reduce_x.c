@@ -63,6 +63,22 @@ int main(int argc, char * argv[])
         }
     }
 
+    /* collective communication */
+    MPIX_Allreduce_x(sbuf, rbuf, n, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+
+    {
+        double val = (double)size*(size+1.)/2.;
+        errors = verify_doubles(rbuf, n, val);
+        if (errors) {
+            printf("There were %zu errors out of %zu elements!\n", errors, (size_t)n);
+            for (MPI_Count i=0; i<n; i++) {
+                printf("rbuf[%zu] = %lf (expected %lf - %s)\n",
+                        (size_t)i, rbuf[i], val, rbuf[i]==val ? "RIGHT" : "WRONG");
+            }
+            fflush(stdout);
+        }
+    }
+
     MPI_Free_mem(sbuf);
     MPI_Free_mem(rbuf);
 

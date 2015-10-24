@@ -8,7 +8,7 @@ int MPIX_Send_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int des
         rc = MPI_Send(buf, (int)count, datatype, dest, tag, comm);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Send(buf, 1, newtype, dest, tag, comm);
         MPI_Type_free(&newtype);
@@ -24,7 +24,7 @@ int MPIX_Recv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, i
         rc = MPI_Recv(buf, (int)count, datatype, source, tag, comm, status);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Recv(buf, 1, newtype, source, tag, comm, status);
         MPI_Type_free(&newtype);
@@ -40,7 +40,7 @@ int MPIX_Isend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
         rc = MPI_Isend(buf, (int)count, datatype, dest, tag, comm, request);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Isend(buf, 1, newtype, dest, tag, comm, request);
         MPI_Type_free(&newtype);
@@ -56,7 +56,7 @@ int MPIX_Irecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, 
         rc = MPI_Irecv(buf, (int)count, datatype, source, tag, comm, request);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Irecv(buf, 1, newtype, source, tag, comm, request);
         MPI_Type_free(&newtype);
@@ -76,7 +76,7 @@ int MPIX_Sendrecv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
                           comm, status);
     } else if (sendcount <= bigmpi_int_max && recvcount > bigmpi_int_max ) {
         MPI_Datatype newrecvtype;
-        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
+        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Sendrecv(sendbuf, (int)sendcount, sendtype, dest, sendtag,
                           recvbuf, 1, newrecvtype, source, recvtag,
@@ -84,7 +84,7 @@ int MPIX_Sendrecv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
         MPI_Type_free(&newrecvtype);
     } else if (sendcount > bigmpi_int_max && recvcount <= bigmpi_int_max ) {
         MPI_Datatype newsendtype;
-        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
+        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
         MPI_Type_commit(&newsendtype);
         rc = MPI_Sendrecv(sendbuf, 1, newsendtype, dest, sendtag,
                           recvbuf, (int)recvcount, recvtype, source, recvtag,
@@ -92,8 +92,8 @@ int MPIX_Sendrecv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
         MPI_Type_free(&newsendtype);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(recvcount, recvtype, &newrecvtype);
+        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
+        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Sendrecv(sendbuf, 1, newsendtype, dest, sendtag,
@@ -114,7 +114,7 @@ int MPIX_Sendrecv_replace_x(void *buf, MPI_Count count, MPI_Datatype datatype, i
         rc = MPI_Sendrecv_replace(buf, (int)count, datatype, dest, sendtag, source, recvtag, comm, status);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Sendrecv_replace(buf, 1, newtype, dest, sendtag, source, recvtag, comm, status);
         MPI_Type_free(&newtype);
@@ -131,7 +131,7 @@ int MPIX_Ssend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
         rc = MPI_Ssend(buf, (int)count, datatype, dest, tag, comm);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Ssend(buf, 1, newtype, dest, tag, comm);
         MPI_Type_free(&newtype);
@@ -147,7 +147,7 @@ int MPIX_Rsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
         rc = MPI_Rsend(buf, (int)count, datatype, dest, tag, comm);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Rsend(buf, 1, newtype, dest, tag, comm);
         MPI_Type_free(&newtype);
@@ -163,7 +163,7 @@ int MPIX_Issend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int d
         rc = MPI_Issend(buf, (int)count, datatype, dest, tag, comm, request);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Issend(buf, 1, newtype, dest, tag, comm, request);
         MPI_Type_free(&newtype);
@@ -179,7 +179,7 @@ int MPIX_Irsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int d
         rc = MPI_Irsend(buf, (int)count, datatype, dest, tag, comm, request);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Irsend(buf, 1, newtype, dest, tag, comm, request);
         MPI_Type_free(&newtype);
@@ -195,7 +195,7 @@ int MPIX_Mrecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message 
         rc = MPI_Mrecv(buf, (int)count, datatype, message, status);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Mrecv(buf, 1, newtype, message, status);
         MPI_Type_free(&newtype);
@@ -211,7 +211,7 @@ int MPIX_Imrecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message
         rc = MPI_Imrecv(buf, (int)count, datatype, message, request);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(count, datatype, &newtype);
+        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Imrecv(buf, 1, newtype, message, request);
         MPI_Type_free(&newtype);
