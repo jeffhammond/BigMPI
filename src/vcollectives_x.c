@@ -3,8 +3,18 @@
 /* The displacements vector cannot be represented in the existing set of MPI-3
    functions because it is an integer rather than an MPI_Aint. */
 
-typedef enum { GATHERV, SCATTERV, ALLGATHERV, ALLTOALLV, ALLTOALLW } bigmpi_collective_t;
-typedef enum { ALLTOALLW, NEIGHBORHOOD_ALLTOALLW, NONBLOCKING_BCAST, P2P, RMA } bigmpi_method_t;
+typedef enum { GATHERV,
+               SCATTERV,
+               ALLGATHERV,
+               ALLTOALLV,
+               ALLTOALLW } bigmpi_collective_t;
+
+typedef enum { ALLTOALLW,
+#if MPI_VERSION >= 3
+               NEIGHBORHOOD_ALLTOALLW,
+#endif
+               P2P,
+               RMA } bigmpi_method_t;
 
 int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
                       const void *sendbuf,
@@ -148,6 +158,7 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
         free(newrecvtypes);
         free(newrdispls);
 
+#if MPI_VERSION >= 3
     } else if (method==NEIGHBORHOOD_ALLTOALLW) {
 
         int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
@@ -265,6 +276,7 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
         free(newrecvtypes);
         free(newrdispls);
 
+#endif
     } else if (method==P2P) {
 
         switch(coll) {
