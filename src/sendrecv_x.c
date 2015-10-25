@@ -187,6 +187,8 @@ int MPIX_Irsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int d
     return rc;
 }
 
+#if MPI_VERSION >= 3
+
 int MPIX_Mrecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message *message, MPI_Status *status)
 {
     int rc = MPI_SUCCESS;
@@ -218,3 +220,5 @@ int MPIX_Imrecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message
     }
     return rc;
 }
+
+#endif
