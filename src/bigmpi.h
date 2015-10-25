@@ -203,6 +203,7 @@ int MPIX_Iexscan_x(const void *sendbuf, void *recvbuf, MPI_Count count, MPI_Data
 /* These are really hard, if not impossible to support, because the argument vectors
  * have to be duplicated for use in Neighborhood_(i)alltoallw, and these vectors cannot
  * be deallocated until the operation has completed, but there is no mechanism to do that. */
+/* TODO Implement these using generalized requests (and a thread)... */
 
 int MPIX_Igatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                     void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint displs[], MPI_Datatype recvtype,
