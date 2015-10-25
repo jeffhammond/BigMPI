@@ -109,6 +109,8 @@ void BigMPI_Convert_vectors(int                num,
     return;
 }
 
+#if MPI_VERSION >= 3
+
 /*
  * Synopsis
  *
@@ -131,8 +133,6 @@ int BigMPI_Create_graph_comm(MPI_Comm comm_old, int root, MPI_Comm * comm_dist_g
     int rank, size;
     MPI_Comm_rank(comm_old, &rank);
     MPI_Comm_size(comm_old, &size);
-
-#if MPI_VERSION >= 3
 
     /* in the all case (root == -1), every rank is a destination for every other rank;
      * otherwise, only the root is a destination. */
@@ -159,12 +159,7 @@ int BigMPI_Create_graph_comm(MPI_Comm comm_old, int root, MPI_Comm * comm_dist_g
     free(sources);
     free(destinations);
 
-#else
-
-#warning TODO implement BigMPI_Create_graph_comm using MPI-2 features.
-    int rc = MPI_Abort(1,comm_old);
-
-#endif
-
     return rc;
 }
+
+#endif
