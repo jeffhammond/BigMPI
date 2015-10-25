@@ -96,6 +96,8 @@ int MPIX_Alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
     return rc;
 }
 
+#if MPI_VERSION >= 3
+
 int MPIX_Ibcast_x(void *buf, MPI_Count count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Request *request)
 {
     int rc = MPI_SUCCESS;
@@ -191,3 +193,5 @@ int MPIX_Ialltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
     }
     return rc;
 }
+
+#endif
