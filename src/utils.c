@@ -40,7 +40,7 @@ void BigMPI_Error_impl(const char *file, const int line, const char *func, const
 /*
  * Synopsis
  *
- * void convert_vectors(..)
+ * void BigMPI_Convert_vectors(..)
  *
  *  Input Parameter
  *
