@@ -252,6 +252,8 @@ int MPIX_Reduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count re
     return MPI_SUCCESS;
 }
 
+#if MPI_VERSION >= 3
+
 int MPIX_Ireduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
                    MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request * req)
 {
@@ -305,3 +307,5 @@ int MPIX_Iallreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
 
     }
 }
+
+#endif
