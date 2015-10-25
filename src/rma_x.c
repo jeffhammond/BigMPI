@@ -68,6 +68,8 @@ int MPIX_Accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datat
     return rc;
 }
 
+#if MPI_VERSION >= 3
+
 int MPIX_Get_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
                           void *result_addr, MPI_Count result_count, MPI_Datatype result_datatype,
                           int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
@@ -199,3 +201,5 @@ int MPIX_Rget_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_
     }
     return rc;
 }
+
+#endif
