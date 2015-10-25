@@ -7,7 +7,10 @@
 extern "C" {
 #endif
 
-#if MPI_VERSION <3
+/* MPI_Count does not exist in MPI-2.  Our implementation
+ * does not require it and in any case uses MPI_Aint in
+ * place of MPI_Count in many places. */
+#if MPI_VERSION < 3
 typedef MPI_Aint MPI_Count;
 #endif
 
@@ -26,7 +29,10 @@ int MPIX_Type_create_hvector_x(int count,
 
 int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datatype * basetype);
 
+/* Requires distributed graph communicators. */
+#if MPI_VERSION >= 3
 int BigMPI_Create_graph_comm(MPI_Comm comm_old, int root, MPI_Comm * comm_dist_graph);
+#endif
 
 /* This is used in tests to query the compile-time setting. */
 MPI_Count BigMPI_Get_max_int(void);
