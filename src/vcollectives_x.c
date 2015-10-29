@@ -18,7 +18,7 @@ typedef enum { ALLTOALLW_OFFSET,
 
 /* Tries to deduce collective operation implementation strategy from
    environment */
-bigmpi_method_t detect_default_bigmpi_method()
+bigmpi_method_t BigMPI_Detect_default_bigmpi_method()
 {
     char *env_var = getenv("BIGMPI_DEFAULT_METHOD");
 
@@ -39,13 +39,13 @@ bigmpi_method_t detect_default_bigmpi_method()
     return P2P;
 }
 
-bigmpi_method_t get_default_bigmpi_method()
+bigmpi_method_t BigMPI_Get_default_bigmpi_method()
 {
     static int initialized = 0;
     static bigmpi_method_t default_value = P2P;
 
     if (!initialized) {
-        default_value = detect_default_bigmpi_method();
+        default_value = BigMPI_Detect_default_bigmpi_method();
         initialized = 1;
     }
 
@@ -465,7 +465,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
                    void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                    int root, MPI_Comm comm)
 {
-    bigmpi_method_t method = get_default_bigmpi_method();
+    bigmpi_method_t method = BigMPI_Get_default_bigmpi_method();
     return BigMPI_Collective(GATHERV, method,
                              sendbuf, sendcount, NULL, NULL, sendtype, NULL,
                              recvbuf, -1 /* recvcount */, recvcounts, rdispls, recvtype, NULL,
@@ -476,7 +476,7 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
                       void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                       MPI_Comm comm)
 {
-    bigmpi_method_t method = get_default_bigmpi_method();
+    bigmpi_method_t method = BigMPI_Get_default_bigmpi_method();
     return BigMPI_Collective(ALLGATHERV, method,
                              sendbuf, sendcount, NULL, NULL, sendtype, NULL,
                              recvbuf, -1 /* recvcount */, recvcounts, rdispls, recvtype, NULL,
@@ -486,7 +486,7 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
 int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], MPI_Datatype sendtype,
                     void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-    bigmpi_method_t method = get_default_bigmpi_method();
+    bigmpi_method_t method = BigMPI_Get_default_bigmpi_method();
     return BigMPI_Collective(SCATTERV, method,
                              sendbuf, -1 /* sendcount */, sendcounts, sdispls, sendtype, NULL,
                              recvbuf, recvcount, NULL, NULL, recvtype, NULL,
@@ -497,7 +497,7 @@ int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                      MPI_Comm comm)
 {
-    bigmpi_method_t method = get_default_bigmpi_method();
+    bigmpi_method_t method = BigMPI_Get_default_bigmpi_method();
     return BigMPI_Collective(ALLTOALLV, method,
                              sendbuf, -1 /* sendcount */, sendcounts, sdispls, sendtype, NULL,
                              recvbuf, -1 /* recvcount */, recvcounts, rdispls, recvtype, NULL,
@@ -508,7 +508,7 @@ int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], const MPI_Datatype recvtypes[],
                      MPI_Comm comm)
 {
-    bigmpi_method_t method = get_default_bigmpi_method();
+    bigmpi_method_t method = BigMPI_Get_default_bigmpi_method();
     return BigMPI_Collective(ALLTOALLW, method,
                              sendbuf, -1 /* sendcount */, sendcounts, sdispls, MPI_DATATYPE_NULL, sendtypes,
                              recvbuf, -1 /* recvcount */, recvcounts, rdispls, MPI_DATATYPE_NULL, recvtypes,
