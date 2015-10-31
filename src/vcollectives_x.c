@@ -449,7 +449,7 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
         MPI_Win_fence(MPI_MODE_NOPRECEDE || MPI_MODE_NOSTORE, win);
         for (int i=0; i<size; i++) {
             MPI_Put(sendbuf+senddispls[i], sendcounts[i], sendtypes[i],
-                    i, recvdispls[i], recvtypes[i], recvtypes[i], win);
+                    i, recvdispls[i], recvcounts[i], recvtypes[i], win);
         }
         MPI_Win_fence(MPI_MODE_NOSUCCEED || MPI_MODE_NOSTORE, win);
         MPI_Win_free(&win);
