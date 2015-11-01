@@ -91,7 +91,8 @@ void BigMPI_Convert_vectors(int                num,
         newcounts[i] = 1;
 
         /* types */
-        MPIX_Type_contiguous_x(0,oldcounts[i], splat_old_type ? oldtype : oldtypes[i], &newtypes[i]);
+        MPIX_Type_contiguous_x(0, splat_old_count ? oldcount : oldcounts[i], 
+                                  splat_old_type  ? oldtype  : oldtypes[i], &newtypes[i]);
         MPI_Type_commit(&newtypes[i]);
 
         /* displacements */
