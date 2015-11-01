@@ -9,8 +9,8 @@ os="$1"
 MPI_IMPL="$2"
 
 case "$os" in
-    Darwin)
-        echo "Mac detected"
+    osx)
+        echo "Mac"
         brew update
         case "$MPI_IMPL" in
             mpich|mpich3)
@@ -26,8 +26,8 @@ case "$os" in
         esac
     ;;
 
-    *)
-        echo "Assuming Linux"
+    linux)
+        echo "Linux"
         sudo apt-get update -q
         case "$MPI_IMPL" in
             mpich1)
