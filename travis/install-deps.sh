@@ -15,7 +15,7 @@ case "$os" in
         case "$MPI_IMPL" in
             mpich|mpich3)
                 brew install mpich
-                ;; 
+                ;;
             openmpi)
                 brew install openmpi
                 ;;
@@ -24,7 +24,7 @@ case "$os" in
                 exit 10
                 ;;
         esac
-    ;;
+        ;;
 
     Linux)
         echo "Linux"
