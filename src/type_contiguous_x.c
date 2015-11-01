@@ -75,7 +75,8 @@ int MPIX_Type_contiguous_x(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtyp
 {
     /* The count has to fit into MPI_Aint for BigMPI to work. */
     if ((MPI_Count)count>(MPI_Count)bigmpi_count_max) {
-        printf("count (%lld) exceeds bigmpi_count_max (%lld)\n", (long long)count, (long long)bigmpi_count_max);
+        printf("count (%llu) exceeds bigmpi_count_max (%llu)\n",
+                (long long unsigned)count, (long long unsigned)bigmpi_count_max);
         fflush(stdout);
     }
 
