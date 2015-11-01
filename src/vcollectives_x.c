@@ -58,7 +58,7 @@ bigmpi_method_t BigMPI_Get_default_vcollectives_method()
 }
 
 int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
-                      const void *sendbuf,
+                      BIGMPI_CONST void *sendbuf,
                       const MPI_Count sendcount, const MPI_Count sendcounts[],
                       const MPI_Aint senddispls[],
                       const MPI_Datatype sendtype, const MPI_Datatype sendtypes[],
@@ -451,12 +451,12 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
             max_size = ((offset > max_size) ? offset : max_size);
         }
         MPI_Win_create(recvbuf, max_size, 1, MPI_INFO_NULL, comm, &win);
-        MPI_Win_fence(MPI_MODE_NOPRECEDE || MPI_MODE_NOSTORE, win);
+        MPI_Win_fence(MPI_MODE_NOPRECEDE | MPI_MODE_NOSTORE, win);
         for (int i=0; i<size; i++) {
             MPI_Put(sendbuf+senddispls[i], sendcounts[i], sendtypes[i],
                     i, recvdispls[i], recvcounts[i], recvtypes[i], win);
         }
-        MPI_Win_fence(MPI_MODE_NOSUCCEED || MPI_MODE_NOSTORE, win);
+        MPI_Win_fence(MPI_MODE_NOSUCCEED | MPI_MODE_NOSTORE, win);
         MPI_Win_free(&win);
 
     } else {
@@ -466,7 +466,7 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
     return rc;
 }
 
-int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+int MPIX_Gatherv_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                    void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                    int root, MPI_Comm comm)
 {
@@ -477,7 +477,7 @@ int MPIX_Gatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
                              root, comm);
 }
 
-int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+int MPIX_Allgatherv_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                       void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                       MPI_Comm comm)
 {
@@ -488,7 +488,7 @@ int MPIX_Allgatherv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
                              -1 /* root */, comm);
 }
 
-int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], MPI_Datatype sendtype,
+int MPIX_Scatterv_x(BIGMPI_CONST void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], MPI_Datatype sendtype,
                     void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
     bigmpi_method_t method = BigMPI_Get_default_vcollectives_method();
@@ -498,7 +498,7 @@ int MPIX_Scatterv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI
                              root, comm);
 }
 
-int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], MPI_Datatype sendtype,
+int MPIX_Alltoallv_x(BIGMPI_CONST void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], MPI_Datatype sendtype,
                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], MPI_Datatype recvtype,
                      MPI_Comm comm)
 {
@@ -509,7 +509,7 @@ int MPIX_Alltoallv_x(const void *sendbuf, const MPI_Count sendcounts[], const MP
                              -1 /* root */, comm);
 }
 
-int MPIX_Alltoallw_x(const void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], const MPI_Datatype sendtypes[],
+int MPIX_Alltoallw_x(BIGMPI_CONST void *sendbuf, const MPI_Count sendcounts[], const MPI_Aint sdispls[], const MPI_Datatype sendtypes[],
                      void *recvbuf, const MPI_Count recvcounts[], const MPI_Aint rdispls[], const MPI_Datatype recvtypes[],
                      MPI_Comm comm)
 {
