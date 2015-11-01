@@ -14,3 +14,4 @@ script:
   - sh ./travis/build-run.sh
 after_failure:
   - cat ./config.log
+  - head -n100 ./test/*.log
