@@ -1,7 +1,7 @@
 Build Status
 ============
 
-Do not be alarmed because the build is failing.  Travis is not yet configured and the builds are failing on account of configuration issues.
+We are still struggling to get Travis working properly.  Right now, only MPICH on Linux is tested and with an artificially low `INT_MAX` (1048576).
 
 [![Build Status](https://travis-ci.org/jeffhammond/BigMPI.svg?branch=master)](https://travis-ci.org/jeffhammond/BigMPI)
 
