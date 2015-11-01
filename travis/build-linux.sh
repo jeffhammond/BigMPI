@@ -6,7 +6,7 @@ set -ev
 # Environment variables
 export CFLAGS="-std=c99"
 export MPICH_CC=$CC
-export MPICC=/usr/bin/mpicc.mpich2
+export MPICC=/usr/bin/mpicc
 
 # Configure and build MADNESS
 ./autogen.sh 
