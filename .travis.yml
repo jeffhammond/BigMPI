@@ -1,17 +1,16 @@
 language: c
-os: linux
+os:
+  - linux
+  - osx
 compiler:
   - gcc
   - clang
 env:
-  - RUN_TEST=buildonly
-  - RUN_TEST=check
-#notifications:
-#  email:
-#    recipients:
-#      - jeff.science@gmail.com
-#    on_success: change
-#    on_failure: always
-before_install: ./travis/dep-$TRAVIS_OS_NAME.sh
-script: ./travis/build-$TRAVIS_OS_NAME.sh
-after_failure: cat ./config.log
+  - MPI_IMPL=mpich
+  - MPI_IMPL=openmpi
+before_install:
+  - sh ./travis/dep-$TRAVIS_OS_NAME.sh $MPI_IMPL
+script:
+  - sh ./travis/build-$TRAVIS_OS_NAME.sh
+after_failure:
+  - cat ./config.log
