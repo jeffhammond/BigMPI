@@ -13,6 +13,7 @@ export MPICC=mpicc
 ./configure \
     --enable-g \
     --disable-static \
+    --with-max-int=1048576 \
     LIBS="-lm -lpthread"
 
 if [ "$RUN_TEST" = "buildonly" ]; then
