@@ -5,11 +5,11 @@
 set -e
 set -x
 
-os="$1"
+os=`uname`
 MPI_IMPL="$2"
 
 case "$os" in
-    osx)
+    Darwin)
         echo "Mac"
         brew update
         case "$MPI_IMPL" in
@@ -26,7 +26,7 @@ case "$os" in
         esac
     ;;
 
-    linux)
+    Linux)
         echo "Linux"
         sudo apt-get update -q
         case "$MPI_IMPL" in
