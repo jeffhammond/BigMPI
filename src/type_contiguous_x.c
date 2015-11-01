@@ -74,7 +74,7 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
 int MPIX_Type_contiguous_x(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype)
 {
     /* The count has to fit into MPI_Aint for BigMPI to work. */
-    if ((MPI_Count)count>(MPI_Count)bigmpi_count_max) {
+    if ((uint64_t)count>(uint64_t)bigmpi_count_max) {
         printf("count (%llu) exceeds bigmpi_count_max (%llu)\n",
                 (long long unsigned)count, (long long unsigned)bigmpi_count_max);
         fflush(stdout);
