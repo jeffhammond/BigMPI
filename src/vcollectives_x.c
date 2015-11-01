@@ -27,10 +27,12 @@ void BigMPI_Detect_default_vcollectives_method()
     char *env_var = getenv("BIGMPI_DEFAULT_METHOD");
 
     if (env_var != NULL) {
+#if MPI_VERSION >= 3
         if (strcmp(env_var, "NEIGHBORHOOD_ALLTOALLW")) {
             BigMPI_vcollectives_method = NEIGHBORHOOD_ALLTOALLW;
             return;
         }
+#endif
 
         if (strcmp(env_var, "P2P")) {
             BigMPI_vcollectives_method = P2P;
