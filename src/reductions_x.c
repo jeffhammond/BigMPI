@@ -82,7 +82,7 @@ int BigMPI_Op_create(MPI_Op op, MPI_Op * bigop)
     return MPI_Op_create(bigfn, commute, bigop);
 }
 
-int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
+int MPIX_Reduce_x(BIGMPI_CONST void *sendbuf, void *recvbuf, MPI_Count count,
                   MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
 {
     if (likely (count <= bigmpi_int_max )) {
@@ -152,7 +152,7 @@ int MPIX_Reduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
     }
 }
 
-int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
+int MPIX_Allreduce_x(BIGMPI_CONST void *sendbuf, void *recvbuf, MPI_Count count,
                      MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     if (likely (count <= bigmpi_int_max )) {
@@ -224,7 +224,7 @@ int MPIX_Allreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
 /* The previous statement is untrue when sendbuf=MPI_IN_PLACE so we
  * are forced to buffer even in the in-place case. */
 
-int MPIX_Reduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count recvcount,
+int MPIX_Reduce_scatter_block_x(BIGMPI_CONST void *sendbuf, void *recvbuf, MPI_Count recvcount,
                                 MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
     if (likely (recvcount <= bigmpi_int_max )) {
@@ -255,7 +255,7 @@ int MPIX_Reduce_scatter_block_x(const void *sendbuf, void *recvbuf, MPI_Count re
 
 #if MPI_VERSION >= 3
 
-int MPIX_Ireduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
+int MPIX_Ireduce_x(BIGMPI_CONST void *sendbuf, void *recvbuf, MPI_Count count,
                    MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm, MPI_Request * req)
 {
     if (likely (count <= bigmpi_int_max )) {
@@ -282,7 +282,7 @@ int MPIX_Ireduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
     }
 }
 
-int MPIX_Iallreduce_x(const void *sendbuf, void *recvbuf, MPI_Count count,
+int MPIX_Iallreduce_x(BIGMPI_CONST void *sendbuf, void *recvbuf, MPI_Count count,
                      MPI_Datatype datatype, MPI_Op op, MPI_Comm comm, MPI_Request * req)
 {
     if (likely (count <= bigmpi_int_max )) {
