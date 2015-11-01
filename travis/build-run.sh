@@ -8,8 +8,8 @@ export CFLAGS="-std=c99"
 #export MPICH_CC=$CC
 export MPICC=mpicc
 
-# Configure and build MADNESS
-./autogen.sh 
+# Configure and build
+./autogen.sh
 ./configure \
     --enable-g \
     --disable-static \
