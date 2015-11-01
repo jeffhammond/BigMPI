@@ -5,8 +5,8 @@
 set -e
 set -x
 
-MPI_IMPL="$1"
-os=`uname`
+os="$1"
+MPI_IMPL="$2"
 
 case "$os" in
     Darwin)
