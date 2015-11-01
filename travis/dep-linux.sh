@@ -7,4 +7,4 @@ set -ev
 sudo apt-get update -qq
 
 # Install other deps
-sudo apt-get install -qq -y cmake mpich2
+sudo apt-get install -qq -y cmake mpich
