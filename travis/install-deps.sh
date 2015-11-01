@@ -6,7 +6,7 @@ set -e
 set -x
 
 os=`uname`
-MPI_IMPL="$2"
+MPI_IMPL="$1"
 
 case "$os" in
     Darwin)
@@ -21,7 +21,7 @@ case "$os" in
                 ;;
             *)
                 echo "Unknown MPI implementation: $MPI_IMPL"
-                exit 1
+                exit 10
                 ;;
         esac
     ;;
@@ -46,7 +46,7 @@ case "$os" in
                 ;;
             *)
                 echo "Unknown MPI implementation: $MPI_IMPL"
-                exit 1
+                exit 20
                 ;;
         esac
         ;;
