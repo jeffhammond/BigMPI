@@ -12,12 +12,6 @@
 
 #include <mpi.h>
 
-#if MPI_VERSION >= 3
-#define BIGMPI_CONST const
-#else
-#define BIGMPI_CONST
-#endif
-
 #include "bigmpi.h"
 
 #include "likely.h"

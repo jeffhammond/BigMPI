@@ -14,6 +14,14 @@ extern "C" {
 typedef MPI_Aint MPI_Count;
 #endif
 
+/* MPI-3 added const to input arguments, which causes
+ * incompatibilities if BigMPI passes in const arguments. */
+#if MPI_VERSION >= 3
+#define BIGMPI_CONST const
+#else
+#define BIGMPI_CONST
+#endif
+
 /* This function does the heavy lifting in BigMPI. */
 
 int MPIX_Type_contiguous_x(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
