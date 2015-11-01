@@ -38,7 +38,9 @@ case "$os" in
                 ;;
             mpich|mpich3)
                 sudo apt-get install -q cmake gfortran libcr0 default-jdk
-                wget -q http://www.cebacad.net/files/mpich/ubuntu/mpich-3.2b3/mpich_3.2b3-1ubuntu_amd64.deb
+                #wget -q http://www.cebacad.net/files/mpich/ubuntu/mpich-3.2b3/mpich_3.2b3-1ubuntu_amd64.deb
+                #sudo dpkg -i ./mpich_3.1-1ubuntu_amd64.deb
+                wget -q http://www.cebacad.net/files/mpich/ubuntu/mpich-3.1/mpich_3.1-1ubuntu_amd64.deb
                 sudo dpkg -i ./mpich_3.1-1ubuntu_amd64.deb
                 # rm -f ./mpich_3.1-1ubuntu_amd64.deb
                 ;;
