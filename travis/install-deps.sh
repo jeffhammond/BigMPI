@@ -25,7 +25,7 @@ case "$os" in
         esac
     ;;
 
-    Linux)
+    linux)
         sudo apt-get update -q
         case "$MPI_IMPL" in
             mpich1)
