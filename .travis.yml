@@ -1,0 +1,23 @@
+language: c
+os: linux
+compiler:
+  - gcc
+  - clang
+env:
+  - GCC_VERSION=4.9 RUN_TEST=buildonly
+  - GCC_VERSION=4.9 RUN_TEST=check
+matrix:
+  exclude:
+    - compiler: clang
+      env: GCC_VERSION=4.9 RUN_TEST=buildonly
+    - compiler: clang
+      env: GCC_VERSION=4.9 RUN_TEST=check
+#notifications:
+#  email:
+#    recipients:
+#      - jeff.science@gmail.com
+#    on_success: change
+#    on_failure: always
+before_install: ./travis/dep-$TRAVIS_OS_NAME.sh
+script: ./travis/build-$TRAVIS_OS_NAME.sh
+after_failure: cat ./config.log
