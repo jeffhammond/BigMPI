@@ -9,7 +9,7 @@ env:
   - MPI_IMPL=mpich
   #- MPI_IMPL=openmpi
 before_install:
-  - sh ./travis/install-deps.sh $TRAVIS_OS_NAME $MPI_IMPL
+  - sh ./travis/install-deps.sh $MPI_IMPL
 script:
   - sh ./travis/build-run.sh
 after_failure:
