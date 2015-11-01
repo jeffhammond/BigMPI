@@ -4,10 +4,10 @@ os:
   - osx
 compiler:
   - gcc
-  #- clang
+  - clang
 env:
   - MPI_IMPL=mpich
-  #- MPI_IMPL=openmpi
+  - MPI_IMPL=openmpi
 before_install:
   - sh ./travis/install-deps.sh $MPI_IMPL
 script:
