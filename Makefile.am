@@ -15,6 +15,7 @@ libbigmpi_la_SOURCES = 	src/collectives_x.c \
 			src/reductions_x.c \
 			src/rma_x.c \
 			src/sendrecv_x.c \
+			src/fileio_x.c \
 			src/type_contiguous_x.c \
 			src/type_hindexed_x.c  \
 			src/utils.c
