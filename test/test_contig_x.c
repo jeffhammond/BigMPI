@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
 
             MPI_Datatype intype = MPI_CHAR, bigtype, outtype;
             MPI_Count nout;
-            MPIX_Type_contiguous_x(0, n, intype, &bigtype);
+            MPIX_Type_contiguous_x(n, intype, &bigtype);
             BigMPI_Decode_contiguous_x(bigtype, &nout, &outtype);
 
             if (n!=nout) {
