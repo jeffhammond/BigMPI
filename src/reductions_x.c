@@ -118,7 +118,7 @@ int MPIX_Reduce_x(BIGMPI_CONST void *sendbuf, void *recvbuf, MPI_Count count,
 #else /* BIGMPI_CLEAVER */
 
         MPI_Datatype bigtype;
-        MPIX_Type_contiguous_x(0,count, datatype, &bigtype);
+        BigMPI_Type_contiguous(0,count, datatype, &bigtype);
         MPI_Type_commit(&bigtype);
 
         MPI_Op bigop;
@@ -184,7 +184,7 @@ int MPIX_Allreduce_x(BIGMPI_CONST void *sendbuf, void *recvbuf, MPI_Count count,
 #else /* BIGMPI_CLEAVER */
 
         MPI_Datatype bigtype;
-        MPIX_Type_contiguous_x(0,count, datatype, &bigtype);
+        BigMPI_Type_contiguous(0,count, datatype, &bigtype);
         MPI_Type_commit(&bigtype);
 
         MPI_Op bigop;
@@ -263,7 +263,7 @@ int MPIX_Ireduce_x(BIGMPI_CONST void *sendbuf, void *recvbuf, MPI_Count count,
     } else {
 
         MPI_Datatype bigtype;
-        MPIX_Type_contiguous_x(0,count, datatype, &bigtype);
+        BigMPI_Type_contiguous(0,count, datatype, &bigtype);
         MPI_Type_commit(&bigtype);
 
         MPI_Op bigop;
@@ -290,7 +290,7 @@ int MPIX_Iallreduce_x(BIGMPI_CONST void *sendbuf, void *recvbuf, MPI_Count count
     } else {
 
         MPI_Datatype bigtype;
-        MPIX_Type_contiguous_x(0,count, datatype, &bigtype);
+        BigMPI_Type_contiguous(0,count, datatype, &bigtype);
         MPI_Type_commit(&bigtype);
 
         MPI_Op bigop;

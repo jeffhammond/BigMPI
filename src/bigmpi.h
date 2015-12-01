@@ -24,9 +24,12 @@ typedef MPI_Aint MPI_Count;
 
 /* This function does the heavy lifting in BigMPI. */
 
-int MPIX_Type_contiguous_x(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
+int BigMPI_Type_contiguous(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
+
 
 /* other datatype creation functions */
+
+int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
 
 int MPIX_Type_create_hvector_x(int count,
 	MPI_Count array_of_blocklengths[], MPI_Aint array_of_displacements[],
