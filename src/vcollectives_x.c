@@ -84,7 +84,6 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
     MPI_Comm_rank(comm, &rank);
 
     if (method==P2P) {
-
         switch(coll) {
             case ALLTOALLW: /* See page 173 of MPI-3 */
                 {
@@ -191,8 +190,9 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
                 BigMPI_Error("Invalid collective chosen. \n");
                 break;
         }
-#if 0
-    } else if (method==ALLTOALLW_OFFSET) {
+    } /* P2P */
+#if 1
+    else if (method==ALLTOALLW_OFFSET) {
 
         BigMPI_Error("ALLTOALL_OFFSET implementation of v-collectives is incomplete!\n");
 
@@ -307,11 +307,10 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
         free(newrecvcounts);
         free(newrecvtypes);
         free(newrdispls);
-
+    } /* ALLTOALLW_OFFSET */
 #endif
-
 #if MPI_VERSION >= 3
-    } else if (method==NEIGHBORHOOD_ALLTOALLW) {
+    else if (method==NEIGHBORHOOD_ALLTOALLW) {
 
         int          * newsendcounts = malloc(size*sizeof(int));          assert(newsendcounts!=NULL);
         MPI_Datatype * newsendtypes  = malloc(size*sizeof(MPI_Datatype)); assert(newsendtypes!=NULL);
@@ -427,9 +426,9 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
         free(newrecvcounts);
         free(newrecvtypes);
         free(newrdispls);
-
+    } /* NEIGHBORHOOD_ALLTOALLW */
 #endif
-    } else if (method==RMA) {
+    else if (method==RMA) {
 
         /* TODO Add MPI_Win_create_dynamic version of this?
          *      This may entail an MPI_Allgather over base addresses,
@@ -459,7 +458,8 @@ int BigMPI_Collective(bigmpi_collective_t coll, bigmpi_method_t method,
         MPI_Win_fence(MPI_MODE_NOSUCCEED | MPI_MODE_NOSTORE, win);
         MPI_Win_free(&win);
 
-    } else {
+    } /* RMA */
+    else {
         /* This should be unreachable... */
         BigMPI_Error("Invalid method for v-collectives chosen. \n");
     }
