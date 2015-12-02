@@ -26,12 +26,12 @@ typedef MPI_Aint MPI_Count;
 
 int BigMPI_Type_contiguous(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
 
-
 /* other datatype creation functions */
 
 int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype);
 
-int MPIX_Type_create_hvector_x(int count,
+/* rename argument "count" to "n" since global search-and-replace on "int count" happens somewhat often. */
+int MPIX_Type_create_hvector_x(int n,
                                MPI_Count array_of_blocklengths[],
                                MPI_Aint array_of_displacements[],
                                MPI_Datatype oldtype,
@@ -246,6 +246,36 @@ int MPIX_Ineighbor_alltoallw_x(BIGMPI_CONST void *sendbuf, const MPI_Count sendc
                                const MPI_Datatype recvtypes[], MPI_Comm comm, MPI_Request *request);
 
 #endif // UNSUPPORTED
+
+int MPIX_File_read_at_x(MPI_File fh, MPI_Offset offset, void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_read_at_all_x(MPI_File fh, MPI_Offset offset, void * buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_write_at_x(MPI_File fh, MPI_Offset offset, const void * buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_write_at_all_x(MPI_File fh, MPI_Offset offset, const void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_iread_at_x(MPI_File fh, MPI_Offset offset, void *buf, MPI_Count count, MPI_Datatype datatype, MPIO_Request *request);
+int MPIX_File_iwrite_at_x(MPI_File fh, MPI_Offset offset, const void *buf, MPI_Count count, MPI_Datatype datatype, MPIO_Request *request);
+int MPIX_File_read_x(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_read_all_x(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_write_x(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_write_all_x(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_iread_x(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype datatype, MPIO_Request *request);
+int MPIX_File_iwrite_x(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatype datatype, MPIO_Request *request);
+int MPIX_File_read_shared_x(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_write_shared_x(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_iread_shared_x(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype datatype, MPIO_Request *request);
+int MPIX_File_iwrite_shared_x(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatype datatype, MPIO_Request *request);
+int MPIX_File_read_ordered_x(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_write_ordered_x(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Status *status);
+int MPIX_File_read_at_all_begin_x(MPI_File fh, MPI_Offset offset, void *buf, MPI_Count count, MPI_Datatype datatype);
+int MPIX_File_write_at_all_begin_x(MPI_File fh, MPI_Offset offset, const void *buf, MPI_Count count, MPI_Datatype datatype);
+int MPIX_File_read_all_begin_x(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype datatype);
+int MPIX_File_write_all_begin_x(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatype datatype);
+int MPIX_File_read_ordered_begin_x(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype datatype);
+int MPIX_File_write_ordered_begin_x(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatype datatype);
+int MPIX_File_iread_at_all_x(MPI_File fh, MPI_Offset offset, void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Request *request);
+int MPIX_File_iwrite_at_all_x(MPI_File fh, MPI_Offset offset, const void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Request *request);
+int MPIX_File_iread_all_x(MPI_File fh, void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Request *request);
+int MPIX_File_iwrite_all_x(MPI_File fh, const void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Request *request);
+
 
 #ifdef __cplusplus
 }
