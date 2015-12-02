@@ -80,9 +80,10 @@ void BigMPI_Convert_vectors(int                num,
 
     MPI_Aint lb /* unused */, oldextent;
     if (splat_old_type) {
+        /* All the v-collectives have the same oldtype, so we get its extent only once. */
         MPI_Type_get_extent(oldtype, &lb, &oldextent);
     } else {
-        /* !splat_old_type implies ALLTOALLW, which implies no displacement zeroing. */
+        /* ALLTOALLW, which implies no displacement zeroing. */
         assert(!zero_new_displs);
     }
 
@@ -97,10 +98,10 @@ void BigMPI_Convert_vectors(int                num,
 
         /* displacements */
         MPI_Aint newextent;
-        /* If we are not splatting old type, it implies ALLTOALLW,
-         * which does not scale the displacement by the type extent,
-         * nor would we ever zero the displacements. */
         if (splat_old_type) {
+            /* If we are splatting the old type, it implies a v-collective,
+             * which means we scale the displacement by the type extent,
+             * because ALLTOALLW uses byte displacements. */
             MPI_Type_get_extent(newtypes[i], &lb, &newextent);
             newdispls[i] = (zero_new_displs ? 0 : olddispls[i]*oldextent/newextent);
         } else {
