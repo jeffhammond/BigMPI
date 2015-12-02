@@ -10,8 +10,8 @@ int MPIX_Put_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype ori
                      target_rank, target_disp, target_count, target_datatype, win);
     } else {
         MPI_Datatype neworigin_datatype, newtarget_datatype;
-        MPIX_Type_contiguous_x(0,origin_count, origin_datatype, &neworigin_datatype);
-        MPIX_Type_contiguous_x(0,target_count, target_datatype, &newtarget_datatype);
+        BigMPI_Type_contiguous(0,origin_count, origin_datatype, &neworigin_datatype);
+        BigMPI_Type_contiguous(0,target_count, target_datatype, &newtarget_datatype);
         MPI_Type_commit(&neworigin_datatype);
         MPI_Type_commit(&newtarget_datatype);
         rc = MPI_Put(origin_addr, 1, neworigin_datatype,
@@ -32,8 +32,8 @@ int MPIX_Get_x(void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_da
                      target_rank, target_disp, target_count, target_datatype, win);
     } else {
         MPI_Datatype neworigin_datatype, newtarget_datatype;
-        MPIX_Type_contiguous_x(0,origin_count, origin_datatype, &neworigin_datatype);
-        MPIX_Type_contiguous_x(0,target_count, target_datatype, &newtarget_datatype);
+        BigMPI_Type_contiguous(0,origin_count, origin_datatype, &neworigin_datatype);
+        BigMPI_Type_contiguous(0,target_count, target_datatype, &newtarget_datatype);
         MPI_Type_commit(&neworigin_datatype);
         MPI_Type_commit(&newtarget_datatype);
         rc = MPI_Get(origin_addr, 1, neworigin_datatype,
@@ -56,8 +56,8 @@ int MPIX_Accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datat
                             op, win);
     } else {
         MPI_Datatype neworigin_datatype, newtarget_datatype;
-        MPIX_Type_contiguous_x(0,origin_count, origin_datatype, &neworigin_datatype);
-        MPIX_Type_contiguous_x(0,target_count, target_datatype, &newtarget_datatype);
+        BigMPI_Type_contiguous(0,origin_count, origin_datatype, &neworigin_datatype);
+        BigMPI_Type_contiguous(0,target_count, target_datatype, &newtarget_datatype);
         MPI_Type_commit(&neworigin_datatype);
         MPI_Type_commit(&newtarget_datatype);
         rc = MPI_Accumulate(origin_addr, 1, neworigin_datatype,
@@ -82,9 +82,9 @@ int MPIX_Get_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_D
                                 op, win);
     } else {
         MPI_Datatype neworigin_datatype, newresult_datatype, newtarget_datatype;
-        MPIX_Type_contiguous_x(0,origin_count, origin_datatype, &neworigin_datatype);
-        MPIX_Type_contiguous_x(0,result_count, result_datatype, &newresult_datatype);
-        MPIX_Type_contiguous_x(0,target_count, target_datatype, &newtarget_datatype);
+        BigMPI_Type_contiguous(0,origin_count, origin_datatype, &neworigin_datatype);
+        BigMPI_Type_contiguous(0,result_count, result_datatype, &newresult_datatype);
+        BigMPI_Type_contiguous(0,target_count, target_datatype, &newtarget_datatype);
         MPI_Type_commit(&neworigin_datatype);
         MPI_Type_commit(&newresult_datatype);
         MPI_Type_commit(&newtarget_datatype);
@@ -110,8 +110,8 @@ int MPIX_Rput_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype or
                      target_rank, target_disp, target_count, target_datatype, win, request);
     } else {
         MPI_Datatype neworigin_datatype, newtarget_datatype;
-        MPIX_Type_contiguous_x(0,origin_count, origin_datatype, &neworigin_datatype);
-        MPIX_Type_contiguous_x(0,target_count, target_datatype, &newtarget_datatype);
+        BigMPI_Type_contiguous(0,origin_count, origin_datatype, &neworigin_datatype);
+        BigMPI_Type_contiguous(0,target_count, target_datatype, &newtarget_datatype);
         MPI_Type_commit(&neworigin_datatype);
         MPI_Type_commit(&newtarget_datatype);
         rc = MPI_Rput(origin_addr, 1, neworigin_datatype,
@@ -133,8 +133,8 @@ int MPIX_Rget_x(void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_d
                      target_rank, target_disp, target_count, target_datatype, win, request);
     } else {
         MPI_Datatype neworigin_datatype, newtarget_datatype;
-        MPIX_Type_contiguous_x(0,origin_count, origin_datatype, &neworigin_datatype);
-        MPIX_Type_contiguous_x(0,target_count, target_datatype, &newtarget_datatype);
+        BigMPI_Type_contiguous(0,origin_count, origin_datatype, &neworigin_datatype);
+        BigMPI_Type_contiguous(0,target_count, target_datatype, &newtarget_datatype);
         MPI_Type_commit(&neworigin_datatype);
         MPI_Type_commit(&newtarget_datatype);
         rc = MPI_Rget(origin_addr, 1, neworigin_datatype,
@@ -157,8 +157,8 @@ int MPIX_Raccumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Data
                             op, win, request);
     } else {
         MPI_Datatype neworigin_datatype, newtarget_datatype;
-        MPIX_Type_contiguous_x(0,origin_count, origin_datatype, &neworigin_datatype);
-        MPIX_Type_contiguous_x(0,target_count, target_datatype, &newtarget_datatype);
+        BigMPI_Type_contiguous(0,origin_count, origin_datatype, &neworigin_datatype);
+        BigMPI_Type_contiguous(0,target_count, target_datatype, &newtarget_datatype);
         MPI_Type_commit(&neworigin_datatype);
         MPI_Type_commit(&newtarget_datatype);
         rc = MPI_Raccumulate(origin_addr, 1, neworigin_datatype,
@@ -183,9 +183,9 @@ int MPIX_Rget_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_
                                 op, win, request);
     } else {
         MPI_Datatype neworigin_datatype, newresult_datatype, newtarget_datatype;
-        MPIX_Type_contiguous_x(0,origin_count, origin_datatype, &neworigin_datatype);
-        MPIX_Type_contiguous_x(0,result_count, result_datatype, &newresult_datatype);
-        MPIX_Type_contiguous_x(0,target_count, target_datatype, &newtarget_datatype);
+        BigMPI_Type_contiguous(0,origin_count, origin_datatype, &neworigin_datatype);
+        BigMPI_Type_contiguous(0,result_count, result_datatype, &newresult_datatype);
+        BigMPI_Type_contiguous(0,target_count, target_datatype, &newtarget_datatype);
         MPI_Type_commit(&neworigin_datatype);
         MPI_Type_commit(&newresult_datatype);
         MPI_Type_commit(&newtarget_datatype);

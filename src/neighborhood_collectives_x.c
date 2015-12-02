@@ -10,20 +10,20 @@ int MPIX_Neighbor_allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Data
         rc = MPI_Neighbor_allgather(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm);
     } else if (sendcount > bigmpi_int_max && recvcount <= bigmpi_int_max ) {
         MPI_Datatype newsendtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
         MPI_Type_commit(&newsendtype);
         rc = MPI_Neighbor_allgather(sendbuf, 1, newsendtype, recvbuf, (int)recvcount, recvtype, comm);
         MPI_Type_free(&newsendtype);
     } else if (sendcount <= bigmpi_int_max && recvcount > bigmpi_int_max ) {
         MPI_Datatype newrecvtype;
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Neighbor_allgather(sendbuf, (int)sendcount, sendtype, recvbuf, 1, newrecvtype, comm);
         MPI_Type_free(&newrecvtype);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Neighbor_allgather(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, comm);
@@ -43,20 +43,20 @@ int MPIX_Neighbor_alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datat
         rc = MPI_Neighbor_alltoall(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm);
     } else if (sendcount > bigmpi_int_max && recvcount <= bigmpi_int_max ) {
         MPI_Datatype newsendtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
         MPI_Type_commit(&newsendtype);
         rc = MPI_Neighbor_alltoall(sendbuf, 1, newsendtype, recvbuf, (int)recvcount, recvtype, comm);
         MPI_Type_free(&newsendtype);
     } else if (sendcount <= bigmpi_int_max && recvcount > bigmpi_int_max ) {
         MPI_Datatype newrecvtype;
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Neighbor_alltoall(sendbuf, (int)sendcount, sendtype, recvbuf, 1, newrecvtype, comm);
         MPI_Type_free(&newrecvtype);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Neighbor_alltoall(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, comm);
@@ -249,20 +249,20 @@ int MPIX_Ineighbor_allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Dat
         rc = MPI_Ineighbor_allgather(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm, request);
     } else if (sendcount > bigmpi_int_max && recvcount <= bigmpi_int_max ) {
         MPI_Datatype newsendtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
         MPI_Type_commit(&newsendtype);
         rc = MPI_Ineighbor_allgather(sendbuf, 1, newsendtype, recvbuf, (int)recvcount, recvtype, comm, request);
         MPI_Type_free(&newsendtype);
     } else if (sendcount <= bigmpi_int_max && recvcount > bigmpi_int_max ) {
         MPI_Datatype newrecvtype;
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Ineighbor_allgather(sendbuf, (int)sendcount, sendtype, recvbuf, 1, newrecvtype, comm, request);
         MPI_Type_free(&newrecvtype);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Ineighbor_allgather(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, comm, request);
@@ -282,20 +282,20 @@ int MPIX_Ineighbor_alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Data
         rc = MPI_Ineighbor_alltoall(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm, request);
     } else if (sendcount > bigmpi_int_max && recvcount <= bigmpi_int_max ) {
         MPI_Datatype newsendtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
         MPI_Type_commit(&newsendtype);
         rc = MPI_Ineighbor_alltoall(sendbuf, 1, newsendtype, recvbuf, (int)recvcount, recvtype, comm, request);
         MPI_Type_free(&newsendtype);
     } else if (sendcount <= bigmpi_int_max && recvcount > bigmpi_int_max ) {
         MPI_Datatype newrecvtype;
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Ineighbor_alltoall(sendbuf, (int)sendcount, sendtype, recvbuf, 1, newrecvtype, comm, request);
         MPI_Type_free(&newrecvtype);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Ineighbor_alltoall(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, comm, request);

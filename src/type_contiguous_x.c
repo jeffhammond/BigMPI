@@ -46,7 +46,7 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
 /*
  * Synopsis
  *
- * int MPIX_Type_contiguous_x(MPI_Aint offset,
+ * int BigMPI_Type_contiguous(MPI_Aint offset,
  *                            MPI_Count count,
  *                            MPI_Datatype   oldtype,
  *                            MPI_Datatype * newtype)
@@ -71,7 +71,7 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
  *   us to use MPI_Alltoallw instead of MPI_Neighborhood_alltoallw.
  *
  */
-int MPIX_Type_contiguous_x(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype)
+int BigMPI_Type_contiguous(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype)
 {
     /* The count has to fit into MPI_Aint for BigMPI to work. */
     assert(count<bigmpi_count_max);
@@ -118,7 +118,7 @@ int MPIX_Type_contiguous_x(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtyp
 /*
  * Synopsis
  *
- * This function inverts MPIX_Type_contiguous_x, i.e. it provides
+ * This function inverts BigMPI_Type_contiguous, i.e. it provides
  * the original arguments for that call so that we know how many
  * built-in types are in the user-defined datatype.
  *

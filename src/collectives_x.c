@@ -8,7 +8,7 @@ int MPIX_Bcast_x(void *buf, MPI_Count count, MPI_Datatype datatype, int root, MP
         rc = MPI_Bcast(buf, (int)count, datatype, root, comm);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
+        BigMPI_Type_contiguous(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Bcast(buf, 1, newtype, root, comm);
         MPI_Type_free(&newtype);
@@ -25,8 +25,8 @@ int MPIX_Gather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtyp
         rc = MPI_Gather(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, root, comm);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Gather(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, root, comm);
@@ -45,8 +45,8 @@ int MPIX_Scatter_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
         rc = MPI_Scatter(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, root, comm);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Scatter(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, root, comm);
@@ -65,8 +65,8 @@ int MPIX_Allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
         rc = MPI_Allgather(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Allgather(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, comm);
@@ -85,8 +85,8 @@ int MPIX_Alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
         rc = MPI_Alltoall(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Alltoall(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, comm);
@@ -104,7 +104,7 @@ int MPIX_Ibcast_x(void *buf, MPI_Count count, MPI_Datatype datatype, int root, M
         rc = MPI_Ibcast(buf, (int)count, datatype, root, comm, request);
     } else {
         MPI_Datatype newtype;
-        MPIX_Type_contiguous_x(0,count, datatype, &newtype);
+        BigMPI_Type_contiguous(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Ibcast(buf, 1, newtype, root, comm, request);
         MPI_Type_free(&newtype);
@@ -121,8 +121,8 @@ int MPIX_Igather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
         rc = MPI_Igather(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, root, comm, request);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Igather(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, root, comm, request);
@@ -141,8 +141,8 @@ int MPIX_Iscatter_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
         rc = MPI_Iscatter(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, root, comm, request);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Iscatter(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, root, comm, request);
@@ -161,8 +161,8 @@ int MPIX_Iallgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
         rc = MPI_Iallgather(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm, request);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Iallgather(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, comm, request);
@@ -181,8 +181,8 @@ int MPIX_Ialltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
         rc = MPI_Ialltoall(sendbuf, (int)sendcount, sendtype, recvbuf, (int)recvcount, recvtype, comm, request);
     } else {
         MPI_Datatype newsendtype, newrecvtype;
-        MPIX_Type_contiguous_x(0,sendcount, sendtype, &newsendtype);
-        MPIX_Type_contiguous_x(0,recvcount, recvtype, &newrecvtype);
+        BigMPI_Type_contiguous(0,sendcount, sendtype, &newsendtype);
+        BigMPI_Type_contiguous(0,recvcount, recvtype, &newrecvtype);
         MPI_Type_commit(&newsendtype);
         MPI_Type_commit(&newrecvtype);
         rc = MPI_Ialltoall(sendbuf, 1, newsendtype, recvbuf, 1, newrecvtype, comm, request);
