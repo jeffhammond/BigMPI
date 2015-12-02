@@ -16,7 +16,7 @@ int MPIX_Bcast_x(void *buf, MPI_Count count, MPI_Datatype datatype, int root, MP
     return rc;
 }
 
-int MPIX_Gather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+int MPIX_Gather_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                   void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -36,7 +36,7 @@ int MPIX_Gather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtyp
     return rc;
 }
 
-int MPIX_Scatter_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+int MPIX_Scatter_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                    void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -56,7 +56,7 @@ int MPIX_Scatter_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     return rc;
 }
 
-int MPIX_Allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+int MPIX_Allgather_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                      void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -76,7 +76,7 @@ int MPIX_Allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
     return rc;
 }
 
-int MPIX_Alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+int MPIX_Alltoall_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                     void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
@@ -96,6 +96,8 @@ int MPIX_Alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
     return rc;
 }
 
+#if MPI_VERSION >= 3
+
 int MPIX_Ibcast_x(void *buf, MPI_Count count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Request *request)
 {
     int rc = MPI_SUCCESS;
@@ -112,7 +114,7 @@ int MPIX_Ibcast_x(void *buf, MPI_Count count, MPI_Datatype datatype, int root, M
     return rc;
 }
 
-int MPIX_Igather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+int MPIX_Igather_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                   void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
 {
     int rc = MPI_SUCCESS;
@@ -132,7 +134,7 @@ int MPIX_Igather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendty
     return rc;
 }
 
-int MPIX_Iscatter_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+int MPIX_Iscatter_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                    void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request *request)
 {
     int rc = MPI_SUCCESS;
@@ -152,7 +154,7 @@ int MPIX_Iscatter_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendt
     return rc;
 }
 
-int MPIX_Iallgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+int MPIX_Iallgather_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                      void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
 {
     int rc = MPI_SUCCESS;
@@ -172,7 +174,7 @@ int MPIX_Iallgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sen
     return rc;
 }
 
-int MPIX_Ialltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
+int MPIX_Ialltoall_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                     void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
 {
     int rc = MPI_SUCCESS;
@@ -191,3 +193,5 @@ int MPIX_Ialltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype send
     }
     return rc;
 }
+
+#endif

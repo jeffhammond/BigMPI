@@ -40,7 +40,7 @@ void BigMPI_Error_impl(const char *file, const int line, const char *func, const
 /*
  * Synopsis
  *
- * void convert_vectors(..)
+ * void BigMPI_Convert_vectors(..)
  *
  *  Input Parameter
  *
@@ -91,7 +91,8 @@ void BigMPI_Convert_vectors(int                num,
         newcounts[i] = 1;
 
         /* types */
-        BigMPI_Type_contiguous(0,oldcounts[i], splat_old_type ? oldtype : oldtypes[i], &newtypes[i]);
+        BigMPI_Type_contiguous(0, splat_old_count ? oldcount : oldcounts[i],
+                                  splat_old_type  ? oldtype  : oldtypes[i], &newtypes[i]);
         MPI_Type_commit(&newtypes[i]);
 
         /* displacements */
@@ -108,6 +109,8 @@ void BigMPI_Convert_vectors(int                num,
     }
     return;
 }
+
+#if MPI_VERSION >= 3
 
 /*
  * Synopsis
@@ -159,3 +162,5 @@ int BigMPI_Create_graph_comm(MPI_Comm comm_old, int root, MPI_Comm * comm_dist_g
 
     return rc;
 }
+
+#endif

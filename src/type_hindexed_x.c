@@ -40,7 +40,11 @@ int MPIX_Type_create_hvector_x(int count,
     int *blocklens;
 
     /* The count has to fit into MPI_Aint for BigMPI to work. */
-    assert(count<bigmpi_count_max);
+    if ((uint64_t)count>(uint64_t)bigmpi_count_max) {
+        printf("count (%lld) exceeds bigmpi_count_max (%lld)\n",
+                (long long unsigned)count, (long long unsigned)bigmpi_count_max);
+        fflush(stdout);
+    }
 
     types = malloc(count*sizeof(*types));
     blocklens = malloc(count*sizeof(*blocklens));

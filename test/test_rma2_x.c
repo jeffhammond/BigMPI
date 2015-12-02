@@ -14,6 +14,7 @@
 
 int main(int argc, char * argv[])
 {
+#if MPI_VERSION >= 3
     const MPI_Count test_int_max = BigMPI_Get_max_int();
 
     MPI_Init(&argc, &argv);
@@ -66,6 +67,8 @@ int main(int argc, char * argv[])
     MPI_Win_free(&win);
 
     MPI_Finalize();
+
+#endif
 
     return 0;
 }

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <limits.h>
 #include <mpi.h>
@@ -50,7 +51,7 @@ int main(int argc, char* argv[])
 
             MPI_Datatype intype = MPI_CHAR, bigtype, outtype;
             MPI_Count nout;
-            MPIX_Type_contiguous_x(0, n, intype, &bigtype);
+            MPIX_Type_contiguous_x(n, intype, &bigtype);
             BigMPI_Decode_contiguous_x(bigtype, &nout, &outtype);
 
             if (n!=nout) {
@@ -67,11 +68,14 @@ int main(int argc, char* argv[])
 
         n *= 2;
 
+        /* TODO: Find a better way to do this... */
         /* If bigmpi_int_max is artificially low for debugging,
          * MPI will throw an error inside of MPIX_Type_contiguous_x. */
-        if (n>INT_MAX || n>=(test_int_max*test_int_max) ) {
-            MPI_Finalize();
-            return errors;
+        if (BigMPI_Get_max_int() < SIZE_MAX) {
+            if (n>INT_MAX || n>=(test_int_max*test_int_max) ) {
+                MPI_Finalize();
+                return errors;
+            }
         }
     }
     MPI_Finalize();

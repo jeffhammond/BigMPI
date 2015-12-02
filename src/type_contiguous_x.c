@@ -74,7 +74,11 @@ static int BigMPI_Factorize_count(MPI_Count in, int * a, int *b)
 int BigMPI_Type_contiguous(MPI_Aint offset, MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype)
 {
     /* The count has to fit into MPI_Aint for BigMPI to work. */
-    assert(count<bigmpi_count_max);
+    if ((uint64_t)count>(uint64_t)bigmpi_count_max) {
+        printf("count (%llu) exceeds bigmpi_count_max (%llu)\n",
+                (long long unsigned)count, (long long unsigned)bigmpi_count_max);
+        fflush(stdout);
+    }
 
 #ifdef BIGMPI_AVOID_TYPE_CREATE_STRUCT
     if (offset==0) {
@@ -221,4 +225,10 @@ int BigMPI_Decode_contiguous_x(MPI_Datatype intype, MPI_Count * count, MPI_Datat
     *count = c*bigmpi_int_max+r;
 
     return MPI_SUCCESS;
+}
+
+/* MPIX_Type_contiguous_x is consistent with MPI_Type_contiguous... */
+int MPIX_Type_contiguous_x(MPI_Count count, MPI_Datatype oldtype, MPI_Datatype * newtype)
+{
+    return BigMPI_Type_contiguous(0, count, oldtype, newtype);
 }

@@ -1,6 +1,6 @@
 #include "bigmpi_impl.h"
 
-int MPIX_Put_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+int MPIX_Put_x(BIGMPI_CONST void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
                int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype, MPI_Win win)
 {
     int rc = MPI_SUCCESS;
@@ -44,7 +44,7 @@ int MPIX_Get_x(void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_da
     return rc;
 }
 
-int MPIX_Accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+int MPIX_Accumulate_x(BIGMPI_CONST void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
                       int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
                       MPI_Op op, MPI_Win win)
 {
@@ -68,7 +68,9 @@ int MPIX_Accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datat
     return rc;
 }
 
-int MPIX_Get_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+#if MPI_VERSION >= 3
+
+int MPIX_Get_accumulate_x(BIGMPI_CONST void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
                           void *result_addr, MPI_Count result_count, MPI_Datatype result_datatype,
                           int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
                           MPI_Op op, MPI_Win win)
@@ -99,7 +101,7 @@ int MPIX_Get_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_D
     return rc;
 }
 
-int MPIX_Rput_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+int MPIX_Rput_x(BIGMPI_CONST void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
                 int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
                 MPI_Win win, MPI_Request *request)
 {
@@ -145,7 +147,7 @@ int MPIX_Rget_x(void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_d
     return rc;
 }
 
-int MPIX_Raccumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+int MPIX_Raccumulate_x(BIGMPI_CONST void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
                       int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
                       MPI_Op op, MPI_Win win, MPI_Request *request)
 {
@@ -169,7 +171,7 @@ int MPIX_Raccumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Data
     return rc;
 }
 
-int MPIX_Rget_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
+int MPIX_Rget_accumulate_x(BIGMPI_CONST void *origin_addr, MPI_Count origin_count, MPI_Datatype origin_datatype,
                           void *result_addr, MPI_Count result_count, MPI_Datatype result_datatype,
                           int target_rank, MPI_Aint target_disp, MPI_Count target_count, MPI_Datatype target_datatype,
                           MPI_Op op, MPI_Win win, MPI_Request * request)
@@ -199,3 +201,5 @@ int MPIX_Rget_accumulate_x(const void *origin_addr, MPI_Count origin_count, MPI_
     }
     return rc;
 }
+
+#endif

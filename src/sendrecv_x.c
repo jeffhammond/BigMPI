@@ -1,6 +1,6 @@
 #include "bigmpi_impl.h"
 
-int MPIX_Send_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int MPIX_Send_x(BIGMPI_CONST void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
 
@@ -32,7 +32,7 @@ int MPIX_Recv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, i
     return rc;
 }
 
-int MPIX_Isend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request * request)
+int MPIX_Isend_x(BIGMPI_CONST void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request * request)
 {
     int rc = MPI_SUCCESS;
 
@@ -64,7 +64,7 @@ int MPIX_Irecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, 
     return rc;
 }
 
-int MPIX_Sendrecv_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype, int dest, int sendtag,
+int MPIX_Sendrecv_x(BIGMPI_CONST void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype, int dest, int sendtag,
                     void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype, int source, int recvtag,
                     MPI_Comm comm, MPI_Status *status)
 {
@@ -123,7 +123,7 @@ int MPIX_Sendrecv_replace_x(void *buf, MPI_Count count, MPI_Datatype datatype, i
 }
 
 
-int MPIX_Ssend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int MPIX_Ssend_x(BIGMPI_CONST void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
 
@@ -139,7 +139,7 @@ int MPIX_Ssend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
     return rc;
 }
 
-int MPIX_Rsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
+int MPIX_Rsend_x(BIGMPI_CONST void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm)
 {
     int rc = MPI_SUCCESS;
 
@@ -155,7 +155,7 @@ int MPIX_Rsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int de
     return rc;
 }
 
-int MPIX_Issend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int MPIX_Issend_x(BIGMPI_CONST void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
 {
     int rc = MPI_SUCCESS;
 
@@ -171,7 +171,7 @@ int MPIX_Issend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int d
     return rc;
 }
 
-int MPIX_Irsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
+int MPIX_Irsend_x(BIGMPI_CONST void *buf, MPI_Count count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request *request)
 {
     int rc = MPI_SUCCESS;
 
@@ -186,6 +186,8 @@ int MPIX_Irsend_x(const void *buf, MPI_Count count, MPI_Datatype datatype, int d
     }
     return rc;
 }
+
+#if MPI_VERSION >= 3
 
 int MPIX_Mrecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message *message, MPI_Status *status)
 {
@@ -218,3 +220,5 @@ int MPIX_Imrecv_x(void *buf, MPI_Count count, MPI_Datatype datatype, MPI_Message
     }
     return rc;
 }
+
+#endif

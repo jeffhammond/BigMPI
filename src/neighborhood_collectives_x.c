@@ -1,5 +1,7 @@
 #include "bigmpi_impl.h"
 
+#if MPI_VERSION >= 3
+
 int MPIX_Neighbor_allgather_x(const void *sendbuf, MPI_Count sendcount, MPI_Datatype sendtype,
                               void *recvbuf, MPI_Count recvcount, MPI_Datatype recvtype,
                               MPI_Comm comm)
@@ -304,3 +306,5 @@ int MPIX_Ineighbor_alltoall_x(const void *sendbuf, MPI_Count sendcount, MPI_Data
     }
     return rc;
 }
+
+#endif
