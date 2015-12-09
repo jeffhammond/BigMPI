@@ -58,17 +58,41 @@ def make_mpi_c11_decl2s(f,name,args):
            +'                 (MPI_Count,MPI_Count):       MPI_' + name +  '_x, \\\n'
            +'                 (default,default):           MPI_' + name +  '_x)' + args + '\n\n')
 
+def make_mpi_c11_decl2sca(f,name,args):
+    f.write('#define MPI_' + name + args + '    \\\n'
+           +'        _Generic((count,disp)                           \\\n'
+           +'                 (int,int):                   MPI_' + name +  ',   \\\n'
+           +'                 (MPI_Count,MPI_Aint):        MPI_' + name +  '_x)' + args + '\n\n')
+
 def make_mpi_c11_decl1s1v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((count,vcount)                           \\\n'
            +'                 (int,int*):                   MPI_' + name +  ',   \\\n'
            +'                 (MPI_Count,MPI_Count*):       MPI_' + name +  '_x)' + args + '\n\n')
 
+def make_mpi_c11_decl1sc1va(f,name,args):
+    f.write('#define MPI_' + name + args + '    \\\n'
+           +'        _Generic((count,disps)                           \\\n'
+           +'                 (int,int*):                  MPI_' + name +  ',   \\\n'
+           +'                 (MPI_Count,MPI_Aint*):       MPI_' + name +  '_x)' + args + '\n\n')
+
 def make_mpi_c11_decl2v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((scounts,rcounts)                           \\\n'
            +'                 (int*,int*):                   MPI_' + name +  ',   \\\n'
            +'                 (MPI_Count*,MPI_Count*):       MPI_' + name +  '_x)' + args + '\n\n')
+
+def make_mpi_c11_decl3v(f,name,args):
+    f.write('#define MPI_' + name + args + '    \\\n'
+           +'        _Generic((counts1,counts2,counts3)                           \\\n'
+           +'                 (const int*,const int*,const int*):                   MPI_' + name +  ',   \\\n'
+           +'                 (const MPI_Count*,const MPI_Count*,const MPI_Count*): MPI_' + name +  '_x)' + args + '\n\n')
+
+def make_mpi_c11_decl2vca(f,name,args):
+    f.write('#define MPI_' + name + args + '    \\\n'
+           +'        _Generic((counts,disps)                           \\\n'
+           +'                 (const int*,const int*):                   MPI_' + name +  ',   \\\n'
+           +'                 (const MPI_Count*,const MPI_Aint*):        MPI_' + name +  '_x)' + args + '\n\n')
 
 def make_mpi_c11_decl1s2v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
@@ -172,27 +196,45 @@ mpi_interfaces = [
                   # neighbor_alltoallw already has Aint displs so no need to select there
                   ['2v','Neighbor_alltoallw',     '(sbuf,scounts,sdispls,stypes,rbuf,rcounts,rdispls,rtypes,comm)'],
                   ['2v','Neighbor_ialltoallw',    '(sbuf,scounts,sdispls,stypes,rbuf,rcounts,rdispls,rtypes,comm,req)'],
+                  # datatypes
+                  ['1s','Type_contiguous',                   '(count,oldtype,newtype)'],
+                  ['2sca','MPI_Type_vector',                 '(nblocks,count,disp,oldtype,newtype)'],
+                  ['1s','MPI_Type_hvector',                  '(nblocks,count,disp,oldtype,newtype)'],
+                  ['2vca','MPI_Type_indexed',                '(nblocks,counts,disps,oldtype,newtype)'],
+                  ['1v','MPI_Type_hindexed',                 '(nblocks,counts,disps,oldtype,newtype)'],
+                  ['1v','MPI_Type_struct',                   '(nblocks,counts,disps,oldtypes,newtype)'],
+                  ['1v','MPI_Type_create_hindexed',          '(nblocks,counts,disps,oldtype,newtype)'],
+                  ['1s','MPI_Type_create_hvector',           '(nblocks,count,disp,oldtype,newtype)'],
+                  ['1sc1va','MPI_Type_create_indexed_block', '(nblocks,count,disps,oldtype,newtype)'],
+                  ['1s','MPI_Type_create_hindexed_block',    '(nblocks,count,disps,oldtype,newtype)'],
+                  ['1v','MPI_Type_create_struct',            '(nblocks,counts,disps,oldtypes,newtype)'],
+                  ['3v','MPI_Type_create_subarray',          '(nblocks,counts1,counts2,counts3,order,oldtype,newtype)']
                   # TODO:
-                  #  file I/I
+                  # MPI_Type_create_darray
+                  # file I/O
                  ]
 
 f = open('test.h','w')
 make_pre(f)
 for (n,name,args) in mpi_interfaces:
-    if   n=='1s':   make_mpi_c11_decl1s(f,name,args)
-    elif n=='2s':   make_mpi_c11_decl2s(f,name,args)
-    elif n=='3s':   make_mpi_c11_decl3s(f,name,args)
-    elif n=='1v':   make_mpi_c11_decl1v(f,name,args)
-    elif n=='2v':   make_mpi_c11_decl1v(f,name,args)
-    elif n=='4v':   make_mpi_c11_decl4v(f,name,args)
-    elif n=='1s1v': make_mpi_c11_decl1s1v(f,name,args)
-    elif n=='1s2v': make_mpi_c11_decl1s2v(f,name,args)
+    if   n=='1s':     make_mpi_c11_decl1s(f,name,args)
+    elif n=='2s':     make_mpi_c11_decl2s(f,name,args)
+    elif n=='3s':     make_mpi_c11_decl3s(f,name,args)
+    elif n=='1v':     make_mpi_c11_decl1v(f,name,args)
+    elif n=='2v':     make_mpi_c11_decl1v(f,name,args)
+    elif n=='4v':     make_mpi_c11_decl4v(f,name,args)
+    elif n=='1s1v':   make_mpi_c11_decl1s1v(f,name,args)
+    elif n=='1s2v':   make_mpi_c11_decl1s2v(f,name,args)
+    # ca = (Count,Aint) - for datatypes
+    elif n=='1sc1va': make_mpi_c11_decl1sc1va(f,name,args)
+    elif n=='2sca':   make_mpi_c11_decl2sca(f,name,args)
+    elif n=='2vca':   make_mpi_c11_decl2vca(f,name,args)
+    elif n=='3v':     make_mpi_c11_decl3v(f,name,args)
     else: print 'oops for '+n
 make_get_count(f)
 make_user_function(f)
 make_post(f)
 f.close()
-
 
 
 
