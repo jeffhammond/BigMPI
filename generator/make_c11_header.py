@@ -114,6 +114,12 @@ mpi_interfaces = [
                   ['2s','Sendrecv_replace', '(buf,scount,stype,dst,stag,rcount,rtype,src,rtag,comm,stat)'],
                   ['1s','Buffer_attach',    '(buf,count)'],
                   ['1s','Buffer_detach',    '(buf,count)'],
+                  # persistent point-to-point
+                  ['1s','Send_init',        '(buf,count,type,dst,tag,comm,req)'],
+                  ['1s','Ssend_init',       '(buf,count,type,dst,tag,comm,req)'],
+                  ['1s','Rsend_init',       '(buf,count,type,dst,tag,comm,req)'],
+                  ['1s','Bsend_init',       '(buf,count,type,dst,tag,comm,req)'],
+                  ['1s','Recv_init',        '(buf,count,type,src,tag,comm,req)'],
                   # RMA
                   ['2s','Put',              '(buf,scount,stype,dst,disp,rcount,rtype,win)'],
                   ['2s','Rput',             '(buf,scount,stype,dst,disp,rcount,rtype,win,req)'],
