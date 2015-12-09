@@ -25,6 +25,15 @@ def make_user_function(f):
            +'                 MPI_User_function*:   MPI_Op_create, \\\n'
            +'                 MPI_User_function_x*: MPI_Op_create_x)(function, commute, op)\n\n')
 
+# int MPI_Get_count(const MPI_Status *status, MPI_Datatype datatype, int *count);
+def make_get_count(f):
+    f.write('int MPI_Get_count_x(const MPI_Status *status, MPI_Datatype datatype, MPI_Count *count);\n'
+           +'#define MPI_Get_count(status,datatype,count)'
+           +'        _Generic((count)                          \\\n'
+           +'                 int*:       MPI_Get_count, \\\n'
+           +'                 MPI_Count*: MPI_Get_count_x)(status,datatype,count)\n\n')
+
+
 def make_mpi_c11_decl1s(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((count)                          \\\n'
@@ -103,15 +112,16 @@ mpi_interfaces = [
                   ['1s','Imrecv',           '(buf,count,type,msg,req)'],
                   ['2s','Sendrecv',         '(sbuf,scount,stype,dst,stag,rbuf,rcount,rtype,src,rtag,comm,stat)'],
                   ['2s','Sendrecv_replace', '(buf,scount,stype,dst,stag,rcount,rtype,src,rtag,comm,stat)'],
-                  ['1s','Buffer_attach',    '(buf,size)'],
+                  ['1s','Buffer_attach',    '(buf,count)'],
+                  ['1s','Buffer_detach',    '(buf,count)'],
                   # RMA
                   ['2s','Put',              '(buf,scount,stype,dst,disp,rcount,rtype,win)'],
-                  ['2s','Get',              '(buf,scount,stype,dst,disp,rcount,rtype,win)'],
-                  ['2s','Accumulate',       '(buf,scount,stype,dst,disp,rcount,rtype,op,win)'],
-                  ['3s','Get_accumulate',   '(obuf,ocount,otype,rbuf,rcount,rtype,dst,disp,tcount,ttype,op,win)'],
                   ['2s','Rput',             '(buf,scount,stype,dst,disp,rcount,rtype,win,req)'],
+                  ['2s','Get',              '(buf,scount,stype,dst,disp,rcount,rtype,win)'],
                   ['2s','Rget',             '(buf,scount,stype,dst,disp,rcount,rtype,win,req)'],
+                  ['2s','Accumulate',       '(buf,scount,stype,dst,disp,rcount,rtype,op,win)'],
                   ['2s','Raccumulate',      '(buf,scount,stype,dst,disp,rcount,rtype,op,win,req)'],
+                  ['3s','Get_accumulate',   '(obuf,ocount,otype,rbuf,rcount,rtype,dst,disp,tcount,ttype,op,win)'],
                   ['3s','Rget_accumulate',  '(obuf,ocount,otype,rbuf,rcount,rtype,dst,disp,tcount,ttype,op,win,req)'],
                   # collectives
                   ['1s','Bcast',                 '(buf,count,type,root,comm)'],
@@ -172,6 +182,7 @@ for (n,name,args) in mpi_interfaces:
     elif n=='1s1v': make_mpi_c11_decl1s1v(f,name,args)
     elif n=='1s2v': make_mpi_c11_decl1s2v(f,name,args)
     else: print 'oops for '+n
+make_get_count(f)
 make_user_function(f)
 make_post(f)
 f.close()
