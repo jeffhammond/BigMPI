@@ -133,8 +133,6 @@ mpi_interfaces = [
                   ['1s','Ireduce_scatter_block', '(sbuf,rbuf,count,type,op,comm,req)'],
                   ['1v','Reduce_scatter',        '(sbuf,rbuf,counts,type,op,comm)'],
                   ['1v','Ireduce_scatter',       '(sbuf,rbuf,counts,type,op,comm,req)'],
-                  # counts here is a pointer not a vector, but it does not matter for C11 _Generic purposes
-                  #['1v','User_function',         '(invec,inoutvec,counts,type)'],
                   # vector collectives
                   ['1s2v','Scatterv',            '(sbuf,counts,displs,stype,rbuf,count,rtype,root,comm)'],
                   ['1s2v','Iscatterv',           '(sbuf,counts,displs,stype,rbuf,count,rtype,root,comm,req)'],
