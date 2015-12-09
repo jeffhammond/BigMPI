@@ -143,7 +143,21 @@ mpi_interfaces = [
                   ['4v','Alltoallv',             '(sbuf,scounts,sdispls,stype,rbuf,rcounts,rdispls,rtype,comm)'],
                   ['4v','Ialltoallv',            '(sbuf,scounts,sdispls,stype,rbuf,rcounts,rdispls,rtype,comm,req)'],
                   ['4v','Alltoallw',             '(sbuf,scounts,sdispls,stypes,rbuf,rcounts,rdispls,rtypes,comm)'],
-                  ['4v','Ialltoallw',            '(sbuf,scounts,sdispls,stypes,rbuf,rcounts,rdispls,rtypes,comm,req)']
+                  ['4v','Ialltoallw',            '(sbuf,scounts,sdispls,stypes,rbuf,rcounts,rdispls,rtypes,comm,req)'],
+                  # neighborhood collectives
+                  ['2s','Neighbor_allgather',     '(sbuf,scount,stype,rbuf,rcount,rtype,comm)'],
+                  ['2s','Neighbor_iallgather',    '(sbuf,scount,stype,rbuf,rcount,rtype,comm,req)'],
+                  ['2s','Neighbor_alltoall',      '(sbuf,scount,stype,rbuf,rcount,rtype,comm)'],
+                  ['2s','Neighbor_ialltoall',     '(sbuf,scount,stype,rbuf,rcount,rtype,comm,req)'],
+                  ['1s2v','Neighbor_allgatherv',  '(sbuf,count,stype,rbuf,counts,displs,rtype,comm)'],
+                  ['1s2v','Neighbor_iallgatherv', '(sbuf,count,stype,rbuf,counts,displs,rtype,comm,req)'],
+                  ['4v','Neighbor_alltoallv',     '(sbuf,scounts,sdispls,stype,rbuf,rcounts,rdispls,rtype,comm)'],
+                  ['4v','Neighbor_ialltoallv',    '(sbuf,scounts,sdispls,stype,rbuf,rcounts,rdispls,rtype,comm,req)'],
+                  # neighbor_alltoallw already has Aint displs so no need to select there
+                  ['2v','Neighbor_alltoallw',     '(sbuf,scounts,sdispls,stypes,rbuf,rcounts,rdispls,rtypes,comm)'],
+                  ['2v','Neighbor_ialltoallw',    '(sbuf,scounts,sdispls,stypes,rbuf,rcounts,rdispls,rtypes,comm,req)'],
+                  # TODO:
+                  #  file I/I
                  ]
 
 f = open('test.h','w')
@@ -153,6 +167,7 @@ for (n,name,args) in mpi_interfaces:
     elif n=='2s':   make_mpi_c11_decl2s(f,name,args)
     elif n=='3s':   make_mpi_c11_decl3s(f,name,args)
     elif n=='1v':   make_mpi_c11_decl1v(f,name,args)
+    elif n=='2v':   make_mpi_c11_decl1v(f,name,args)
     elif n=='4v':   make_mpi_c11_decl4v(f,name,args)
     elif n=='1s1v': make_mpi_c11_decl1s1v(f,name,args)
     elif n=='1s2v': make_mpi_c11_decl1s2v(f,name,args)
