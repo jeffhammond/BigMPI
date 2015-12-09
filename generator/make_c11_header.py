@@ -48,21 +48,29 @@ def make_mpi_c11_decl3(f,name,args):
            +'                 (default,default,default):         MPI_' + name +  '_x)' + args + '\n\n')
 
 mpi_interfaces = [
-                  [1,'Send',             '(buf,count,type,dest,tag,comm)'],
-                  [1,'Ssend',            '(buf,count,type,dest,tag,comm)'],
-                  [1,'Rsend',            '(buf,count,type,dest,tag,comm)'],
-                  [1,'Bsend',            '(buf,count,type,dest,tag,comm)'],
-                  [1,'Isend',            '(buf,count,type,dest,tag,comm,req)'],
-                  [1,'Issend',           '(buf,count,type,dest,tag,comm,req)'],
-                  [1,'Irsend',           '(buf,count,type,dest,tag,comm,req)'],
-                  [1,'Ibsend',           '(buf,count,type,dest,tag,comm,req)'],
+                  [1,'Send',             '(buf,count,type,dst,tag,comm)'],
+                  [1,'Ssend',            '(buf,count,type,dst,tag,comm)'],
+                  [1,'Rsend',            '(buf,count,type,dst,tag,comm)'],
+                  [1,'Bsend',            '(buf,count,type,dst,tag,comm)'],
+                  [1,'Isend',            '(buf,count,type,dst,tag,comm,req)'],
+                  [1,'Issend',           '(buf,count,type,dst,tag,comm,req)'],
+                  [1,'Irsend',           '(buf,count,type,dst,tag,comm,req)'],
+                  [1,'Ibsend',           '(buf,count,type,dst,tag,comm,req)'],
                   [1,'Recv',             '(buf,count,type,src,tag,comm,stat)'],
                   [1,'Irecv',            '(buf,count,type,src,tag,comm,req)'],
                   [1,'Mrecv',            '(buf,count,type,msg,stat)'],
                   [1,'Imrecv',           '(buf,count,type,msg,req)'],
-                  [2,'Sendrecv',         '(sbuf,scount,stype,dest,stag,rbuf,rcount,rtype,src,rtag,comm,stat)'],
-                  [2,'Sendrecv_replace', '(buf,scount,stype,dest,stag,rcount,rtype,src,rtag,comm,stat)'],
+                  [2,'Sendrecv',         '(sbuf,scount,stype,dst,stag,rbuf,rcount,rtype,src,rtag,comm,stat)'],
+                  [2,'Sendrecv_replace', '(buf,scount,stype,dst,stag,rcount,rtype,src,rtag,comm,stat)'],
                   [1,'Buffer_attach',    '(buf,size)'],
+                  [2,'Put',              '(buf,scount,stype,dst,disp,rcount,rtype,win)']
+                  [2,'Get',              '(buf,scount,stype,dst,disp,rcount,rtype,win)']
+                  [2,'Accumulate',       '(buf,scount,stype,dst,disp,rcount,rtype,op,win)']
+                  [3,'Get_accumulate',   '(obuf,ocount,otype,rbuf,rcount,rtype,dst,disp,tcount,ttype,op,win)']
+                  [2,'Rput',              '(buf,scount,stype,dst,disp,rcount,rtype,win,req)']
+                  [2,'Rget',              '(buf,scount,stype,dst,disp,rcount,rtype,win,req)']
+                  [2,'Raccumulate',       '(buf,scount,stype,dst,disp,rcount,rtype,op,win,req)']
+                  [3,'Rget_accumulate',   '(obuf,ocount,otype,rbuf,rcount,rtype,dst,disp,tcount,ttype,op,win,req)']
                  ]
 
 f = open('test.h','w')
