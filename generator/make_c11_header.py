@@ -15,70 +15,80 @@ def make_post(f):
     f.write('#endif // C11 supported\n\n'
            +'#endif // MPI_C11_H_INCLUDED\n')
 
+def make_user_function(f):
+    f.write('typedef void MPI_User_function( void *invec, void *inoutvec, int *len, MPI_Datatype *datatype);\n'
+           +'typedef void MPI_User_function_x( void *invec, void *inoutvec, int *MPI_Count, MPI_Datatype *datatype);\n'
+           #+'int MPI_Op_create(MPI_User_function *function, int commute, MPI_Op *op);\n'
+           +'int MPI_Op_create_x(MPI_User_function_x *function, int commute, MPI_Op *op);\n'
+           +'#define MPI_Op_create(function, commute, op)'
+           +'        _Generic((function)                          \\\n'
+           +'                 MPI_User_function*:   MPI_Op_create, \\\n'
+           +'                 MPI_User_function_x*: MPI_Op_create_x)(function, commute, op)\n\n')
+
 def make_mpi_c11_decl1s(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((count)                          \\\n'
-           +'                 short:               MPI_' + name +  '    \\\n'
-           +'                 int:                 MPI_' + name +  '    \\\n'
+           +'                 short:               MPI_' + name +  ',   \\\n'
+           +'                 int:                 MPI_' + name +  ',   \\\n'
            +'                 MPI_Count:           MPI_' + name +  '_x, \\\n'
            +'                 default:             MPI_' + name +  '_x)' + args + '\n\n')
 
 def make_mpi_c11_decl1v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((counts)                          \\\n'
-           +'                 int*:                 MPI_' + name +  '    \\\n'
+           +'                 int*:                 MPI_' + name +  ',   \\\n'
            +'                 MPI_Count*:           MPI_' + name +  '_x)' + args + '\n\n')
 
 def make_mpi_c11_decl2s(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((scount,rcount)                           \\\n'
-           +'                 (short,short):               MPI_' + name +  '    \\\n'
-           +'                 (short,int):                 MPI_' + name +  '    \\\n'
-           +'                 (int,short):                 MPI_' + name +  '    \\\n'
-           +'                 (int,int):                   MPI_' + name +  '    \\\n'
+           +'                 (short,short):               MPI_' + name +  ',   \\\n'
+           +'                 (short,int):                 MPI_' + name +  ',   \\\n'
+           +'                 (int,short):                 MPI_' + name +  ',   \\\n'
+           +'                 (int,int):                   MPI_' + name +  ',   \\\n'
            +'                 (MPI_Count,MPI_Count):       MPI_' + name +  '_x, \\\n'
            +'                 (default,default):           MPI_' + name +  '_x)' + args + '\n\n')
 
 def make_mpi_c11_decl1s1v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((count,vcount)                           \\\n'
-           +'                 (int,int*):                   MPI_' + name +  '    \\\n'
+           +'                 (int,int*):                   MPI_' + name +  ',   \\\n'
            +'                 (MPI_Count,MPI_Count*):       MPI_' + name +  '_x)' + args + '\n\n')
 
 def make_mpi_c11_decl2v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((scounts,rcounts)                           \\\n'
-           +'                 (int*,int*):                   MPI_' + name +  '    \\\n'
+           +'                 (int*,int*):                   MPI_' + name +  ',   \\\n'
            +'                 (MPI_Count*,MPI_Count*):       MPI_' + name +  '_x)' + args + '\n\n')
 
 def make_mpi_c11_decl1s2v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((count,counts,displs)                           \\\n'
-           +'                 (int,int*,int*):                   MPI_' + name +  '    \\\n'
+           +'                 (int,int*,int*):                   MPI_' + name +  ',   \\\n'
            +'                 (MPI_Count,MPI_Count*,MPI_Aint*):  MPI_' + name +  '_x)' + args + '\n\n')
 
 def make_mpi_c11_decl3s(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((ocount,rcount,tcount)                      \\\n'
-           +'                 (short,short,short):               MPI_' + name +  '    \\\n'
-           +'                 (short,short,int):                 MPI_' + name +  '    \\\n'
-           +'                 (short,int,short):                 MPI_' + name +  '    \\\n'
-           +'                 (int,short,short):                 MPI_' + name +  '    \\\n'
-           +'                 (short,int,int):                   MPI_' + name +  '    \\\n'
-           +'                 (int,short,int):                   MPI_' + name +  '    \\\n'
-           +'                 (int,int,short):                   MPI_' + name +  '    \\\n'
-           +'                 (int,int,int):                     MPI_' + name +  '    \\\n'
+           +'                 (short,short,short):               MPI_' + name +  ',   \\\n'
+           +'                 (short,short,int):                 MPI_' + name +  ',   \\\n'
+           +'                 (short,int,short):                 MPI_' + name +  ',   \\\n'
+           +'                 (int,short,short):                 MPI_' + name +  ',   \\\n'
+           +'                 (short,int,int):                   MPI_' + name +  ',   \\\n'
+           +'                 (int,short,int):                   MPI_' + name +  ',   \\\n'
+           +'                 (int,int,short):                   MPI_' + name +  ',   \\\n'
+           +'                 (int,int,int):                     MPI_' + name +  ',   \\\n'
            +'                 (MPI_Count,MPI_Count,MPI_Count):   MPI_' + name +  '_x, \\\n'
            +'                 (default,default,default):         MPI_' + name +  '_x)' + args + '\n\n')
 
 def make_mpi_c11_decl4v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((scounts,sdispls,rcounts,rdispls)                           \\\n'
-           +'                 (int*,int*,int*,int*):                        MPI_' + name +  '    \\\n'
+           +'                 (int*,int*,int*,int*):                        MPI_' + name +  ',   \\\n'
            +'                 (MPI_Count*,MPI_Aint*,MPI_Count*,MPI_Aint*):  MPI_' + name +  '_x)' + args + '\n\n')
 
 mpi_interfaces = [
-                  # P2P
+                  # point-to-point
                   ['1s','Send',             '(buf,count,type,dst,tag,comm)'],
                   ['1s','Ssend',            '(buf,count,type,dst,tag,comm)'],
                   ['1s','Rsend',            '(buf,count,type,dst,tag,comm)'],
@@ -99,11 +109,11 @@ mpi_interfaces = [
                   ['2s','Get',              '(buf,scount,stype,dst,disp,rcount,rtype,win)'],
                   ['2s','Accumulate',       '(buf,scount,stype,dst,disp,rcount,rtype,op,win)'],
                   ['3s','Get_accumulate',   '(obuf,ocount,otype,rbuf,rcount,rtype,dst,disp,tcount,ttype,op,win)'],
-                  ['2s','Rput',              '(buf,scount,stype,dst,disp,rcount,rtype,win,req)'],
-                  ['2s','Rget',              '(buf,scount,stype,dst,disp,rcount,rtype,win,req)'],
-                  ['2s','Raccumulate',       '(buf,scount,stype,dst,disp,rcount,rtype,op,win,req)'],
-                  [3,'Rget_accumulate',   '(obuf,ocount,otype,rbuf,rcount,rtype,dst,disp,tcount,ttype,op,win,req)'],
-                  # COLL
+                  ['2s','Rput',             '(buf,scount,stype,dst,disp,rcount,rtype,win,req)'],
+                  ['2s','Rget',             '(buf,scount,stype,dst,disp,rcount,rtype,win,req)'],
+                  ['2s','Raccumulate',      '(buf,scount,stype,dst,disp,rcount,rtype,op,win,req)'],
+                  ['3s','Rget_accumulate',  '(obuf,ocount,otype,rbuf,rcount,rtype,dst,disp,tcount,ttype,op,win,req)'],
+                  # collectives
                   ['1s','Bcast',                 '(buf,count,type,root,comm)'],
                   ['1s','Ibcast',                '(buf,count,type,root,comm,req)'],
                   ['2s','Gather',                '(sbuf,scount,stype,rbuf,rcount,rtype,root,comm)'],
@@ -114,6 +124,7 @@ mpi_interfaces = [
                   ['2s','Iscatter',              '(sbuf,scount,stype,rbuf,rcount,rtype,root,comm,req)'],
                   ['2s','Alltoall',              '(sbuf,scount,stype,rbuf,rcount,rtype,comm)'],
                   ['2s','Ialltoall',             '(sbuf,scount,stype,rbuf,rcount,rtype,comm,req)'],
+                  # reductions
                   ['1s','Reduce',                '(sbuf,rbuf,count,type,op,root,comm)'],
                   ['1s','Ireduce',               '(sbuf,rbuf,count,type,op,root,comm,req)'],
                   ['1s','Allreduce',             '(sbuf,rbuf,count,type,op,comm)'],
@@ -122,6 +133,9 @@ mpi_interfaces = [
                   ['1s','Ireduce_scatter_block', '(sbuf,rbuf,count,type,op,comm,req)'],
                   ['1v','Reduce_scatter',        '(sbuf,rbuf,counts,type,op,comm)'],
                   ['1v','Ireduce_scatter',       '(sbuf,rbuf,counts,type,op,comm,req)'],
+                  # counts here is a pointer not a vector, but it does not matter for C11 _Generic purposes
+                  #['1v','User_function',         '(invec,inoutvec,counts,type)'],
+                  # vector collectives
                   ['1s2v','Scatterv',            '(sbuf,counts,displs,stype,rbuf,count,rtype,root,comm)'],
                   ['1s2v','Iscatterv',           '(sbuf,counts,displs,stype,rbuf,count,rtype,root,comm,req)'],
                   ['1s2v','Gatherv',             '(sbuf,count,stype,rbuf,counts,displs,rtype,root,comm)'],
@@ -140,9 +154,12 @@ for (n,name,args) in mpi_interfaces:
     if   n=='1s':   make_mpi_c11_decl1s(f,name,args)
     elif n=='2s':   make_mpi_c11_decl2s(f,name,args)
     elif n=='3s':   make_mpi_c11_decl3s(f,name,args)
+    elif n=='1v':   make_mpi_c11_decl1v(f,name,args)
+    elif n=='4v':   make_mpi_c11_decl4v(f,name,args)
     elif n=='1s1v': make_mpi_c11_decl1s1v(f,name,args)
     elif n=='1s2v': make_mpi_c11_decl1s2v(f,name,args)
-    elif n=='4v':   make_mpi_c11_decl4v(f,name,args)
+    else: print 'oops for '+n
+make_user_function(f)
 make_post(f)
 f.close()
 
