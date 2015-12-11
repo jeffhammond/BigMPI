@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
     MPI_Alloc_mem((MPI_Aint)n * size, MPI_INFO_NULL, &buf_recv);
     assert(buf_recv!=NULL);
 
-    for (int j = 0; j < n; ++j) {
+    for (MPI_Count j = 0; j < n; ++j) {
         buf_send[j] = (unsigned char)rank;
     }
     memset(buf_recv, -1, (size_t)n);
