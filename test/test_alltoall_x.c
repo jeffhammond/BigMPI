@@ -42,7 +42,7 @@ int main(int argc, char * argv[])
     assert(buf_recv!=NULL);
 
     for (int i = 0; i < size; ++i) {
-        for (int j = 0; j < n; ++j) {
+        for (MPI_Count j = 0; j < n; ++j) {
             buf_send[i*n+j] = (unsigned char)i;
         }
     }
