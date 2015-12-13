@@ -5,6 +5,8 @@ import string
 import sys
 import os
 
+large_count_namespace = 'MPIX_'
+
 def make_pre(f):
     f.write('#ifndef MPI_C11_H_INCLUDED\n'
            +'#define MPI_C11_H_INCLUDED\n\n'
@@ -17,108 +19,117 @@ def make_post(f):
 
 def make_user_function(f):
     f.write('typedef void MPI_User_function( void *invec, void *inoutvec, int *len, MPI_Datatype *datatype);\n'
-           +'typedef void MPI_User_function_x( void *invec, void *inoutvec, int *MPI_Count, MPI_Datatype *datatype);\n'
+           +'typedef void '+large_count_namespace+'_User_function_x( void *invec, void *inoutvec, int *MPI_Count, MPI_Datatype *datatype);\n'
            #+'int MPI_Op_create(MPI_User_function *function, int commute, MPI_Op *op);\n'
-           +'int MPI_Op_create_x(MPI_User_function_x *function, int commute, MPI_Op *op);\n'
+           +'int '+large_count_namespace+'_Op_create_x(MPI_User_function_x *function, int commute, MPI_Op *op);\n'
            +'#define MPI_Op_create(function, commute, op)'
            +'        _Generic((function)                          \\\n'
            +'                 MPI_User_function*:   MPI_Op_create, \\\n'
-           +'                 MPI_User_function_x*: MPI_Op_create_x)(function, commute, op)\n\n')
+           +'                 '+large_count_namespace+'_User_function_x*: '+large_count_namespace+'_Op_create_x)(function, commute, op)\n\n')
 
 # int MPI_Get_count(const MPI_Status *status, MPI_Datatype datatype, int *count);
-def make_get_count(f):
+# int MPI_Get_elements(const MPI_Status *status, MPI_Datatype datatype, int *count);
+# int MPI_Get_elements_x(const MPI_Status *status, MPI_Datatype datatype, MPI_Count *count);
+# int MPI_Type_get_extent(MPI_Datatype datatype, MPI_Aint *lb, MPI_Aint *extent)
+# int MPI_Type_get_extent_x(MPI_Datatype datatype, MPI_Count *lb, MPI_Count *extent)
+def make_get_count_etc(f):
     f.write('int MPI_Get_count_x(const MPI_Status *status, MPI_Datatype datatype, MPI_Count *count);\n'
            +'#define MPI_Get_count(status,datatype,count)'
            +'        _Generic((count)                          \\\n'
            +'                 int*:       MPI_Get_count, \\\n'
-           +'                 MPI_Count*: MPI_Get_count_x)(status,datatype,count)\n\n')
+           +'                 MPI_Count*: '+large_count_namespace+'_Get_count_x)(status,datatype,count)\n\n'
+           +'#define MPI_Get_elements(status,datatype,count)'
+           +'        _Generic((count)                          \\\n'
+           +'                 int*:       MPI_Get_elements, \\\n'
+           +'                 MPI_Count*: MPI_Get_elements_x)(status,datatype,count)\n\n'
+           +'#define MPI_Type_size(datatype,count)'
+           +'        _Generic((size)                          \\\n'
+           +'                 int*:       MPI_Type_size, \\\n'
+           +'                 MPI_Count*: MPI_Type_size_x)(datatype,size)\n\n'
+           +'#define MPI_Type_get_extent(datatype,lb,extent)'
+           +'        _Generic((lb,extent)                          \\\n'
+           +'                 (int*,int*):             MPI_Type_get_extent, \\\n'
+           +'                 (MPI_Count*,MPI_Count*): MPI_Type_get_extent_x)(datatype,lb,extent)\n\n'
+           +'#define MPI_Type_get_true_extent(datatype,lb,extent)'
+           +'        _Generic((lb,extent)                          \\\n'
+           +'                 (int*,int*):             MPI_Type_get_true_extent, \\\n'
+           +'                 (MPI_Count*,MPI_Count*): MPI_Type_get_true_extent_x)(datatype,lb,extent)\n\n')
 
 
 def make_mpi_c11_decl1s(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((count)                          \\\n'
-           +'                 short:               MPI_' + name +  ',   \\\n'
            +'                 int:                 MPI_' + name +  ',   \\\n'
-           +'                 MPI_Count:           MPI_' + name +  '_x, \\\n'
-           +'                 default:             MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 MPI_Count:           '+large_count_namespace+name+'_x, \\\n'
+           +'                 default:             MPI_' + name +  ')' + args + '\n\n')
 
 def make_mpi_c11_decl1v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((counts)                          \\\n'
            +'                 int*:                 MPI_' + name +  ',   \\\n'
-           +'                 MPI_Count*:           MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 MPI_Count*:           '+large_count_namespace+name+'_x)' + args + '\n\n')
 
 def make_mpi_c11_decl2s(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((scount,rcount)                           \\\n'
-           +'                 (short,short):               MPI_' + name +  ',   \\\n'
-           +'                 (short,int):                 MPI_' + name +  ',   \\\n'
-           +'                 (int,short):                 MPI_' + name +  ',   \\\n'
            +'                 (int,int):                   MPI_' + name +  ',   \\\n'
-           +'                 (MPI_Count,MPI_Count):       MPI_' + name +  '_x, \\\n'
-           +'                 (default,default):           MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 (MPI_Count,MPI_Count):       '+large_count_namespace+name+'_x, \\\n'
+           +'                 (default,default):           MPI_' + name +  ')' + args + '\n\n')
 
 def make_mpi_c11_decl2sca(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((count,disp)                           \\\n'
            +'                 (int,int):                   MPI_' + name +  ',   \\\n'
-           +'                 (MPI_Count,MPI_Aint):        MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 (MPI_Count,MPI_Aint):        '+large_count_namespace+name+'_x)' + args + '\n\n')
 
 def make_mpi_c11_decl1s1v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((count,vcount)                           \\\n'
            +'                 (int,int*):                   MPI_' + name +  ',   \\\n'
-           +'                 (MPI_Count,MPI_Count*):       MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 (MPI_Count,MPI_Count*):       '+large_count_namespace+name+'_x)' + args + '\n\n')
 
 def make_mpi_c11_decl1sc1va(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((count,disps)                           \\\n'
            +'                 (int,int*):                  MPI_' + name +  ',   \\\n'
-           +'                 (MPI_Count,MPI_Aint*):       MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 (MPI_Count,MPI_Aint*):       '+large_count_namespace+name+'_x)' + args + '\n\n')
 
 def make_mpi_c11_decl2v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((scounts,rcounts)                           \\\n'
            +'                 (int*,int*):                   MPI_' + name +  ',   \\\n'
-           +'                 (MPI_Count*,MPI_Count*):       MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 (MPI_Count*,MPI_Count*):       '+large_count_namespace+name+'_x)' + args + '\n\n')
 
 def make_mpi_c11_decl3v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((counts1,counts2,counts3)                           \\\n'
            +'                 (const int*,const int*,const int*):                   MPI_' + name +  ',   \\\n'
-           +'                 (const MPI_Count*,const MPI_Count*,const MPI_Count*): MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 (const MPI_Count*,const MPI_Count*,const MPI_Count*): '+large_count_namespace+name+'_x)' + args + '\n\n')
 
 def make_mpi_c11_decl2vca(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((counts,disps)                           \\\n'
            +'                 (const int*,const int*):                   MPI_' + name +  ',   \\\n'
-           +'                 (const MPI_Count*,const MPI_Aint*):        MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 (const MPI_Count*,const MPI_Aint*):        '+large_count_namespace+name+'_x)' + args + '\n\n')
 
 def make_mpi_c11_decl1s2v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((count,counts,displs)                           \\\n'
            +'                 (int,int*,int*):                   MPI_' + name +  ',   \\\n'
-           +'                 (MPI_Count,MPI_Count*,MPI_Aint*):  MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 (MPI_Count,MPI_Count*,MPI_Aint*):  '+large_count_namespace+name+'_x)' + args + '\n\n')
 
 def make_mpi_c11_decl3s(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((ocount,rcount,tcount)                      \\\n'
-           +'                 (short,short,short):               MPI_' + name +  ',   \\\n'
-           +'                 (short,short,int):                 MPI_' + name +  ',   \\\n'
-           +'                 (short,int,short):                 MPI_' + name +  ',   \\\n'
-           +'                 (int,short,short):                 MPI_' + name +  ',   \\\n'
-           +'                 (short,int,int):                   MPI_' + name +  ',   \\\n'
-           +'                 (int,short,int):                   MPI_' + name +  ',   \\\n'
-           +'                 (int,int,short):                   MPI_' + name +  ',   \\\n'
            +'                 (int,int,int):                     MPI_' + name +  ',   \\\n'
-           +'                 (MPI_Count,MPI_Count,MPI_Count):   MPI_' + name +  '_x, \\\n'
-           +'                 (default,default,default):         MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 (MPI_Count,MPI_Count,MPI_Count):   '+large_count_namespace+name+'_x, \\\n'
+           +'                 (default,default,default):         MPI_' + name +  ')' + args + '\n\n')
 
 def make_mpi_c11_decl4v(f,name,args):
     f.write('#define MPI_' + name + args + '    \\\n'
            +'        _Generic((scounts,sdispls,rcounts,rdispls)                           \\\n'
            +'                 (int*,int*,int*,int*):                        MPI_' + name +  ',   \\\n'
-           +'                 (MPI_Count*,MPI_Aint*,MPI_Count*,MPI_Aint*):  MPI_' + name +  '_x)' + args + '\n\n')
+           +'                 (MPI_Count*,MPI_Aint*,MPI_Count*,MPI_Aint*):  '+large_count_namespace+name+'_x)' + args + '\n\n')
 
 mpi_interfaces = [
                   # point-to-point
@@ -214,7 +225,7 @@ mpi_interfaces = [
                   # file I/O
                  ]
 
-f = open('test.h','w')
+f = open('mpi_c11.h','w')
 make_pre(f)
 for (n,name,args) in mpi_interfaces:
     if   n=='1s':     make_mpi_c11_decl1s(f,name,args)
@@ -231,7 +242,7 @@ for (n,name,args) in mpi_interfaces:
     elif n=='2vca':   make_mpi_c11_decl2vca(f,name,args)
     elif n=='3v':     make_mpi_c11_decl3v(f,name,args)
     else: print 'oops for '+n
-make_get_count(f)
+make_get_count_etc(f)
 make_user_function(f)
 make_post(f)
 f.close()
