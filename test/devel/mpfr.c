@@ -1,14 +1,3 @@
-/* LICENSE NOTE
- *
- * Depending on how aggressively one interprets the LGPL,
- * this file may be infected with LGPL, by virtue of the
- * author having looked at mpfr.h in order to know
- * the names of various preprocessor symbols and an
- * internal struct name.
- *
- * All code other than that which references mpfr.h
- * names is covered by the BSD-2 license. */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h> /* offsetof */
