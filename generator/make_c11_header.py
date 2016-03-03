@@ -208,18 +208,18 @@ mpi_interfaces = [
                   ['2v','Neighbor_alltoallw',     '(sbuf,scounts,sdispls,stypes,rbuf,rcounts,rdispls,rtypes,comm)'],
                   ['2v','Neighbor_ialltoallw',    '(sbuf,scounts,sdispls,stypes,rbuf,rcounts,rdispls,rtypes,comm,req)'],
                   # datatypes
-                  ['1s','Type_contiguous',                   '(count,oldtype,newtype)'],
-                  ['2sca','MPI_Type_vector',                 '(nblocks,count,disp,oldtype,newtype)'],
-                  ['1s','MPI_Type_hvector',                  '(nblocks,count,disp,oldtype,newtype)'],
-                  ['2vca','MPI_Type_indexed',                '(nblocks,counts,disps,oldtype,newtype)'],
-                  ['1v','MPI_Type_hindexed',                 '(nblocks,counts,disps,oldtype,newtype)'],
-                  ['1v','MPI_Type_struct',                   '(nblocks,counts,disps,oldtypes,newtype)'],
-                  ['1v','MPI_Type_create_hindexed',          '(nblocks,counts,disps,oldtype,newtype)'],
-                  ['1s','MPI_Type_create_hvector',           '(nblocks,count,disp,oldtype,newtype)'],
-                  ['1sc1va','MPI_Type_create_indexed_block', '(nblocks,count,disps,oldtype,newtype)'],
-                  ['1s','MPI_Type_create_hindexed_block',    '(nblocks,count,disps,oldtype,newtype)'],
-                  ['1v','MPI_Type_create_struct',            '(nblocks,counts,disps,oldtypes,newtype)'],
-                  ['3v','MPI_Type_create_subarray',          '(nblocks,counts1,counts2,counts3,order,oldtype,newtype)']
+                  ['1s','Type_contiguous',               '(count,oldtype,newtype)'],
+                  ['2sca','Type_vector',                 '(nblocks,count,disp,oldtype,newtype)'],
+                  ['1s','Type_hvector',                  '(nblocks,count,disp,oldtype,newtype)'],
+                  ['2vca','Type_indexed',                '(nblocks,counts,disps,oldtype,newtype)'],
+                  ['1v','Type_hindexed',                 '(nblocks,counts,disps,oldtype,newtype)'],
+                  ['1v','Type_struct',                   '(nblocks,counts,disps,oldtypes,newtype)'],
+                  ['1v','Type_create_hindexed',          '(nblocks,counts,disps,oldtype,newtype)'],
+                  ['1s','Type_create_hvector',           '(nblocks,count,disp,oldtype,newtype)'],
+                  ['1sc1va','Type_create_indexed_block', '(nblocks,count,disps,oldtype,newtype)'],
+                  ['1s','Type_create_hindexed_block',    '(nblocks,count,disps,oldtype,newtype)'],
+                  ['1v','Type_create_struct',            '(nblocks,counts,disps,oldtypes,newtype)'],
+                  ['3v','Type_create_subarray',          '(nblocks,counts1,counts2,counts3,order,oldtype,newtype)']
                   # TODO:
                   # MPI_Type_create_darray
                   # file I/O
