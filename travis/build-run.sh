@@ -3,23 +3,36 @@
 # Exit on error
 set -ev
 
+os=`uname`
+TRAVIS_ROOT="$1"
+MPI_IMPL="$2"
+
 # Environment variables
-export CFLAGS="-std=c99"
-#export MPICH_CC=$CC
-export MPICC=mpicc
+case "$os" in
+    Darwin)
+        ;;
+    Linux)
+       export PATH=$TRAVIS_ROOT/mpich/bin:$PATH
+       export PATH=$TRAVIS_ROOT/open-mpi/bin:$PATH
+       ;;
+esac
+
+# Capture details of build
+case "$MPI_IMPL" in
+    mpich)
+        #mpichversion
+        mpicc -show
+        ;;
+    openmpi)
+        # this is missing with Mac build it seems
+        #ompi_info --arch --config
+        mpicc --showme:command
+        ;;
+esac
 
 # Configure and build
 ./autogen.sh
-./configure \
-    --enable-g \
-    --disable-static \
-    --with-max-int=1048576 \
-    LIBS="-lm -lpthread"
-
-if [ "$RUN_TEST" = "buildonly" ]; then
-    # Build all libraries, examples, and applications
-    make -j2 all
-else
-    # Run unit tests
-    make check
-fi
+./configure CC=mpicc CFLAGS="-std=c99" --disable-static --prefix=/tmp --with-max-int=1048576
+make V=1
+make V=1 install
+make V=1 check

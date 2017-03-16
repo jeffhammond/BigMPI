@@ -1,18 +1,23 @@
-sudo: true
+sudo: false
 language: c
 os:
   - linux
-  #- osx
+  - osx
 compiler:
   - gcc
   - clang
 env:
   - MPI_IMPL=mpich
-  #- MPI_IMPL=openmpi
+  - MPI_IMPL=openmpi
 before_install:
-  - sh ./travis/install-deps.sh $MPI_IMPL
+  - export TRAVIS_ROOT=$HOME/travis
+  - mkdir -p $TRAVIS_ROOT
+  - sh ./travis/install-autotools.sh $TRAVIS_ROOT
+  - export PATH=$TRAVIS_ROOT/bin:$PATH
+install:
+  - sh ./travis/install-mpi.sh $TRAVIS_ROOT $MPI_IMPL
 script:
-  - sh ./travis/build-run.sh
+  - sh ./travis/build-run.sh $TRAVIS_ROOT $MPI_IMPL
 after_failure:
-  - cat ./config.log
-  - head -n100 ./test/*.log
+  - echo "Sad panda"
+  - find . -name config.log -exec grep -L "configure: exit 0" {} ";" | xargs cat
