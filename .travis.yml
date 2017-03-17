@@ -19,5 +19,4 @@ install:
 script:
   - sh ./travis/build-run.sh $TRAVIS_ROOT $MPI_IMPL
 after_failure:
-  - echo "Sad panda"
   - find . -name config.log -exec grep -L "configure: exit 0" {} ";" | xargs cat
