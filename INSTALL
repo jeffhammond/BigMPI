@@ -1,3 +1,0 @@
-# CMake
-
-cmake $(BIGMPI_SOURCE_DIR) -DCMAKE_C_COMPILER=mpicc

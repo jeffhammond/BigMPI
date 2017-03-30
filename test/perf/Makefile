@@ -1,7 +1,7 @@
 CC     = mpicc
-CFLAGS = -g -O2 -Wall -std=c99
+CFLAGS = -O2 -Wall -std=c99
 
-TESTS = reductions typecontig
+TESTS = reductions typecontig typepiggy
 
 all: $(TESTS)
 
