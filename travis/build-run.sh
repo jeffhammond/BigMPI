@@ -27,6 +27,8 @@ case "$MPI_IMPL" in
         # this is missing with Mac build it seems
         #ompi_info --arch --config
         mpicc --showme:command
+        # see https://github.com/open-mpi/ompi/issues/2956
+        export TMPDIR=/tmp
         ;;
 esac
 
