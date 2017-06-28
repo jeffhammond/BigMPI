@@ -3,14 +3,15 @@
 #set -e
 set -x
 
-os=`uname`
 TOP="$1"
 
-case "$os" in
-    Darwin)
+case "${TRAVIS_OS_NAME}" in
+    osx)
         brew update
         brew info autoconf automake libtool
-        brew install autoconf automake libtool | brew upgrade autoconf automake libtool | true
+        brew install autoconf | brew upgrade autoconf
+        brew install automake | brew upgrade automake
+        brew install libtool  | brew upgrade libtool
         which glibtool
         which glibtoolize
         glibtool --version
@@ -18,7 +19,7 @@ case "$os" in
         ln -s `which glibtool` ${TOP}/bin/libtool
         ln -s `which glibtoolize` ${TOP}/bin/libtoolize
         ;;
-    Linux)
+    linux)
         MAKE_JNUM=2
         M4_VERSION=1.4.17
         LIBTOOL_VERSION=2.4.6

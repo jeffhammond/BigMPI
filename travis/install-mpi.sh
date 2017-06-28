@@ -5,25 +5,30 @@
 set -e
 set -x
 
-os=`uname`
 TRAVIS_ROOT="$1"
 MPI_IMPL="$2"
+BUILD_SYSTEM="$3"
 
-# this is where updated Autotools will be for Linux
-export PATH=$TRAVIS_ROOT/bin:$PATH
+if [ "${TRAVIS_OS_NAME}" = "linux" ] || [ "${BUILD_SYSTEM}" = "autotools" ] ; then
+    sh ./travis/install-autotools.sh $TRAVIS_ROOT
+    # this is where updated Autotools will be
+    export PATH=$TRAVIS_ROOT/bin:$PATH
+fi
 
-case "$os" in
-    Darwin)
+case "${TRAVIS_OS_NAME}" in
+    osx)
         echo "Mac"
         brew update
         case "$MPI_IMPL" in
             mpich)
+                brew install mpich || brew upgrade mpich
                 brew info mpich
-                brew install mpich
+                brew list mpich
                 ;;
             openmpi)
-                brew info open-mpi
-                brew install openmpi
+                brew install openmpi || brew upgrade openmpi
+                brew info openmpi
+                brew list openmpi
                 ;;
             *)
                 echo "Unknown MPI implementation: $MPI_IMPL"
@@ -32,7 +37,7 @@ case "$os" in
         esac
     ;;
 
-    Linux)
+    linux)
         echo "Linux"
         case "$MPI_IMPL" in
             mpich)
