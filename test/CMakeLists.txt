@@ -1,5 +1,7 @@
 file(GLOB TESTS "test_*.c")
 
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../src")
+
 foreach(test ${TESTS})
   string(REPLACE ".c" "" buffer0 ${test})
   string(REPLACE "${CMAKE_SOURCE_DIR}" "" buffer1 ${buffer0})
