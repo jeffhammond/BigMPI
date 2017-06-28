@@ -46,7 +46,6 @@ case "${BUILD_SYSTEM}" in
         cd build-cmake
         cmake .. -DCMAKE_C_COMPILER=mpicc -DCMAKE_C_FLAGS="-std=c99" -DBIGMPI_MAX_INT=1048576
         make VERBOSE=1
-        make VERBOSE=1 install
         make VERBOSE=1 check
         ;;
     *)
