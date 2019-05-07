@@ -178,6 +178,16 @@ if test "$pipelined_reductions" = "yes"; then
    AC_DEFINE(BIGMPI_CLEAVER,1,[Defined when pipelined reductions are to be used])
 fi
 
+## Pipeline send instead of using user-defined operations
+AC_ARG_ENABLE(send-pipelining, AC_HELP_STRING([--enable-send-pipelining],[Use pipelined sends]),
+                 [ pipelined_sends=$enableval ],
+                 [ pipelined_sends=yes ])
+AC_MSG_CHECKING(pipelined sends)
+AC_MSG_RESULT($pipelined_sends)
+if test "$pipelined_sends" = "yes"; then
+   AC_DEFINE(BIGMPI_MULTISEND,1,[Defined when pipelined sends are to be used])
+fi
+
 ## Documentation
 AC_PATH_PROG([DOXYGEN],[doxygen],,$PATH)
 AC_SUBST(DOXYGEN)
