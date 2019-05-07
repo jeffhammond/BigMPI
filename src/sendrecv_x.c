@@ -13,10 +13,10 @@ int MPIX_Send_x(BIGMPI_CONST void *buf, MPI_Count count, MPI_Datatype datatype, 
         int typesize;
         MPI_Type_size(datatype, &typesize);
         for (ptrdiff_t i=0; i<c; i++) {
-            MPI_Send(sendbuf+i*bigmpi_int_max*(size_t)typesize, bigmpi_int_max, datatype, dest, tag, comm);
+            rc = MPI_Send(buf+i*bigmpi_int_max*(size_t)typesize, bigmpi_int_max, datatype, dest, tag, comm);
+            if (rc != MPI_SUCCESS) return rc;
         }
-        MPI_Send(sendbuf+c*bigmpi_int_max*(size_t)typesize, r, datatype, dest, tag, comm);
-        return MPI_SUCCESS;
+        rc = MPI_Send(buf+c*bigmpi_int_max*(size_t)typesize, r, datatype, dest, tag, comm);
 #else /* BIGMPI_MULTISEND */
         MPI_Datatype newtype;
         BigMPI_Type_contiguous(0,count, datatype, &newtype);
@@ -35,11 +35,26 @@ int MPIX_Recv_x(void *buf, MPI_Count count, MPI_Datatype datatype, int source, i
     if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Recv(buf, (int)count, datatype, source, tag, comm, status);
     } else {
+#ifdef BIGMPI_MULTISEND
+        int c = (int)(count/bigmpi_int_max);
+        int r = (int)(count%bigmpi_int_max);
+        int typesize;
+        MPI_Type_size(datatype, &typesize);
+        if (status != MPI_STATUS_IGNORE) {
+            fprintf(stderr, "Warning: BigMPI does not currently handle MPI_Status correctly in the case of MULTISEND (chunking).\n");
+        }
+        for (ptrdiff_t i=0; i<c; i++) {
+            rc = MPI_Recv(buf+i*bigmpi_int_max*(size_t)typesize, bigmpi_int_max, datatype, source, tag, comm, status);
+            if (rc != MPI_SUCCESS) return rc;
+        }
+        rc = MPI_Recv(buf+c*bigmpi_int_max*(size_t)typesize, r, datatype, source, tag, comm, status);
+#else /* BIGMPI_MULTISEND */
         MPI_Datatype newtype;
         BigMPI_Type_contiguous(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Recv(buf, 1, newtype, source, tag, comm, status);
         MPI_Type_free(&newtype);
+#endif
     }
     return rc;
 }
@@ -51,11 +66,26 @@ int MPIX_Isend_x(BIGMPI_CONST void *buf, MPI_Count count, MPI_Datatype datatype,
     if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Isend(buf, (int)count, datatype, dest, tag, comm, request);
     } else {
+#ifdef BIGMPI_MULTISEND
+        int c = (int)(count/bigmpi_int_max);
+        int r = (int)(count%bigmpi_int_max);
+        int typesize;
+        MPI_Type_size(datatype, &typesize);
+        if (request != MPI_REQUEST_NULL) {
+            fprintf(stderr, "Warning: BigMPI does not currently handle MPI_Request correctly in the case of MULTISEND (chunking).\n");
+        }
+        for (ptrdiff_t i=0; i<c; i++) {
+            rc = MPI_Isend(buf+i*bigmpi_int_max*(size_t)typesize, bigmpi_int_max, datatype, dest, tag, comm, request);
+            if (rc != MPI_SUCCESS) return rc;
+        }
+        rc = MPI_Isend(buf+c*bigmpi_int_max*(size_t)typesize, r, datatype, dest, tag, comm, request);
+#else /* BIGMPI_MULTISEND */
         MPI_Datatype newtype;
         BigMPI_Type_contiguous(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Isend(buf, 1, newtype, dest, tag, comm, request);
         MPI_Type_free(&newtype);
+#endif
     }
     return rc;
 }
