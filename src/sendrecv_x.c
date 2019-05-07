@@ -7,11 +7,23 @@ int MPIX_Send_x(BIGMPI_CONST void *buf, MPI_Count count, MPI_Datatype datatype, 
     if (likely (count <= bigmpi_int_max )) {
         rc = MPI_Send(buf, (int)count, datatype, dest, tag, comm);
     } else {
+#ifdef BIGMPI_MULTISEND
+        int c = (int)(count/bigmpi_int_max);
+        int r = (int)(count%bigmpi_int_max);
+        int typesize;
+        MPI_Type_size(datatype, &typesize);
+        for (ptrdiff_t i=0; i<c; i++) {
+            MPI_Send(sendbuf+i*bigmpi_int_max*(size_t)typesize, bigmpi_int_max, datatype, dest, tag, comm);
+        }
+        MPI_Send(sendbuf+c*bigmpi_int_max*(size_t)typesize, r, datatype, dest, tag, comm);
+        return MPI_SUCCESS;
+#else /* BIGMPI_MULTISEND */
         MPI_Datatype newtype;
         BigMPI_Type_contiguous(0,count, datatype, &newtype);
         MPI_Type_commit(&newtype);
         rc = MPI_Send(buf, 1, newtype, dest, tag, comm);
         MPI_Type_free(&newtype);
+#endif
     }
     return rc;
 }
