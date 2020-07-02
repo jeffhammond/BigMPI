@@ -6,3 +6,23 @@ add_custom_command(
 
 file(GLOB SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
 add_library(bigmpi ${LIB_LINKAGE_TYPE} ${SOURCES} "bigmpiconf.h")
+
+target_link_libraries ( bigmpi ${MPI_LIBRARIES} )
+
+set_target_properties ( bigmpi PROPERTIES PUBLIC_HEADER "bigmpi.h")
+
+if (NOT CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR lib)
+endif()
+
+if (NOT CMAKE_INSTALL_INCLUDEDIR)
+  set(CMAKE_INSTALL_INCLUDEDIR include)
+endif()
+
+install(TARGETS bigmpi
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    COMPONENT lib
+    )

@@ -1,6 +1,17 @@
+if(DEFINED PROJECT_NAME)
+  set(BigMPI_SUBPROJECT ON)
+endif()
+
+project(BigMPI)
+
 cmake_minimum_required(VERSION 2.6.4 FATAL_ERROR)
 
 set(PACKAGE_NAME BigMPI)
+
+# set macosx_rpath
+set(CMAKE_MACOSX_RPATH 1)
+
+# find and use detected mpi
 find_package(MPI)
 
 # generic function to add user-configurable options.
@@ -28,13 +39,15 @@ endif()
 
 add_definitions(-DBIGMPI_VCOLLS_${BIGMPI_VCOLLS})
 
-set(CMAKE_C_FLAGS "-std=c99")
+set_property(GLOBAL PROPERTY C_STANDARD 99)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-add_definitions(${MPI_COMPILE_FLAGS})
 include_directories(${MPI_INCLUDE_PATH})
 
-add_custom_target(test echo "Tests passed.")
+string(APPEND CMAKE_C_COMPILE_FLAGS "${MPI_COMPILE_FLAGS}")
+string(APPEND CMAKE_EXE_LINKER_FLAGS "${MPI_LINK_FLAGS}")
+
+add_custom_target(bigmpi_test echo "Tests passed.")
 
 add_subdirectory(src)
 add_subdirectory(test)
