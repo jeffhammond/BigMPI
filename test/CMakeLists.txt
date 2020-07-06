@@ -20,7 +20,7 @@ foreach(test ${TESTS})
   if(found EQUAL -1)
     add_custom_target(${TARGET_RUN_UNIT_TEST} echo "running ${TARGET_UNIT_TEST_EXE}" && bash -c "${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 2 ./${TARGET_UNIT_TEST_EXE}")
 
-    add_dependencies(test ${TARGET_RUN_UNIT_TEST})
+    add_dependencies(bigmpi_test ${TARGET_RUN_UNIT_TEST})
     add_dependencies(${TARGET_RUN_UNIT_TEST} ${TARGET_UNIT_TEST_EXE})
   endif()
 endforeach()
