@@ -2,8 +2,8 @@ file(GLOB TESTS "test_*.c")
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../src")
 
-foreach(bigmpi_test ${TESTS})
-  string(REPLACE ".c" "" buffer0 ${bigmpi_test})
+foreach(test ${TESTS})
+  string(REPLACE ".c" "" buffer0 ${test})
   string(REPLACE "${CMAKE_SOURCE_DIR}" "" buffer1 ${buffer0})
   string(REPLACE "/" _ buffer2 ${buffer1})
   string(REGEX REPLACE "_test_(.+)" "\\1" executable ${buffer2})
@@ -11,7 +11,7 @@ foreach(bigmpi_test ${TESTS})
   set(TARGET_UNIT_TEST_EXE ${executable})
   set(TARGET_RUN_UNIT_TEST run_${executable})
 
-  add_executable(${TARGET_UNIT_TEST_EXE} ${bigmpi_test})
+  add_executable(${TARGET_UNIT_TEST_EXE} ${test})
   target_link_libraries(${TARGET_UNIT_TEST_EXE} bigmpi m ${MPI_LIBRARIES})
 
   set(exclude_list "test_assert_x;test_factorize")
