@@ -114,6 +114,7 @@ https://github.com/jeffhammond/mpich/tree/type_contiguous_x.
 
 * Jeff Hammond
 * Andreas Schäfer
+* Rob Latham
 
 ## Related
 
