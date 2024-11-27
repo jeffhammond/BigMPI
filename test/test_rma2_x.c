@@ -5,18 +5,10 @@
 #include <strings.h>
 
 #include <mpi.h>
-#include "bigmpi.h"
 #include "verify_buffer.h"
-
-/* Yes, it is technically unsafe to cast MPI_Count to MPI_Aint or size_t without checking,
- * given that MPI_Count might be 128b and MPI_Aint and size_t might be 64b, but BigMPI
- * does not aspire to support communication of more than 8 EiB messages at a time. */
 
 int main(int argc, char * argv[])
 {
-#if MPI_VERSION >= 3
-    const MPI_Count test_int_max = BigMPI_Get_max_int();
-
     MPI_Init(&argc, &argv);
 
     int rank, size;
@@ -25,7 +17,7 @@ int main(int argc, char * argv[])
 
     int l = (argc > 1) ? atoi(argv[1]) : 2;
     int m = (argc > 2) ? atoi(argv[2]) : 17777;
-    MPI_Count n = l * test_int_max + m;
+    MPI_Count n = l * INT_MAX + m;
     MPI_Count c = n/sizeof(double);
 
     double * baseptr = NULL;
@@ -44,11 +36,11 @@ int main(int argc, char * argv[])
     if ((size==1 && rank==0) || rank==1) {
         MPI_Alloc_mem((MPI_Aint)n, MPI_INFO_NULL, &buf);
         set_doubles(buf, c, 7.0);
-        MPIX_Put_x(buf, c, MPI_DOUBLE, 0 /* target */, 0 /* disp */, c, MPI_DOUBLE, win);
+        MPI_Put_c(buf, c, MPI_DOUBLE, 0 /* target */, 0 /* disp */, c, MPI_DOUBLE, win);
         set_doubles(buf, c, 17.0);
-        MPIX_Accumulate_x(buf, c, MPI_DOUBLE, 0 /* target */, 0 /* disp */, c, MPI_DOUBLE, MPI_SUM, win);
+        MPI_Accumulate_c(buf, c, MPI_DOUBLE, 0 /* target */, 0 /* disp */, c, MPI_DOUBLE, MPI_SUM, win);
         set_doubles(buf, c, 0.0);
-        MPIX_Get_x(buf, c, MPI_DOUBLE, 0 /* target */, 0 /* disp */, c, MPI_DOUBLE, win);
+        MPI_Get_c(buf, c, MPI_DOUBLE, 0 /* target */, 0 /* disp */, c, MPI_DOUBLE, win);
 
         double expected = 7.0 + 17.0;
         size_t errors = verify_doubles(buf, c, expected);
@@ -67,8 +59,6 @@ int main(int argc, char * argv[])
     MPI_Win_free(&win);
 
     MPI_Finalize();
-
-#endif
 
     return 0;
 }

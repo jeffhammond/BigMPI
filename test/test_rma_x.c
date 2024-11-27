@@ -6,17 +6,10 @@
 #include <assert.h>
 
 #include <mpi.h>
-#include "bigmpi.h"
 #include "verify_buffer.h"
-
-/* Yes, it is technically unsafe to cast MPI_Count to MPI_Aint or size_t without checking,
- * given that MPI_Count might be 128b and MPI_Aint and size_t might be 64b, but BigMPI
- * does not aspire to support communication of more than 8 EiB messages at a time. */
 
 int main(int argc, char * argv[])
 {
-    const MPI_Count test_int_max = BigMPI_Get_max_int();
-
     MPI_Init(&argc, &argv);
 
     int rank, size;
@@ -25,7 +18,7 @@ int main(int argc, char * argv[])
 
     int l = (argc > 1) ? atoi(argv[1]) : 2;
     int m = (argc > 2) ? atoi(argv[2]) : 17777;
-    MPI_Count n = l * test_int_max + m;
+    MPI_Count n = l * INT_MAX + m;
 
     double * baseptr = NULL;
     MPI_Win win;
@@ -58,7 +51,7 @@ int main(int argc, char * argv[])
 #if MPI_VERSION < 3
     MPI_Win_lock(MPI_LOCK_EXCLUSIVE, 0 /* target */, 0 /* assert */, win);
 #endif
-    MPIX_Accumulate_x(buf, n/sizeof(double), MPI_DOUBLE,
+    MPI_Accumulate_c(buf, n/sizeof(double), MPI_DOUBLE,
                       0 /* target */, 0 /* disp */, n/sizeof(double), MPI_DOUBLE, MPI_SUM, win);
 #if MPI_VERSION >= 3
     MPI_Win_flush(0,win);

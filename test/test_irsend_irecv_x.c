@@ -5,12 +5,7 @@
 #include <strings.h>
 
 #include <mpi.h>
-#include "bigmpi.h"
 #include "verify_buffer.h"
-
-/* Yes, it is technically unsafe to cast MPI_Count to MPI_Aint or size_t without checking,
- * given that MPI_Count might be 128b and MPI_Aint and size_t might be 64b, but BigMPI
- * does not aspire to support communication of more than 8 EiB messages at a time. */
 
 int main(int argc, char * argv[])
 {
@@ -20,8 +15,6 @@ int main(int argc, char * argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    const MPI_Count test_int_max = BigMPI_Get_max_int();
-
     if (size<2) {
         printf("Use 2 or more processes. \n");
         MPI_Finalize();
@@ -30,7 +23,7 @@ int main(int argc, char * argv[])
 
     int l = (argc > 1) ? atoi(argv[1]) : 2;
     int m = (argc > 2) ? atoi(argv[2]) : 17777;
-    MPI_Count n = l * test_int_max + m;
+    MPI_Count n = l * INT_MAX + m;
 
     char * buf = NULL;
 
@@ -45,10 +38,10 @@ int main(int argc, char * argv[])
 
         /* pairwise communication */
         if (rank==r) {
-            MPIX_Irsend_x(buf, n, MPI_CHAR, 0 /* dst */, r /* tag */, MPI_COMM_WORLD, &req);
+            MPI_Irsend_c(buf, n, MPI_CHAR, 0 /* dst */, r /* tag */, MPI_COMM_WORLD, &req);
         }
         else if (rank==0) {
-            MPIX_Irecv_x(buf, n, MPI_CHAR, r /* src */, r /* tag */, MPI_COMM_WORLD, &req);
+            MPI_Irecv_c(buf, n, MPI_CHAR, r /* src */, r /* tag */, MPI_COMM_WORLD, &req);
         }
 
         if (rank == 0 || rank==r) {

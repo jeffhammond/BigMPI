@@ -42,4 +42,24 @@ static void set_doubles(double *buf, MPI_Count count, double value)
     }
 }
 
+static size_t verify_longs(long *buf, MPI_Count count, long expected_value)
+{
+    assert(count<SIZE_MAX);
+
+    size_t errors = 0;
+    for (size_t i = 0; i < (size_t)count; i++) {
+        if (buf[i] != expected_value) errors++;
+    }
+    return errors;
+}
+
+static void set_longs(long *buf, MPI_Count count, long value)
+{
+    assert(count<SIZE_MAX);
+
+    for (size_t i = 0; i < (size_t)count; i++) {
+        buf[i] = value;
+    }
+}
+
 #endif // VERIFY_BUFFER_H

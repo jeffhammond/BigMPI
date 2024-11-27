@@ -3,19 +3,14 @@
 #include <limits.h>
 #include <string.h>
 #include <strings.h>
+#include <assert.h>
+#include <math.h>
 
 #include <mpi.h>
-#include "bigmpi.h"
 #include "verify_buffer.h"
-
-/* Yes, it is technically unsafe to cast MPI_Count to MPI_Aint or size_t without checking,
- * given that MPI_Count might be 128b and MPI_Aint and size_t might be 64b, but BigMPI
- * does not aspire to support communication of more than 8 EiB messages at a time. */
 
 int main(int argc, char * argv[])
 {
-    const MPI_Count test_int_max = BigMPI_Get_max_int();
-
     MPI_Init(&argc, &argv);
 
     int rank, size;
@@ -30,32 +25,32 @@ int main(int argc, char * argv[])
 
     int l = (argc > 1) ? atoi(argv[1]) : 2;
     int m = (argc > 2) ? atoi(argv[2]) : 17777;
-    MPI_Count n = l * test_int_max + m;
+    MPI_Count n = l * INT_MAX + m;
 
-    double * sbuf = NULL;
-    double * rbuf = NULL;
+    long * sbuf = NULL;
+    long * rbuf = NULL;
 
-    MPI_Aint bytes = n*sizeof(double);
+    MPI_Aint bytes = n*sizeof(long);
     MPI_Alloc_mem(bytes, MPI_INFO_NULL, &sbuf);
     MPI_Alloc_mem(bytes, MPI_INFO_NULL, &rbuf);
 
     for (MPI_Count i=0; i<n; i++) {
-        sbuf[i] = (double)rank+1.;
+        sbuf[i] = rank+1;
     }
     for (MPI_Count i=0; i<n; i++) {
-        rbuf[i] = 0.0;
+        rbuf[i] = 0;
     }
 
     /* collective communication */
-    MPIX_Allreduce_x(sbuf, rbuf, n, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    MPI_Allreduce_c(sbuf, rbuf, n, MPI_LONG, MPI_SUM, MPI_COMM_WORLD);
 
     size_t errors = 0;
-    double val = (double)size*(size+1.)/2.;
-    errors = verify_doubles(rbuf, n, val);
+    long val = (long)size*(size+1)/2;
+    errors = verify_longs(rbuf, n, val);
     if (errors) {
         printf("There were %zu errors out of %zu elements!\n", errors, (size_t)n);
         for (MPI_Count i=0; i<n; i++) {
-            printf("rbuf[%zu] = %lf (expected %lf - %s)\n",
+            printf("rbuf[%zu] = %ld (expected %ld - %s)\n",
                     (size_t)i, rbuf[i], val, rbuf[i]==val ? "RIGHT" : "WRONG");
         }
         fflush(stdout);

@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 {
     const int e = 60;
 
-    const MPI_Count test_int_max = BigMPI_Get_max_int();
+    const MPI_Count test_int_max = INT_MAX;
 
     MPI_Init(&argc, &argv);
 
@@ -51,15 +51,15 @@ int main(int argc, char* argv[])
 
             MPI_Datatype intype = MPI_CHAR, bigtype, outtype;
             MPI_Count nout;
-            MPIX_Type_contiguous_x(n, intype, &bigtype);
-            BigMPI_Decode_contiguous_x(bigtype, &nout, &outtype);
+            MPI_Type_contiguous_c(n, intype, &bigtype);
+            BigMPI_Decode_contiguous_c(bigtype, &nout, &outtype);
 
             if (n!=nout) {
                 printf("in (%zu) and out (%zu) counts do not match!\n", (size_t)n, (size_t)nout);
                 errors++;
             }
             if (intype!=outtype) {
-                printf("intype (%d) and outtype (%d) do not match!\n", intype, outtype);
+                printf("intype (%zu) and outtype (%zu) do not match!\n", (intptr_t)intype, (intptr_t)outtype);
                 print_typename(intype);
                 print_typename(outtype);
                 errors++;
@@ -70,8 +70,8 @@ int main(int argc, char* argv[])
 
         /* TODO: Find a better way to do this... */
         /* If bigmpi_int_max is artificially low for debugging,
-         * MPI will throw an error inside of MPIX_Type_contiguous_x. */
-        if (BigMPI_Get_max_int() < SIZE_MAX) {
+         * MPI will throw an error inside of MPI_Type_contiguous_c. */
+        if (INT_MAX < SIZE_MAX) {
             if (n>INT_MAX || n>=(test_int_max*test_int_max) ) {
                 MPI_Finalize();
                 return errors;

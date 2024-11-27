@@ -15,7 +15,7 @@ static inline unsigned long long rdtsc(void)
 }
 #endif
 
-/* This function is copied from src/type_contiguous_x.c and must be updated
+/* This function is copied from src/type_contiguous_c.c and must be updated
  * manually if the implementation changes.  It is an internal function so
  * it is static and therefore be cannot call the symbol from the library. */
 
@@ -30,7 +30,7 @@ static inline unsigned long long rdtsc(void)
  *
  * Output Parameters
  *
- *   a, b               integers such that c=a*b and a,b<INT_MAX
+ *   a, b               integers such that c=a*b and a,b<INT_MAX;
  *   rc                 returns 0 if a,b found (success), else 1 (failure)
  *
  */
@@ -38,7 +38,7 @@ static int BigMPI_Factorize_count(MPI_Count count, int * a, int *b)
 {
     size_t in = (size_t)count;
     /* Not using bigmpi_int_max because we want to debug the case where the library is actually used. */
-    size_t lo = in/INT_MAX+1;
+    size_t lo = in/INT_MAX;+1;
     size_t hi = (size_t)floor(sqrt((double)in));
     for (size_t g=hi; g>lo; g--) {
         size_t rem = in%g;
